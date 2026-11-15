@@ -887,9 +887,7 @@
   line-height: 1;
   user-select: none;
 }
-
-      #btn-toggle-master-editor { display: none !important; }
-  </style>
+</style>
 </head>
 <body>
 
@@ -1278,6 +1276,15 @@
           <input type="range" id="slider-trav-y" min="-6" max="6" step="0.05" value="-0.55" style="flex: 1;">
         </div>
       </div>
+      <div class="coord-row">
+        <label>Zoom</label>
+        <div style="display: flex; align-items: center; gap: 4px; flex: 1;">
+          <input type="number" id="num-cam-zoom" min="40" max="300" step="1" value="100" style="width: 52px;">
+          <input type="range" id="slider-cam-zoom" min="40" max="300" step="1" value="100" style="flex: 1;">
+          <span style="font-size: 11px; color: #64748b;">%</span>
+        </div>
+      </div>
+
 
       <div class="tab-actions">
         <button class="btn-editor-action" id="btn-reset-cam-default">Punt inicial</button>
@@ -3335,11 +3342,14 @@ rightMat = new THREE.MeshStandardMaterial({
       const sliderCamZ = document.getElementById("slider-cam-z");
       const numTgtY = document.getElementById("num-tgt-y");
       const sliderTgtY = document.getElementById("slider-tgt-y");
+      const numCamZoom = document.getElementById("num-cam-zoom");
+      const sliderCamZoom = document.getElementById("slider-cam-zoom");
 
       if (numCamX && sliderCamX) numCamX.value = sliderCamX.value = camera.position.x.toFixed(2);
       if (numCamY && sliderCamY) numCamY.value = sliderCamY.value = camera.position.y.toFixed(2);
       if (numCamZ && sliderCamZ) numCamZ.value = sliderCamZ.value = camera.position.z.toFixed(2);
       if (numTgtY && sliderTgtY) numTgtY.value = sliderTgtY.value = controls.target.y.toFixed(2);
+        if (numCamZoom && sliderCamZoom && camera) numCamZoom.value = sliderCamZoom.value = Math.round((camera.zoom || 1) * 100).toString();
     }
 
     // --- Animation Loop ---
@@ -4061,6 +4071,10 @@ function switchMode(mode) {
     if (btn2014) btn2014.classList.remove('active');
     if (btn2025) btn2025.classList.add('active');
     if (view2025) view2025.style.display = 'block';
+    const btnMaster = document.getElementById('btn-toggle-master-editor');
+    const pnlMaster = document.getElementById('master-editor-panel');
+    if (btnMaster) btnMaster.style.display = 'none';
+    if (pnlMaster) pnlMaster.classList.remove('open');
     if (webglCont) webglCont.style.display = 'none';
     if (tempBanner) tempBanner.style.display = 'none';
     updateTN25Scale();
@@ -4072,6 +4086,8 @@ function switchMode(mode) {
     if (btn2014) btn2014.classList.add('active');
     if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'block';
+    const btnMaster = document.getElementById('btn-toggle-master-editor');
+    if (btnMaster) btnMaster.style.display = 'inline-flex';
     if (tempBanner) tempBanner.style.display = 'block';
   }
 }
@@ -4433,6 +4449,20 @@ function switchMode(mode) {
 
       bindPair(sliderTravX, numTravX, applyTravelling);
       bindPair(sliderTravY, numTravY, applyTravelling);
+      // Camera Zoom Control
+      const sliderCamZoom = document.getElementById('slider-cam-zoom');
+      const numCamZoom = document.getElementById('num-cam-zoom');
+
+      function applyCamZoom() {
+        if (!camera) return;
+        const zPercent = parseFloat(numCamZoom ? numCamZoom.value : 100) || 100;
+        camera.zoom = Math.max(0.1, zPercent / 100.0);
+        camera.updateProjectionMatrix();
+      }
+
+      bindPair(sliderCamZoom, numCamZoom, applyCamZoom);
+      bindCamPair(sliderCamZoom, numCamZoom);
+
 
       if (btnResetCam) {
         btnResetCam.addEventListener('click', () => {
@@ -4440,6 +4470,8 @@ function switchMode(mode) {
           if (sliderTravY && numTravY) sliderTravY.value = numTravY.value = '-0.55';
           travellingParams.x = 0.00;
           travellingParams.y = -0.55;
+          if (sliderCamZoom && numCamZoom) sliderCamZoom.value = numCamZoom.value = '100';
+          if (camera) { camera.zoom = 1.0; camera.updateProjectionMatrix(); }
           animateCameraTo(DEFAULT_CAMERA_POS, DEFAULT_TARGET_POS);
         });
       }
