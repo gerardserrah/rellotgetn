@@ -859,6 +859,7 @@
 }
 
 .tn25-ticker-track {
+  will-change: transform;
   display: flex;
   white-space: nowrap;
   font-family: '3Cat', -apple-system, sans-serif;
@@ -881,10 +882,13 @@
   font-weight: 400;
 }
 .tn25-ticker-dot {
-  color: var(--tn25-orange, #F56115);
-  margin-left: 24px;
-  font-size: 16px;
-  line-height: 1;
+  display: inline-block;
+  width: calc(15px * var(--tn25-stage-scale, 1));
+  height: calc(15px * var(--tn25-stage-scale, 1));
+  border-radius: 50%;
+  background-color: var(--tn25-orange, #F56115);
+  margin-left: calc(26px * var(--tn25-stage-scale, 1));
+  flex-shrink: 0;
   user-select: none;
 }
     #btn-toggle-master-editor { display: none !important; }
@@ -2596,7 +2600,7 @@ let flankCubesParams = {
       // 3. Renderer
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
       if (renderer) renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -2897,11 +2901,13 @@ let flankCubesParams = {
       const floorSize = 85;
       const floorGeo = new THREE.PlaneGeometry(floorSize, floorSize);
 
-      // Faint subtle reflection
+      // Faint subtle reflection (optimized resolution for maximum FPS)
+      const refW = Math.min(1024, Math.max(512, Math.round(window.innerWidth * 0.5)));
+      const refH = Math.min(1024, Math.max(512, Math.round(window.innerHeight * 0.5)));
       floorReflector = new THREE.Reflector(floorGeo, {
         clipBias: 0.003,
-        textureWidth: window.innerWidth * window.devicePixelRatio,
-        textureHeight: window.innerHeight * window.devicePixelRatio,
+        textureWidth: refW,
+        textureHeight: refH,
         color: 0x14181a
       });
       floorReflector.rotation.x = -Math.PI / 2;
@@ -3362,6 +3368,7 @@ rightMat = new THREE.MeshStandardMaterial({
 if (currentAppMode === '2025') {
   updateTN25Clock();
   updateTN25Ticker();
+  return; // Stop Three.js render loop when in 2D TN 2025 mode to save CPU/GPU!
 }
 
       updateClockDigits(false);
@@ -3409,21 +3416,23 @@ if (currentAppMode === '2025') {
         ringMesh.material.uniforms.uOffset.value += tempParams.speed;
       }
 
-      // Animate the mosaic dots on both flanking cubes (slow, aesthetic illumination rhythm)
-      const elapsedSec = performance.now() * 0.001;
-      if (worldCubeCtx && worldCubeTexture) {
-        drawWorldCubeCanvas(worldCubeCtx, elapsedSec);
-        worldCubeTexture.needsUpdate = true;
-      }
-      if (catalunyaCubeCtx && catalunyaCubeTexture) {
-        drawCatalunyaCubeCanvas(catalunyaCubeCtx, elapsedSec);
-        catalunyaCubeTexture.needsUpdate = true;
-      }
-
-      // Animate the circular grey dial on central cube (fast overlapping semicircles)
-      if (tv3RingCtx && tv3RingTexture) {
-        drawAnimatedTV3Ring(tv3RingCtx, elapsedSec);
-        tv3RingTexture.needsUpdate = true;
+      // Animate the mosaic dots on both flanking cubes throttled to ~25fps to eliminate GPU upload stalls
+      const nowMs = performance.now();
+      if (!window._lastTexUpdateMs || (nowMs - window._lastTexUpdateMs) >= 40) {
+        window._lastTexUpdateMs = nowMs;
+        const elapsedSec = nowMs * 0.001;
+        if (worldCubeCtx && worldCubeTexture) {
+          drawWorldCubeCanvas(worldCubeCtx, elapsedSec);
+          worldCubeTexture.needsUpdate = true;
+        }
+        if (catalunyaCubeCtx && catalunyaCubeTexture) {
+          drawCatalunyaCubeCanvas(catalunyaCubeCtx, elapsedSec);
+          catalunyaCubeTexture.needsUpdate = true;
+        }
+        if (tv3RingCtx && tv3RingTexture) {
+          drawAnimatedTV3Ring(tv3RingCtx, elapsedSec);
+          tv3RingTexture.needsUpdate = true;
+        }
       }
 
       // Update camera editor inputs in real time when orbiting freely with mouse
@@ -3469,10 +3478,9 @@ if (currentAppMode === '2025') {
       renderer.setSize(window.innerWidth, window.innerHeight);
 
       if (floorReflector) {
-        floorReflector.getRenderTarget().setSize(
-          window.innerWidth * window.devicePixelRatio,
-          window.innerHeight * window.devicePixelRatio
-        );
+        const refW = Math.min(1024, Math.max(512, Math.round(window.innerWidth * 0.5)));
+        const refH = Math.min(1024, Math.max(512, Math.round(window.innerHeight * 0.5)));
+        floorReflector.getRenderTarget().setSize(refW, refH);
       }
     }
 
@@ -3915,7 +3923,7 @@ function initTN25Ticker() {
     <div class="tn25-ticker-item">
       <span class="tn25-ticker-city">${w.capital}</span>
       <span class="tn25-ticker-temp">${Math.round(w.temp)}º</span>
-      <span class="tn25-ticker-dot">•</span>
+      <span class="tn25-ticker-dot"></span>
     </div>
   `).join('');
 
@@ -3923,6 +3931,8 @@ function initTN25Ticker() {
 }
 
 let tn25TickerPos = 0;
+let cachedTickerSingleWidth = 0;
+window.addEventListener('resize', () => { cachedTickerSingleWidth = 0; });
 let lastTN25TickerTime = performance.now();
 function updateTN25Ticker() {
   const now = performance.now();
@@ -3937,11 +3947,13 @@ function updateTN25Ticker() {
   const pxPerSec = speed * 800000;
   tn25TickerPos -= pxPerSec * Math.min(dt, 0.1);
 
-  const singleWidth = track.scrollWidth / 4;
-  if (singleWidth > 0 && Math.abs(tn25TickerPos) >= singleWidth) {
-    tn25TickerPos += singleWidth;
+  if (!cachedTickerSingleWidth) {
+    cachedTickerSingleWidth = track.scrollWidth / 4;
   }
-  track.style.transform = `translateX(${tn25TickerPos}px)`;
+  if (cachedTickerSingleWidth > 0 && Math.abs(tn25TickerPos) >= cachedTickerSingleWidth) {
+    tn25TickerPos += cachedTickerSingleWidth;
+  }
+  track.style.transform = `translate3d(${tn25TickerPos.toFixed(1)}px, 0, 0)`;
 }
 
 function updateTN25Clock() {
