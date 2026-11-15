@@ -887,7 +887,8 @@
   line-height: 1;
   user-select: none;
 }
-</style>
+    #btn-toggle-master-editor { display: none !important; }
+  </style>
 </head>
 <body>
 
@@ -1279,8 +1280,8 @@
       <div class="coord-row">
         <label>Zoom</label>
         <div style="display: flex; align-items: center; gap: 4px; flex: 1;">
-          <input type="number" id="num-cam-zoom" min="40" max="300" step="1" value="100" style="width: 52px;">
-          <input type="range" id="slider-cam-zoom" min="40" max="300" step="1" value="100" style="flex: 1;">
+          <input type="number" id="num-cam-zoom" min="40" max="300" step="1" value="116" style="width: 52px;">
+          <input type="range" id="slider-cam-zoom" min="40" max="300" step="1" value="116" style="flex: 1;">
           <span style="font-size: 11px; color: #64748b;">%</span>
         </div>
       </div>
@@ -2589,6 +2590,8 @@ let flankCubesParams = {
       // 2. Camera
       camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
       camera.position.copy(DEFAULT_CAMERA_POS);
+      camera.zoom = 1.16;
+      camera.updateProjectionMatrix();
 
       // 3. Renderer
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -4087,7 +4090,7 @@ function switchMode(mode) {
     if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'block';
     const btnMaster = document.getElementById('btn-toggle-master-editor');
-    if (btnMaster) btnMaster.style.display = 'inline-flex';
+    if (btnMaster) btnMaster.style.display = 'none';
     if (tempBanner) tempBanner.style.display = 'block';
   }
 }
@@ -4470,8 +4473,8 @@ function switchMode(mode) {
           if (sliderTravY && numTravY) sliderTravY.value = numTravY.value = '-0.55';
           travellingParams.x = 0.00;
           travellingParams.y = -0.55;
-          if (sliderCamZoom && numCamZoom) sliderCamZoom.value = numCamZoom.value = '100';
-          if (camera) { camera.zoom = 1.0; camera.updateProjectionMatrix(); }
+          if (sliderCamZoom && numCamZoom) sliderCamZoom.value = numCamZoom.value = '116';
+          if (camera) { camera.zoom = 1.16; camera.updateProjectionMatrix(); }
           animateCameraTo(DEFAULT_CAMERA_POS, DEFAULT_TARGET_POS);
         });
       }
