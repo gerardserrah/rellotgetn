@@ -612,12 +612,12 @@
 }
 
 .tn25-col-hours {
-  width: calc(490px * var(--tn25-stage-scale, 1));
+  width: calc(560px * var(--tn25-stage-scale, 1));
   height: 100%;
   background: var(--tn25-orange);
   position: relative;
   flex-shrink: 0;
-  overflow: hidden;
+  overflow: visible;
   z-index: 24;
 }
 
@@ -3778,6 +3778,18 @@ function updateTN25Scale() {
   const curH = window.innerHeight;
   const scale = Math.min(curW / baseW, curH / baseH);
   document.documentElement.style.setProperty('--tn25-stage-scale', scale.toString());
+
+  // Ajusta l'amplada de la columna d'hores segons el text real (p. ex. números amples com '20.', '22.', '23.')
+  const hEl = document.getElementById('tn25-hours-text');
+  const hoursCol = document.querySelector('.tn25-col-hours');
+  if (hEl && hoursCol) {
+    const hRect = hEl.getBoundingClientRect();
+    const rightMargin = 21 * scale;
+    const domeWidth = (396 + 21) * scale;
+    const measuredW = hRect.width > 0 ? (hRect.width + rightMargin) : (560 * scale);
+    const finalW = Math.ceil(Math.max(measuredW, domeWidth, 540 * scale));
+    hoursCol.style.width = finalW + 'px';
+  }
 
   // Posiciona dinàmicament el ticker bar just a la línia divisòria de l'hora
   const min1El = document.querySelector('.tn25-col-min1');
