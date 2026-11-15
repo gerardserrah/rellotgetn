@@ -1,0 +1,7 @@
+.DS_Store
+*.bak
+patch_*.rb
+check_terms.rb
+update_script.rb
+crop_ref.jpg
+.git
