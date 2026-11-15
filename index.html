@@ -891,8 +891,7 @@
   flex-shrink: 0;
   user-select: none;
 }
-    #btn-toggle-master-editor { display: none !important; }
-  </style>
+</style>
 </head>
 <body>
 
@@ -4088,7 +4087,7 @@ function switchMode(mode) {
     if (view2025) view2025.style.display = 'block';
     const btnMaster = document.getElementById('btn-toggle-master-editor');
     const pnlMaster = document.getElementById('master-editor-panel');
-    if (btnMaster) btnMaster.style.display = 'none';
+    if (btnMaster) btnMaster.style.display = 'inline-flex';
     if (pnlMaster) pnlMaster.classList.remove('open');
     if (webglCont) webglCont.style.display = 'none';
     if (tempBanner) tempBanner.style.display = 'none';
@@ -4102,7 +4101,7 @@ function switchMode(mode) {
     if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'block';
     const btnMaster = document.getElementById('btn-toggle-master-editor');
-    if (btnMaster) btnMaster.style.display = 'none';
+    if (btnMaster) btnMaster.style.display = 'inline-flex';
     if (tempBanner) tempBanner.style.display = 'block';
   }
 }
