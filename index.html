@@ -4,18 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rellotge TN</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
 
   <!-- Webfonts for Museo Slab & Akkurat / Sans-serif -->
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/museo-slab">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Roboto+Slab:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Montserrat:wght@500;600;700;800;900&family=Oswald:wght@600;700&family=Roboto+Slab:wght@700;800;900&display=swap" rel="stylesheet">
 
   <style>
+    @font-face {
+      font-family: 'OpinionPro';
+      src: url('fonts/OpinionPro-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AddressSansPro';
+      src: url('fonts/Address_Sans_Pro_Cd_Regular.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'HYHeadLine';
+      src: url('fonts/HYHeadLine-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
     @font-face {
       font-family: 'Akkurat Pro';
       src: url('fonts/AkkuratPro-Bold.ttf') format('truetype');
       font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'HYHeadLine';
+      src: url('fonts/HYHeadLine-Medium.ttf') format('truetype');
+      font-weight: 500;
       font-style: normal;
     }
     @font-face {
@@ -566,6 +592,151 @@
   box-shadow: 0 2px 8px rgba(245, 97, 21, 0.35);
 }
 
+/* ==========================================================================
+   TN 2005 - Rellotge TN Comarques TV3 (2005)
+   ========================================================================== */
+#view-tn-2005 {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 5;
+  user-select: none;
+  background: #DE4C00;
+  display: none;
+  font-family: 'HYHeadLine', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.tn05-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 110% 90% at 36% 38%, #F7740A 0%, #E35300 45%, #B33600 80%, #7A1D00 100%);
+  z-index: 1;
+}
+
+#tn05-gears-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tn05-top-left-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75vw;
+  height: 75vh;
+  background: radial-gradient(ellipse at 0% 0%, #F7740A 0%, rgba(247, 116, 10, 0.85) 35%, rgba(247, 116, 10, 0) 75%);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.85;
+}
+
+.tn05-clock-container {
+  position: absolute;
+  right: 12.5vw;
+  top: 64.7vh;
+  transform: translateY(-100%);
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.tn05-clock-digits {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'HYHeadLine', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: clamp(48px, 14.2vh, 165px);
+  line-height: 0.88;
+  color: #FFF2D6;
+  text-shadow: 0 2px 10px rgba(180, 80, 0, 0.35);
+  white-space: nowrap;
+  letter-spacing: 0;
+  -webkit-text-stroke: var(--tn05-font-stroke, 1.2px) currentColor;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke fill;
+}
+
+.tn05-digit {
+  display: inline-block;
+  width: 0.60em;
+  text-align: center;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.tn05-colon {
+  display: inline-block;
+  width: 0.28em;
+  text-align: center;
+  flex-shrink: 0;
+  position: relative;
+  top: -0.04em;
+}
+
+.tn05-ticker-bar {
+  position: absolute;
+  left: 0;
+  width: 100vw;
+  top: 66.0vh;
+  height: clamp(26px, 6.8vh, 72px);
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  z-index: 5;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.tn05-ticker-bar.hidden {
+  opacity: 0;
+}
+
+.tn05-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.tn05-ticker-item {
+  display: inline-flex;
+  align-items: baseline;
+  margin-right: 48px;
+  font-family: 'OpinionPro', 'AddressSansPro', -apple-system, sans-serif;
+  font-size: clamp(14px, 3.2vh, 32px);
+  font-weight: normal;
+  color: #FFFFFF;
+  -webkit-text-stroke: var(--tn05-ticker-stroke, 0.4px) currentColor;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke fill;
+  text-shadow: 0 1px 4px rgba(60, 20, 0, 0.4);
+}
+
+.tn05-ticker-item .tn05-city {
+  margin-right: 8px;
+}
+
+.tn05-ticker-item .tn05-temp {
+  color: #FFF6E5;
+  font-weight: normal;
+}
+
 #view-tn-2025 {
   position: fixed;
   inset: 0;
@@ -891,7 +1062,27 @@
   flex-shrink: 0;
   user-select: none;
 }
+
+/* Amaga les configuracions en producció / Vercel */
+html.hide-config #btn-toggle-master-editor,
+html.hide-config #master-editor-panel {
+  display: none !important;
+}
 </style>
+  <script>
+    (function() {
+      try {
+        var h = window.location.hostname;
+        var isVercelOrProd = h.indexOf('vercel.app') !== -1 || (h !== 'localhost' && h !== '127.0.0.1');
+        var params = new URLSearchParams(window.location.search);
+        var forceShow = params.has('config') || params.has('edit') || params.has('admin');
+        var forceHide = params.has('hide_config') || (isVercelOrProd && !forceShow);
+        if (forceHide) {
+          document.documentElement.classList.add('hide-config');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
 
@@ -904,6 +1095,8 @@
     <span style="font-family: '3Cat'; font-weight: 400;">3Cat Regular</span>
     <span style="font-family: '3Cat'; font-weight: 500;">3Cat Medium</span>
     <span style="font-family: '3Cat'; font-weight: 700;">3Cat Bold</span>
+    <span style="font-family: 'OpinionPro';">Opinion Pro Barcelona 17º 0123456789</span>
+    <span style="font-family: 'AddressSansPro';">Address Sans Barcelona 17º 0123456789</span>
   </div>
 
   <!-- SVG Filter for Levels / Gamma adjustments -->
@@ -929,6 +1122,21 @@
 
   <!-- WebGL Canvas Container -->
   <div id="webgl-container"></div>
+
+<!-- TN 2005 BROADCAST VIEW (TN Comarques TV3) -->
+<div id="view-tn-2005" style="display: none;">
+  <div class="tn05-bg"></div>
+  <canvas id="tn05-gears-canvas"></canvas>
+  <div class="tn05-top-left-mask" id="tn05-top-left-mask"></div>
+  <div class="tn05-clock-container" id="tn05-clock-container">
+    <div class="tn05-clock-digits" id="tn05-clock-digits">
+      <span class="tn05-digit" id="tn05-h0">1</span><span class="tn05-digit" id="tn05-h1">3</span><span class="tn05-colon">:</span><span class="tn05-digit" id="tn05-m0">5</span><span class="tn05-digit" id="tn05-m1">9</span><span class="tn05-colon">:</span><span class="tn05-digit" id="tn05-s0">4</span><span class="tn05-digit" id="tn05-s1">1</span>
+    </div>
+  </div>
+  <div class="tn05-ticker-bar" id="tn05-ticker-bar">
+    <div class="tn05-ticker-track" id="tn05-ticker-track"></div>
+  </div>
+</div>
 
 <!-- TN 2025 FLAT BROADCAST VIEW -->
 <div id="view-tn-2025">
@@ -1012,8 +1220,9 @@
   <!-- Minimal Discreet Controls (Autohides when mouse is idle) -->
   <div class="minimal-controls" id="controls-container">
   <div class="tn-version-toggle" id="tn-version-toggle">
-    <button type="button" class="tn-ver-btn active" id="btn-ver-2014" title="Rellotge TN 2014 3D">TN 2014</button>
-    <button type="button" class="tn-ver-btn" id="btn-ver-2025" title="Rellotge TN 2025 2D">TN 2025</button>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2005" title="Rellotge 2005 (TN Comarques)">2005</button>
+    <button type="button" class="tn-ver-btn active" id="btn-ver-2014" title="Rellotge 2014 3D">2014</button>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2025" title="Rellotge 2025 2D">2025</button>
   </div>
     <button class="btn-minimal" id="btn-sync-audio" title="Sincronitza la sintonia amb l'emissió">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1085,7 +1294,8 @@
       <button class="editor-tab-btn" data-tab="tab-clock">Rellotge</button>
       <button class="editor-tab-btn" data-tab="tab-cubs">Cubs</button>
       <button class="editor-tab-btn" data-tab="tab-temps">Temps</button>
-<button class="editor-tab-btn" data-tab="tab-tn2025">TN 2025</button>
+      <button class="editor-tab-btn" data-tab="tab-tn2005">2005</button>
+      <button class="editor-tab-btn" data-tab="tab-tn2025">2025</button>
     </div>
 
     <!-- Scrollable tab container -->
@@ -1704,7 +1914,258 @@
   </div>
 
   <div class="tab-actions" style="margin-top: 14px;">
-    <button type="button" class="btn-editor-action" id="btn-reset-tn25">Restableix TN 2025</button>
+    <button type="button" class="btn-editor-action" id="btn-reset-tn25">Restableix 2025</button>
+  </div>
+</div>
+
+<div id="tab-tn2005" class="tab-content">
+  <div class="panel-section-title">Càmera Engranatges 2005</div>
+  <div class="coord-row">
+    <label>Càmera Pan X (px)</label>
+    <input type="number" id="num-tn05-cam-x" min="-400" max="400" step="5" value="0">
+    <input type="range" id="slider-tn05-cam-x" min="-400" max="400" step="5" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Càmera Pan Y (px)</label>
+    <input type="number" id="num-tn05-cam-y" min="-300" max="300" step="5" value="115">
+    <input type="range" id="slider-tn05-cam-y" min="-300" max="300" step="5" value="115">
+  </div>
+  <div class="coord-row">
+    <label>Càmera Zoom (%)</label>
+    <input type="number" id="num-tn05-cam-zoom" min="50" max="220" step="5" value="100">
+    <input type="range" id="slider-tn05-cam-zoom" min="50" max="220" step="5" value="100">
+  </div>
+  <div class="coord-row">
+    <label>Càmera Inclinació Tilt (%)</label>
+    <input type="number" id="num-tn05-cam-tilt" min="-30" max="30" step="1" value="21">
+    <input type="range" id="slider-tn05-cam-tilt" min="-30" max="30" step="1" value="21">
+  </div>
+  <div class="coord-row">
+    <label>Càmera Rotació (º)</label>
+    <input type="number" id="num-tn05-cam-rot" min="-30" max="30" step="1" value="0">
+    <input type="range" id="slider-tn05-cam-rot" min="-30" max="30" step="1" value="0">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Pack d'Engranatges (Loop i Moviment)</div>
+  <div class="coord-row">
+    <label>Durada Loop Pack (s)</label>
+    <input type="number" id="num-tn05-loop-dur" min="2" max="30" step="0.5" value="10.0">
+    <input type="range" id="slider-tn05-loop-dur" min="2" max="30" step="0.5" value="10.0">
+  </div>
+  <div class="coord-row">
+    <label>Direcció del Pack</label>
+    <select id="select-tn05-pack-dir" style="flex: 1; height: 26px; background: rgba(30,30,30,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 0 6px; font-size: 11px;">
+      <option value="1" selected>D'esquerra a dreta (1)</option>
+      <option value="-1">De dreta a esquerra (-1)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Recorregut Pack (% amplada)</label>
+    <input type="number" id="num-tn05-travel-dist" min="20" max="200" step="5" value="80">
+    <input type="range" id="slider-tn05-travel-dist" min="20" max="200" step="5" value="80">
+  </div>
+  <div class="coord-row">
+    <label>Posició Vertical Pack (%)</label>
+    <input type="number" id="num-tn05-pack-y" min="20" max="90" step="1" value="70">
+    <input type="range" id="slider-tn05-pack-y" min="20" max="90" step="1" value="70">
+  </div>
+  <div class="coord-row">
+    <label>Descens Diagonal Pack (% alçada)</label>
+    <input type="number" id="num-tn05-pack-diag-y" min="0" max="60" step="1" value="18">
+    <input type="range" id="slider-tn05-pack-diag-y" min="0" max="60" step="1" value="18">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">4 Engranatges (Sense Ombres, Espaiats)</div>
+  <div class="coord-row">
+    <label>Velocitat Rotació</label>
+    <input type="number" id="num-tn05-rot-speed" min="0" max="1.5" step="0.01" value="0.55">
+    <input type="range" id="slider-tn05-rot-speed" min="0" max="1.5" step="0.01" value="0.55">
+  </div>
+  <div class="coord-row">
+    <label>Direcció Rotació</label>
+    <select id="select-tn05-rot-dir" style="flex: 1; height: 26px; background: rgba(30,30,30,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 0 6px; font-size: 11px;">
+      <option value="1" selected>Horari / Mecànica (1)</option>
+      <option value="-1">Invertida (-1)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Gruix dels Engranatges (px)</label>
+    <input type="number" id="num-tn05-gear-depth" min="0" max="35" step="1" value="16">
+    <input type="range" id="slider-tn05-gear-depth" min="0" max="35" step="1" value="16">
+  </div>
+  <div class="coord-row">
+    <label>Il·luminació Engranatge Llunyà (%)</label>
+    <input type="number" id="num-tn05-far-light" min="10" max="100" step="5" value="45">
+    <input type="range" id="slider-tn05-far-light" min="10" max="100" step="5" value="45">
+  </div>
+  <div class="coord-row">
+    <label>Escala Engranatges (%)</label>
+    <input type="number" id="num-tn05-gear-scale" min="50" max="180" step="5" value="110">
+    <input type="range" id="slider-tn05-gear-scale" min="50" max="180" step="5" value="110">
+  </div>
+  <div class="coord-row">
+    <label>Separació entre Engranatges (%)</label>
+    <input type="number" id="num-tn05-gear-spacing" min="50" max="200" step="5" value="100">
+    <input type="range" id="slider-tn05-gear-spacing" min="50" max="200" step="5" value="100">
+  </div>
+  <div class="coord-row">
+    <label>Opacitat Engranatges (%)</label>
+    <input type="number" id="num-tn05-gear-opacity" min="20" max="100" step="5" value="75">
+    <input type="range" id="slider-tn05-gear-opacity" min="20" max="100" step="5" value="75">
+  </div>
+  <div class="coord-row">
+    <label>Color Daurat Brillant</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-gear-c1" value="#ffe8a3" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-gear-c1" value="#FFE8A3" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color Taronja Càlid</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-gear-c2" value="#f5820d" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-gear-c2" value="#F5820D" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color Gruix / Bisell Lluent</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-gear-c3" value="#ffb347" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-gear-c3" value="#FFB347" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Efectes (Mask Dalt-Esquerra i Mirror Engranatges)</div>
+  <div class="coord-row">
+    <label>Opacitat Mask Dalt-Esquerra (%)</label>
+    <input type="number" id="num-tn05-mask-opacity" min="0" max="100" step="5" value="100">
+    <input type="range" id="slider-tn05-mask-opacity" min="0" max="100" step="5" value="100">
+  </div>
+  <div class="coord-row">
+    <label>Opacitat Mirall Engranatges (%)</label>
+    <input type="number" id="num-tn05-mirror-opacity" min="0" max="100" step="5" value="100">
+    <input type="range" id="slider-tn05-mirror-opacity" min="0" max="100" step="5" value="100">
+  </div>
+  <div class="coord-row">
+    <label>Alçada Efecte Mirror Fons (%)</label>
+    <input type="number" id="num-tn05-floor-y" min="20" max="98" step="0.5" value="66.5">
+    <input type="range" id="slider-tn05-floor-y" min="20" max="98" step="0.5" value="66.5">
+  </div>
+  <div class="coord-row">
+    <label>Opacitat Reflex Engranatges (%)</label>
+    <input type="number" id="num-tn05-mirror-gear-op" min="5" max="100" step="5" value="35">
+    <input type="range" id="slider-tn05-mirror-gear-op" min="5" max="100" step="5" value="35">
+  </div>
+  <div class="coord-row">
+    <label>Difusió Mirall (px)</label>
+    <input type="number" id="num-tn05-mirror-blur" min="0" max="8" step="0.2" value="0">
+    <input type="range" id="slider-tn05-mirror-blur" min="0" max="8" step="0.2" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Capa Taronja Fosc Terra (%)</label>
+    <input type="number" id="num-tn05-floor-tint-op" min="0" max="100" step="5" value="55">
+    <input type="range" id="slider-tn05-floor-tint-op" min="0" max="100" step="5" value="55">
+  </div>
+  <div class="coord-row">
+    <label>Color Taronja Fosc Terra</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-floor-tint-col" value="#8e2500" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-floor-tint-col" value="#8E2500" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Arrodoniment Tipografia (px)</label>
+    <input type="number" id="num-tn05-font-round" min="0" max="3" step="0.1" value="0">
+    <input type="range" id="slider-tn05-font-round" min="0" max="3" step="0.1" value="0">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Rellotge Digital 2005 (Sense Mirror)</div>
+  <div class="coord-row">
+    <label>Mida Rellotge (vh)</label>
+    <input type="number" id="num-tn05-clock-size" min="8" max="25" step="0.5" value="17.0">
+    <input type="range" id="slider-tn05-clock-size" min="8" max="25" step="0.5" value="17.0">
+  </div>
+  <div class="coord-row">
+    <label>Posició Dreta (vw)</label>
+    <input type="number" id="num-tn05-clock-right" min="2" max="40" step="0.5" value="12.5">
+    <input type="range" id="slider-tn05-clock-right" min="2" max="40" step="0.5" value="12.5">
+  </div>
+  <div class="coord-row">
+    <label>Posició Vertical (vh)</label>
+    <input type="number" id="num-tn05-clock-top" min="30" max="90" step="0.5" value="64.7">
+    <input type="range" id="slider-tn05-clock-top" min="30" max="90" step="0.5" value="64.7">
+  </div>
+  <div class="coord-row">
+    <label>Amplada Ranura Dígits (em)</label>
+    <input type="number" id="num-tn05-slot-w" min="0.45" max="0.85" step="0.01" value="0.60">
+    <input type="range" id="slider-tn05-slot-w" min="0.45" max="0.85" step="0.01" value="0.60">
+  </div>
+  <div class="coord-row">
+    <label>Color Dígits</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-clock-color" value="#fff2d6" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-clock-color" value="#FFF2D6" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Ticker de Temperatures (Sense Fons)</div>
+  <div class="coord-row">
+    <label>Velocitat Ticker (px/s)</label>
+    <input type="number" id="num-tn05-ticker-speed" min="20" max="200" step="5" value="95">
+    <input type="range" id="slider-tn05-ticker-speed" min="20" max="200" step="5" value="95">
+  </div>
+  <div class="coord-row">
+    <label>Posició Vertical (vh)</label>
+    <input type="number" id="num-tn05-ticker-pos-y" min="40" max="95" step="0.5" value="68.0">
+    <input type="range" id="slider-tn05-ticker-pos-y" min="40" max="95" step="0.5" value="68.0">
+  </div>
+  <div class="coord-row">
+    <label>Mida Font (px)</label>
+    <input type="number" id="num-tn05-ticker-font" min="14" max="50" step="1" value="30">
+    <input type="range" id="slider-tn05-ticker-font" min="14" max="50" step="1" value="30">
+  </div>
+  <div class="coord-row">
+    <label>Espai Ciutats (px)</label>
+    <input type="number" id="num-tn05-ticker-gap" min="20" max="120" step="2" value="52">
+    <input type="range" id="slider-tn05-ticker-gap" min="20" max="120" step="2" value="52">
+  </div>
+  <div class="coord-row">
+    <label>Color Text Ticker</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-ticker-color" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-ticker-color" value="#FFFFFF" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Fons Càlid 2005</div>
+  <div class="coord-row">
+    <label>Color Centre</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-bg-c1" value="#f7740a" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-bg-c1" value="#F7740A" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color Vores</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+      <input type="color" id="picker-tn05-bg-c2" value="#7a1d00" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-bg-c2" value="#7A1D00" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Centre Focus X (%)</label>
+    <input type="number" id="num-tn05-bg-x" min="10" max="90" step="1" value="36">
+    <input type="range" id="slider-tn05-bg-x" min="10" max="90" step="1" value="36">
+  </div>
+  <div class="coord-row">
+    <label>Centre Focus Y (%)</label>
+    <input type="number" id="num-tn05-bg-y" min="10" max="90" step="1" value="38">
+    <input type="range" id="slider-tn05-bg-y" min="10" max="90" step="1" value="38">
+  </div>
+
+  <div class="tab-actions" style="margin-top: 14px; display: flex; gap: 8px;">
+    <button type="button" class="btn-editor-action primary" id="btn-copy-tn05" style="flex: 1;">📋 Copia 2005</button>
+    <button type="button" class="btn-editor-action" id="btn-reset-tn05" style="flex: 1;">Restableix 2005</button>
   </div>
 </div>
 </div>
@@ -3364,11 +3825,16 @@ rightMat = new THREE.MeshStandardMaterial({
     function animate() {
       requestAnimationFrame(animate);
 
-if (currentAppMode === '2025') {
-  updateTN25Clock();
-  updateTN25Ticker();
-  return; // Stop Three.js render loop when in 2D TN 2025 mode to save CPU/GPU!
-}
+      if (currentAppMode === '2005') {
+        updateTN05Clock();
+        updateTN05Animation();
+        return;
+      }
+      if (currentAppMode === '2025') {
+        updateTN25Clock();
+        updateTN25Ticker();
+        return; // Stop Three.js render loop when in 2D TN 2025 mode to save CPU/GPU!
+      }
 
       updateClockDigits(false);
 
@@ -3489,6 +3955,91 @@ if (currentAppMode === '2025') {
     let isSyncActive = false;
     let syncIntervalId = null;
 
+    // --- Web Audio API Seamless Gapless Looper for TN 2005 ---
+    let tn05AudioCtx = null;
+    let tn05AudioBuffer = null;
+    let tn05AudioSource = null;
+    let tn05GainNode = null;
+    let isTN05AudioActive = false;
+
+    async function loadTN05AudioBuffer() {
+      if (tn05AudioBuffer) return tn05AudioBuffer;
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtxClass) return null;
+      if (!tn05AudioCtx) {
+        tn05AudioCtx = new AudioCtxClass();
+      }
+      try {
+        const resp = await fetch('audio/music_2005.m4a');
+        const ab = await resp.arrayBuffer();
+        const decoded = await tn05AudioCtx.decodeAudioData(ab);
+
+        // Smooth crossfade (128 samples) at loop boundary to guarantee zero click/gap
+        const fade = Math.min(128, Math.floor(decoded.length * 0.005));
+        for (let ch = 0; ch < decoded.numberOfChannels; ch++) {
+          const chData = decoded.getChannelData(ch);
+          const len = chData.length;
+          for (let i = 0; i < fade; i++) {
+            const factor = i / fade;
+            chData[i] = (1 - factor) * chData[len - fade + i] + factor * chData[i];
+          }
+        }
+        tn05AudioBuffer = decoded;
+        return decoded;
+      } catch (err) {
+        console.warn("Could not load seamless TN 2005 audio:", err);
+        return null;
+      }
+    }
+
+    async function playTN05SeamlessAudio() {
+      isTN05AudioActive = true;
+      if (bgAudio) {
+        bgAudio.pause();
+      }
+      const buf = await loadTN05AudioBuffer();
+      if (!buf || !isTN05AudioActive) return;
+
+      if (tn05AudioCtx && tn05AudioCtx.state === 'suspended') {
+        await tn05AudioCtx.resume().catch(() => {});
+      }
+
+      if (tn05AudioSource) {
+        try { tn05AudioSource.stop(); } catch (e) {}
+        tn05AudioSource.disconnect();
+        tn05AudioSource = null;
+      }
+
+      if (!tn05GainNode) {
+        tn05GainNode = tn05AudioCtx.createGain();
+        tn05GainNode.connect(tn05AudioCtx.destination);
+      }
+      const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+      tn05GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn05AudioCtx.currentTime);
+
+      tn05AudioSource = tn05AudioCtx.createBufferSource();
+      tn05AudioSource.buffer = buf;
+      tn05AudioSource.loop = true;
+      tn05AudioSource.connect(tn05GainNode);
+      tn05AudioSource.start(0);
+    }
+
+    function stopTN05SeamlessAudio() {
+      isTN05AudioActive = false;
+      if (tn05AudioSource) {
+        try { tn05AudioSource.stop(); } catch (e) {}
+        tn05AudioSource.disconnect();
+        tn05AudioSource = null;
+      }
+    }
+
+    function updateTN05AudioVolume() {
+      if (tn05GainNode && tn05AudioCtx) {
+        const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+        tn05GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn05AudioCtx.currentTime);
+      }
+    }
+
     async function initAudio() {
       bgAudio = document.getElementById('bg-audio');
       if (!bgAudio) return;
@@ -3522,7 +4073,17 @@ if (currentAppMode === '2025') {
         const unlockSound = () => {
           bgAudio.muted = false;
           isAudioMuted = false;
-          if (bgAudio.paused) bgAudio.play().catch(() => {});
+          if (currentAppMode === '2005') {
+            if (tn05AudioCtx && tn05AudioCtx.state === 'suspended') {
+              tn05AudioCtx.resume().catch(() => {});
+            }
+            updateTN05AudioVolume();
+            if (!tn05AudioSource || !isTN05AudioActive) {
+              playTN05SeamlessAudio();
+            }
+          } else if (bgAudio.paused) {
+            bgAudio.play().catch(() => {});
+          }
           updateAudioUI();
           ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(ev => {
             window.removeEventListener(ev, unlockSound);
@@ -3536,11 +4097,19 @@ if (currentAppMode === '2025') {
 
     function toggleAudioMute() {
       if (!bgAudio) return;
-      if (bgAudio.paused) {
-        bgAudio.play().catch(e => console.log(e));
-      }
       isAudioMuted = !isAudioMuted;
       bgAudio.muted = isAudioMuted;
+      if (currentAppMode === '2005') {
+        updateTN05AudioVolume();
+        updateAudioUI();
+        if (!isAudioMuted && (!tn05AudioSource || !isTN05AudioActive)) {
+          playTN05SeamlessAudio();
+        }
+        return;
+      }
+      if (!isAudioMuted && bgAudio.paused) {
+        bgAudio.play().catch(e => console.log(e));
+      }
       updateAudioUI();
     }
 
@@ -3623,11 +4192,11 @@ while (targetSongTimeNow < 0) {
       const targetDate = getTargetSyncDate();
       const diffSec = (targetDate.getTime() - now.getTime()) / 1000.0;
 
-      // Punt clau de sincronització: segon 00:40 (40.0s) per al 2025, segon 02:04.19 (124.19s) per al 2014
-      const targetSongTime = (currentAppMode === '2025') ? 40.0 : 124.19;
+      // Punt clau de sincronització: segon 00:40 (40.0s) per al 2025, segon 23.8s per al 2005, segon 02:04.19 (124.19s) per al 2014
+      const targetSongTime = (currentAppMode === '2025') ? 40.0 : (currentAppMode === '2005' ? 23.8 : 124.19);
       const songDuration = (bgAudio && bgAudio.duration && !isNaN(bgAudio.duration) && bgAudio.duration > 5)
         ? bgAudio.duration
-        : ((currentAppMode === '2025') ? 43.5 : 240.0);
+        : ((currentAppMode === '2025') ? 43.5 : (currentAppMode === '2005' ? 24.24 : 240.0));
 
       let targetSongNow = (targetSongTime - diffSec) % songDuration;
       while (targetSongNow < 0) targetSongNow += songDuration;
@@ -4046,10 +4615,654 @@ function updateTN25Clock() {
   if (yrEl) yrEl.textContent = String(d.yearNum);
 }
 
+// ==========================================================================
+// --- TN 2005 ENGINE (TN Comarques TV3 - 2005) ---
+// ==========================================================================
+let tn05Canvas = null;
+let tn05Ctx = null;
+let tn05GearAngle = 0;
+let lastTN05AnimTime = performance.now();
+let tn05TickerPos = 0;
+let cachedTN05TickerSingleWidth = 0;
+
+let tn05Params = {
+  // Càmera Engranatges 2005
+  camX: 0,
+  camY: 115,
+  camZoom: 100,
+  camTilt: 21,
+  camRot: 0,
+
+  // Pack d'engranatges (Loop i moviment)
+  packLoopDuration: 10.0, // segons loop complet
+  packDir: 1,             // 1: d'esquerra a dreta, -1: de dreta a esquerra
+  travelDist: 80,         // % amplada pantalla recorregut
+  packPosY: 70,           // % alçada pantalla eix
+  packDiagY: 18,          // % descens vertical en diagonal durant el recorregut
+
+  // 4 Engranatges (Sense ombres, espaiats)
+  rotSpeed: 0.55,         // rad/s
+  rotDir: 1,              // 1: horari / mecànica, -1: invertida
+  gearDepth: 16,          // px gruix/bisell lluent
+  farLight: 45,           // % il·luminació engranatge més llunyà
+  gearScale: 110,         // %
+  gearSpacing: 100,       // % separació relativa entre ells
+  gearOpacity: 75,        // %
+  gearColor1: '#FFE8A3',  // Daurat brillant
+  gearColor2: '#F5820D',  // Taronja càlid
+  gearColor3: '#FFB347',  // Bisell / gruix lluent (no fosc)
+
+  // Efectes (Mask dalt-esquerra i mirror engranatges sota rellotge)
+  maskOpacity: 100,       // % opacitat mask degradat dalt-esquerra
+  mirrorOpacity: 100,     // % opacitat mirall engranatges sota rellotge
+  floorHorizonY: 66.5,    // % alçada linia terra/horitzó del mirall (66.5%, estrictament horitzontal)
+  mirrorBlur: 0,          // px difusió reflex
+  mirrorGearAlpha: 35,    // % opacitat relativa dels engranatges reflectits (es veuen menys que els directes)
+  fontRoundness: 0,       // px arrodoniment tipografia
+  floorTintOpacity: 55,   // % opacitat capa taronja més fosc per matissar el reflex
+  floorTintColor: '#8E2500', // Color taronja fosc del terra
+
+  // Clock
+  clockFontSize: 17.0,    // vh
+  clockRight: 12.5,       // vw
+  clockTop: 64.7,         // vh
+  clockSlotWidth: 0.60,   // em
+  clockColor: '#FFF2D6',
+
+  // Ticker (Sense fons)
+  tickerSpeed: 95,        // px/s
+  tickerPosY: 68.0,       // vh
+  tickerFontSize: 30,     // px
+  tickerGap: 52,          // px
+  tickerColor: '#FFFFFF',
+
+  // Background
+  bgCenterColor: '#F7740A',
+  bgEdgeColor: '#7A1D00',
+  bgCenterX: 36,          // %
+  bgCenterY: 38           // %
+};
+
+// 4 engranatges distribuïts en l'espai frontal amb distàncies entre ells (no concèntrics)
+let tn05Gears = [
+  // 0. Furthest gear (el de més lluny, menys il·luminat, a l'esquerra)
+  {
+    relX: -0.34,
+    relY: -0.05,
+    radiusRel: 0.44,
+    teeth: 38,
+    angleOffset: 0.0,
+    rotSpeedMult: 0.65,
+    spokes: 5,
+    spokeWidthRel: 0.10,
+    hubRadiusRel: 0.38,
+    rimInnerRel: 0.84,
+    holeRadiusRel: 0.13,
+    hasPinion: false,
+    alphaBase: 0.40,
+    isFar: true
+  },
+  // 1. Middle-back gear (mitjà, al mig cap a dalt)
+  {
+    relX: 0.08,
+    relY: -0.24,
+    radiusRel: 0.35,
+    teeth: 30,
+    angleOffset: 0.75,
+    rotSpeedMult: -0.85,
+    spokes: 4,
+    spokeWidthRel: 0.12,
+    hubRadiusRel: 0.34,
+    rimInnerRel: 0.80,
+    holeRadiusRel: 0.13,
+    hasPinion: false,
+    alphaBase: 0.75,
+    isFar: false
+  },
+  // 2. Middle-front gear (a la dreta, sota/darrere del rellotge com a la refe)
+  {
+    relX: 0.36,
+    relY: 0.06,
+    radiusRel: 0.40,
+    teeth: 32,
+    angleOffset: 1.55,
+    rotSpeedMult: 0.90,
+    spokes: 4,
+    spokeWidthRel: 0.15,
+    hubRadiusRel: 0.34,
+    rimInnerRel: 0.78,
+    holeRadiusRel: 0.13,
+    hasPinion: false,
+    alphaBase: 0.88,
+    isFar: false
+  },
+  // 3. Front center gear / pinion (frontal, entre els engranatges)
+  {
+    relX: -0.04,
+    relY: 0.15,
+    radiusRel: 0.22,
+    teeth: 18,
+    angleOffset: 0.30,
+    rotSpeedMult: -1.35,
+    spokes: 4,
+    spokeWidthRel: 0.18,
+    hubRadiusRel: 0.42,
+    rimInnerRel: 0.70,
+    holeRadiusRel: 0.13,
+    hasPinion: true,
+    alphaBase: 0.96,
+    isFar: false
+  }
+];
+
+function initTN05() {
+  tn05Canvas = document.getElementById('tn05-gears-canvas');
+  if (tn05Canvas) {
+    tn05Ctx = tn05Canvas.getContext('2d');
+    resizeTN05Canvas();
+  }
+  initTN05Ticker();
+  updateTN05Styles();
+  loadTN05AudioBuffer();
+}
+
+function resizeTN05Canvas() {
+  if (!tn05Canvas) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  tn05Canvas.width = Math.round(w * dpr);
+  tn05Canvas.height = Math.round(h * dpr);
+  if (tn05Ctx) {
+    tn05Ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+}
+window.addEventListener('resize', () => {
+  if (currentAppMode === '2005') {
+    resizeTN05Canvas();
+    cachedTN05TickerSingleWidth = 0;
+  }
+});
+
+function updateTN05Styles() {
+  const clockContainer = document.getElementById('tn05-clock-container');
+  const clockDigits = document.getElementById('tn05-clock-digits');
+  const tickerBar = document.getElementById('tn05-ticker-bar');
+  const bg = document.querySelector('.tn05-bg');
+  const mask = document.getElementById('tn05-top-left-mask');
+
+  document.documentElement.style.setProperty('--tn05-font-stroke', `${tn05Params.fontRoundness}px`);
+  document.documentElement.style.setProperty('--tn05-ticker-stroke', `${(tn05Params.fontRoundness * 0.65).toFixed(1)}px`);
+
+  if (mask) {
+    mask.style.opacity = (tn05Params.maskOpacity / 100).toString();
+  }
+  if (clockContainer) {
+    clockContainer.style.right = `${tn05Params.clockRight}vw`;
+    clockContainer.style.top = `${tn05Params.clockTop}vh`;
+  }
+  if (clockDigits) {
+    clockDigits.style.fontSize = `${tn05Params.clockFontSize}vh`;
+    clockDigits.style.color = tn05Params.clockColor;
+    document.querySelectorAll('#tn05-clock-digits .tn05-digit').forEach(d => {
+      d.style.width = `${tn05Params.clockSlotWidth}em`;
+    });
+  }
+  if (tickerBar) {
+    tickerBar.style.top = `${tn05Params.tickerPosY}vh`;
+    document.querySelectorAll('.tn05-ticker-item').forEach(item => {
+      item.style.marginRight = `${tn05Params.tickerGap}px`;
+      item.style.fontSize = `${tn05Params.tickerFontSize}px`;
+      item.style.color = tn05Params.tickerColor;
+    });
+  }
+  if (bg) {
+    bg.style.background = `radial-gradient(ellipse 110% 90% at ${tn05Params.bgCenterX}% ${tn05Params.bgCenterY}%, ${tn05Params.bgCenterColor} 0%, #E35300 45%, #B33600 80%, ${tn05Params.bgEdgeColor} 100%)`;
+  }
+}
+
+function drawGearPath(ctx, rTip, rRoot, teeth, angle, hubRadius, holeRadius, rimInner, spokeWidth, spokes) {
+  ctx.beginPath();
+  const toothStep = (Math.PI * 2) / teeth;
+  for (let i = 0; i < teeth; i++) {
+    const a0 = angle + i * toothStep;
+    const a1 = a0 + toothStep * 0.22;
+    const a2 = a0 + toothStep * 0.52;
+    const a3 = a0 + toothStep * 0.74;
+    const a4 = a0 + toothStep;
+
+    const x0 = Math.cos(a0) * rRoot, y0 = Math.sin(a0) * rRoot;
+    const x1 = Math.cos(a1) * rTip,  y1 = Math.sin(a1) * rTip;
+    const x2 = Math.cos(a2) * rTip,  y2 = Math.sin(a2) * rTip;
+    const x3 = Math.cos(a3) * rRoot, y3 = Math.sin(a3) * rRoot;
+    const x4 = Math.cos(a4) * rRoot, y4 = Math.sin(a4) * rRoot;
+
+    if (i === 0) ctx.moveTo(x0, y0);
+    else ctx.lineTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.lineTo(x4, y4);
+  }
+  ctx.closePath();
+
+  // Axle hole
+  ctx.moveTo(holeRadius, 0);
+  ctx.arc(0, 0, holeRadius, 0, Math.PI * 2, true);
+
+  // Spoke cutouts
+  if (spokes > 0 && rimInner > hubRadius) {
+    const spokeStep = (Math.PI * 2) / spokes;
+    const halfGapAngle = Math.asin(Math.min(0.9, (spokeWidth * 0.5) / hubRadius));
+    for (let s = 0; s < spokes; s++) {
+      const sa = angle + s * spokeStep;
+      const startA = sa + halfGapAngle + 0.05;
+      const endA = sa + spokeStep - halfGapAngle - 0.05;
+      if (endA > startA) {
+        ctx.moveTo(Math.cos(startA) * rimInner, Math.sin(startA) * rimInner);
+        ctx.arc(0, 0, rimInner, startA, endA, false);
+        ctx.arc(0, 0, hubRadius, endA, startA, true);
+        ctx.closePath();
+      }
+    }
+  }
+}
+
+// Dibuixa l'engranatge sense cap mena d'ombra ni de stroke (NO STROKE)
+function drawClockworkGear3D(ctx, cx, cy, radius, teeth, angle, options = {}) {
+  const toothDepth = radius * 0.11;
+  const rTip = radius;
+  const rRoot = radius - toothDepth;
+  const spokes = options.spokes !== undefined ? options.spokes : 4;
+  const spokeWidth = radius * (options.spokeWidthRel || 0.14);
+  const hubRadius = radius * (options.hubRadiusRel || 0.35);
+  const holeRadius = radius * (options.holeRadiusRel || 0.13);
+  const rimInner = radius * (options.rimInnerRel || 0.80);
+
+  const depth = tn05Params.gearDepth;
+
+  // Desactiva qualsevol ombra fosca o drop-shadow
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+
+  // 1. Gruix 3D (si depth > 0), amb to càlid ambre sense strokes ni ombres
+  if (depth > 0) {
+    const steps = Math.min(6, Math.max(2, Math.round(depth / 2)));
+    ctx.fillStyle = tn05Params.gearColor3;
+    for (let s = steps; s >= 1; s--) {
+      const t = s / steps;
+      const ox = cx + (depth * 0.45 * t);
+      const oy = cy + (depth * 0.25 * t);
+
+      ctx.save();
+      ctx.translate(ox, oy);
+      drawGearPath(ctx, rTip, rRoot, teeth, angle, hubRadius, holeRadius, rimInner, spokeWidth, spokes);
+      ctx.fill('evenodd');
+      ctx.restore();
+    }
+  }
+
+  // 2. Cara frontal daurada brillant (SENSE STROKE)
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  drawGearPath(ctx, rTip, rRoot, teeth, angle, hubRadius, holeRadius, rimInner, spokeWidth, spokes);
+
+  const grad = ctx.createLinearGradient(-radius * 0.7, -radius * 0.8, radius * 0.8, radius * 0.9);
+  grad.addColorStop(0.0, tn05Params.gearColor1);
+  grad.addColorStop(0.25, '#FFCA64');
+  grad.addColorStop(0.65, tn05Params.gearColor2);
+  grad.addColorStop(1.0, '#E65100');
+
+  ctx.fillStyle = grad;
+  ctx.fill('evenodd');
+
+  // Pinyó central de 12 dents (si en té), SENSE STROKE
+  if (options.hasPinion) {
+    const pinR = hubRadius * 0.85;
+    const pinTeeth = 12;
+    const pinStep = (Math.PI * 2) / pinTeeth;
+    const pinDepth = pinR * 0.16;
+    const pinRoot = pinR - pinDepth;
+
+    ctx.beginPath();
+    for (let p = 0; p < pinTeeth; p++) {
+      const pa0 = -angle * 1.5 + p * pinStep;
+      const pa1 = pa0 + pinStep * 0.25;
+      const pa2 = pa0 + pinStep * 0.55;
+      const pa3 = pa0 + pinStep * 0.75;
+      const pa4 = pa0 + pinStep;
+
+      const px0 = Math.cos(pa0) * pinRoot, py0 = Math.sin(pa0) * pinRoot;
+      const px1 = Math.cos(pa1) * pinR,    py1 = Math.sin(pa1) * pinR;
+      const px2 = Math.cos(pa2) * pinR,    py2 = Math.sin(pa2) * pinR;
+      const px3 = Math.cos(pa3) * pinRoot, py3 = Math.sin(pa3) * pinRoot;
+      const px4 = Math.cos(pa4) * pinRoot, py4 = Math.sin(pa4) * pinRoot;
+
+      if (p === 0) ctx.moveTo(px0, py0);
+      else ctx.lineTo(px0, py0);
+      ctx.lineTo(px1, py1);
+      ctx.lineTo(px2, py2);
+      ctx.lineTo(px3, py3);
+      ctx.lineTo(px4, py4);
+    }
+    ctx.closePath();
+    ctx.moveTo(holeRadius, 0);
+    ctx.arc(0, 0, holeRadius, 0, Math.PI * 2, true);
+
+    const pinGrad = ctx.createLinearGradient(-pinR, -pinR, pinR, pinR);
+    pinGrad.addColorStop(0, '#FFF6D6');
+    pinGrad.addColorStop(0.5, '#FFB300');
+    pinGrad.addColorStop(1, '#E65100');
+    ctx.fillStyle = pinGrad;
+    ctx.fill('evenodd');
+  }
+
+  // Anell concèntric subtil interior
+  ctx.beginPath();
+  ctx.arc(0, 0, holeRadius * 1.25, 0, Math.PI * 2);
+  ctx.arc(0, 0, holeRadius, 0, Math.PI * 2, true);
+  ctx.fillStyle = 'rgba(255, 245, 195, 0.35)';
+  ctx.fill('evenodd');
+
+  ctx.restore();
+}
+
+// Funció auxiliar per dibuixar tots 4 engranatges amb el seu espaiat
+function drawAllTN05Gears(ctx, cx, packY, h, globalScale, isMirror) {
+  const spacing = tn05Params.gearSpacing / 100;
+  tn05Gears.forEach(g => {
+    const gx = cx + (g.relX * h * spacing * globalScale);
+    const gy = packY + (g.relY * h * spacing * globalScale);
+    const r = g.radiusRel * h * globalScale;
+    const ang = g.angleOffset + tn05GearAngle * g.rotSpeedMult;
+
+    let gearAlpha = g.alphaBase;
+    if (g.isFar) {
+      gearAlpha = g.alphaBase * (tn05Params.farLight / 100);
+    }
+    gearAlpha *= (tn05Params.gearOpacity / 100);
+    if (isMirror) {
+      // En la part mirror els engranatges es veuen menys (opacitat més baixa que al directe)
+      const mirrorMult = (tn05Params.mirrorGearAlpha !== undefined ? tn05Params.mirrorGearAlpha : 35) / 100;
+      gearAlpha *= (tn05Params.mirrorOpacity / 100) * mirrorMult;
+    }
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.01, Math.min(1.0, gearAlpha));
+    drawClockworkGear3D(ctx, gx, gy, r, g.teeth, ang, {
+      spokes: g.spokes,
+      spokeWidthRel: g.spokeWidthRel,
+      hubRadiusRel: g.hubRadiusRel,
+      rimInnerRel: g.rimInnerRel,
+      holeRadiusRel: g.holeRadiusRel,
+      hasPinion: g.hasPinion
+    });
+    ctx.restore();
+  });
+}
+
+function updateTN05Animation() {
+  if (currentAppMode !== '2005' || !tn05Ctx || !tn05Canvas) return;
+
+  const now = performance.now();
+  const dt = (now - lastTN05AnimTime) * 0.001;
+  lastTN05AnimTime = now;
+
+  // Rotació suau i contínua dels engranatges
+  tn05GearAngle += tn05Params.rotSpeed * tn05Params.rotDir * dt;
+
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  tn05Ctx.clearRect(0, 0, w, h);
+
+  const loopDur = Math.max(1, tn05Params.packLoopDuration);
+  const travelSpan = Math.max(100, (tn05Params.travelDist / 100) * w);
+  const dir = tn05Params.packDir; // 1: d'esquerra a dreta, -1: de dreta a esquerra
+  const globalScale = tn05Params.gearScale / 100;
+
+  // Moviment diagonal descendent en bucle 100% SEAMLESS (infinit i continu, mai fa salts abruptes)
+  const cycleW = travelSpan;
+  const cycleH = ((tn05Params.packDiagY !== undefined ? tn05Params.packDiagY : 18) / 100) * h;
+  const speedX = cycleW / loopDur;
+  const speedY = cycleH / loopDur;
+
+  const timeSec = now * 0.001;
+  const continuousDriftX = timeSec * speedX * dir;
+  const wrappedShiftX = ((continuousDriftX % cycleW) + cycleW) % cycleW;
+  const packCurrentX = (w * 0.44) + wrappedShiftX;
+
+  const continuousDriftY = timeSec * speedY * dir;
+  const wrappedShiftY = ((continuousDriftY % cycleH) + cycleH) % cycleH;
+  const packCurrentY = ((tn05Params.packPosY / 100) * h) + wrappedShiftY;
+
+  // Genera offsets periòdics 2D suficients per cobrir tota la pantalla i marges
+  const kSpan = Math.ceil(w / cycleW) + 2;
+  const offsets = [];
+  for (let k = -kSpan; k <= kSpan; k++) {
+    offsets.push({
+      x: k * cycleW,
+      y: k * cycleH
+    });
+  }
+  const maxR = 0.85 * h * globalScale;
+
+  // CÀMERA TN 2005
+  const camX = tn05Params.camX;
+  const camY = tn05Params.camY;
+  const camZoom = tn05Params.camZoom / 100;
+  const camTilt = tn05Params.camTilt / 100;
+  const camRotRad = (tn05Params.camRot * Math.PI) / 180;
+
+  // Alçada de l'horitzó del mirall en coordenades de pantalla:
+  // SEMPRE 100% HORITZONTAL d'un extrem a l'altre, mai afectat pel tilt ni rotació
+  const screenFloorY = (tn05Params.floorHorizonY / 100) * h;
+
+  // 1. DIBUIXA ELS ENGRANATGES DIRECTES (Part superior, per sobre de la línia horitzontal)
+  tn05Ctx.save();
+  if (screenFloorY < h) {
+    tn05Ctx.beginPath();
+    tn05Ctx.rect(0, 0, w, screenFloorY);
+    tn05Ctx.clip();
+  }
+
+  // Aplica la transformació de la càmera als engranatges directes
+  tn05Ctx.translate(w * 0.5 + camX, h * 0.5 + camY);
+  tn05Ctx.scale(camZoom, camZoom);
+  if (camRotRad !== 0) tn05Ctx.rotate(camRotRad);
+  if (camTilt !== 0) tn05Ctx.transform(1, camTilt * 0.5, 0, 1, 0, 0);
+  tn05Ctx.translate(-w * 0.5, -h * 0.5);
+
+  offsets.forEach(off => {
+    const cx = packCurrentX + off.x;
+    const cy = packCurrentY + off.y;
+    if (cx + maxR < -w * 0.6 || cx - maxR > w * 1.6) return;
+    drawAllTN05Gears(tn05Ctx, cx, cy, h, globalScale, false);
+  });
+  tn05Ctx.restore();
+
+  // 2. CAPA TARONJA MÉS FOSC PER MATISSAR EL REFLEX (Coincidint amb el mirror, sota l'horitzó)
+  if (screenFloorY < h) {
+    const tintOp = (tn05Params.floorTintOpacity !== undefined ? tn05Params.floorTintOpacity : 55) / 100;
+    if (tintOp > 0) {
+      tn05Ctx.save();
+      const tintCol = tn05Params.floorTintColor || '#8E2500';
+      const floorGrad = tn05Ctx.createLinearGradient(0, screenFloorY, 0, h);
+      floorGrad.addColorStop(0, tintCol);
+      floorGrad.addColorStop(0.35, '#731C00');
+      floorGrad.addColorStop(1, '#4A1000');
+      tn05Ctx.globalAlpha = tintOp;
+      tn05Ctx.fillStyle = floorGrad;
+      tn05Ctx.fillRect(0, screenFloorY, w, h - screenFloorY);
+      tn05Ctx.restore();
+    }
+  }
+
+  // 3. DIBUIXA EL MIRROR DELS ENGRANATGES (Invertit verticalment sobre l'horitzó estrictament horitzontal)
+  // El mirror és directe, sense cap línia
+  if (tn05Params.mirrorOpacity > 0 && screenFloorY < h) {
+    tn05Ctx.save();
+    // Clip estricte a la meitat inferior de la pantalla (100% horitzontal d'un extrem a l'altre)
+    tn05Ctx.beginPath();
+    tn05Ctx.rect(0, screenFloorY, w, h - screenFloorY);
+    tn05Ctx.clip();
+
+    // Inversió especular sobre la línia horitzontal de pantalla screenFloorY
+    tn05Ctx.translate(0, screenFloorY);
+    tn05Ctx.scale(1, -1);
+    tn05Ctx.translate(0, -screenFloorY);
+
+    if (tn05Params.mirrorBlur > 0) {
+      tn05Ctx.filter = `blur(${tn05Params.mirrorBlur}px)`;
+    }
+
+    // Aplica la mateixa transformació càmera per als engranatges reflectits
+    tn05Ctx.translate(w * 0.5 + camX, h * 0.5 + camY);
+    tn05Ctx.scale(camZoom, camZoom);
+    if (camRotRad !== 0) tn05Ctx.rotate(camRotRad);
+    if (camTilt !== 0) tn05Ctx.transform(1, camTilt * 0.5, 0, 1, 0, 0);
+    tn05Ctx.translate(-w * 0.5, -h * 0.5);
+
+    offsets.forEach(off => {
+      const cx = packCurrentX + off.x;
+      const cy = packCurrentY + off.y;
+      if (cx + maxR < -w * 0.6 || cx - maxR > w * 1.6) return;
+      drawAllTN05Gears(tn05Ctx, cx, cy, h, globalScale, true);
+    });
+
+    tn05Ctx.restore();
+
+    // Matís suau addicional per sobre del reflex per fondre'l amb el terra fosc
+    tn05Ctx.save();
+    const overGrad = tn05Ctx.createLinearGradient(0, screenFloorY, 0, h);
+    overGrad.addColorStop(0, 'rgba(142, 37, 0, 0.15)');
+    overGrad.addColorStop(1, 'rgba(74, 16, 0, 0.40)');
+    tn05Ctx.fillStyle = overGrad;
+    tn05Ctx.fillRect(0, screenFloorY, w, h - screenFloorY);
+    tn05Ctx.restore();
+  }
+
+  updateTN05Ticker(dt);
+}
+
+function updateTN05Clock() {
+  const t = getEffectiveTime();
+  const h0 = t.hours[0] || '0', h1 = t.hours[1] || '0';
+  const m0 = t.minutes[0] || '0', m1 = t.minutes[1] || '0';
+  const s0 = t.seconds[0] || '0', s1 = t.seconds[1] || '0';
+
+  // Rellotge principal (sense mirror als dígits)
+  const dH0 = document.getElementById('tn05-h0');
+  const dH1 = document.getElementById('tn05-h1');
+  const dM0 = document.getElementById('tn05-m0');
+  const dM1 = document.getElementById('tn05-m1');
+  const dS0 = document.getElementById('tn05-s0');
+  const dS1 = document.getElementById('tn05-s1');
+
+  if (dH0 && dH0.textContent !== h0) dH0.textContent = h0;
+  if (dH1 && dH1.textContent !== h1) dH1.textContent = h1;
+  if (dM0 && dM0.textContent !== m0) dM0.textContent = m0;
+  if (dM1 && dM1.textContent !== m1) dM1.textContent = m1;
+  if (dS0 && dS0.textContent !== s0) dS0.textContent = s0;
+  if (dS1 && dS1.textContent !== s1) dS1.textContent = s1;
+
+  const secVal = parseInt(t.seconds, 10);
+  const tickerBar = document.getElementById('tn05-ticker-bar');
+  if (tickerBar) {
+    if (secVal >= 58 || secVal === 0) {
+      tickerBar.classList.add('hidden');
+    } else {
+      tickerBar.classList.remove('hidden');
+    }
+  }
+}
+
+function initTN05Ticker() {
+  const track = document.getElementById('tn05-ticker-track');
+  if (!track) return;
+
+  // Extreu les dades del mateix lloc que 2014 i 2025 (capitalsData ordenada alfabèticament)
+  let list = [];
+  if (typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0) {
+    list = [...capitalsData].sort((a, b) => cleanSortKey(a.capital).localeCompare(cleanSortKey(b.capital)));
+  } else {
+    list = [
+      { capital: "Balaguer", temp: 12 },
+      { capital: "Banyoles", temp: 15 },
+      { capital: "Barcelona", temp: 17 },
+      { capital: "Berga", temp: 14 },
+      { capital: "Cervera", temp: 11 },
+      { capital: "El Vendrell", temp: 17 },
+      { capital: "Girona", temp: 15 },
+      { capital: "Igualada", temp: 11 },
+      { capital: "La Bisbal d'Empordà", temp: 14 },
+      { capital: "Les Borges Blanques", temp: 12 },
+      { capital: "Lleida", temp: 13 },
+      { capital: "Manresa", temp: 16 },
+      { capital: "Mollerussa", temp: 12 },
+      { capital: "Móra d'Ebre", temp: 16 },
+      { capital: "Pla d'Urgell", temp: 12 },
+      { capital: "Puigcerdà", temp: 12 },
+      { capital: "Reus", temp: 17 },
+      { capital: "Ripoll", temp: 11 },
+      { capital: "Sant Feliu de Guíxols", temp: 15 },
+      { capital: "Santa Coloma de Farners", temp: 14 },
+      { capital: "Solsona", temp: 13 },
+      { capital: "Sort", temp: 12 },
+      { capital: "Tarragona", temp: 16 },
+      { capital: "Tàrrega", temp: 12 },
+      { capital: "Terrassa", temp: 16 },
+      { capital: "Tortosa", temp: 16 },
+      { capital: "Tremp", temp: 12 },
+      { capital: "Vilafranca del Penedès", temp: 14 }
+    ];
+  }
+
+  const items = list.map(w => `
+    <span class="tn05-ticker-item">
+      <span class="tn05-city">${w.capital}</span>
+      <span class="tn05-temp">${Math.round(w.temp)}º</span>
+    </span>
+  `).join('');
+
+  track.innerHTML = items + items + items;
+  cachedTN05TickerSingleWidth = 0;
+}
+
+function updateTN05Ticker(dt) {
+  const track = document.getElementById('tn05-ticker-track');
+  if (!track) return;
+
+  const pxPerSec = tn05Params.tickerSpeed;
+  tn05TickerPos -= pxPerSec * Math.min(dt, 0.1);
+
+  if (!cachedTN05TickerSingleWidth) {
+    cachedTN05TickerSingleWidth = track.scrollWidth / 3;
+  }
+  if (cachedTN05TickerSingleWidth > 0 && Math.abs(tn05TickerPos) >= cachedTN05TickerSingleWidth) {
+    tn05TickerPos += cachedTN05TickerSingleWidth;
+  }
+  track.style.transform = `translate3d(${tn05TickerPos.toFixed(1)}px, 0, 0)`;
+}
+
 function switchAudioForMode(mode) {
+  if (mode === '2005') {
+    if (bgAudio) {
+      bgAudio.pause();
+    }
+    playTN05SeamlessAudio();
+    return;
+  }
+
+  // Si sortim del mode 2005, atura el bucle Web Audio seamless
+  stopTN05SeamlessAudio();
+
   if (!bgAudio) return;
-  const targetSrc = (mode === '2025') ? 'audio/music_2025.mp3' : 'audio/music.m4a';
-  const isPlaying = !bgAudio.paused;
+  let targetSrc = (mode === '2025') ? 'audio/music_2025.mp3' : 'audio/music.m4a';
+  const isPlaying = !isAudioMuted && !bgAudio.muted;
 
   if (!bgAudio.src.endsWith(targetSrc)) {
     bgAudio.src = targetSrc;
@@ -4068,41 +5281,71 @@ function switchAudioForMode(mode) {
     }
   } else if (isSyncActive) {
     applySyncToCurrentMode();
+  } else if (isPlaying && bgAudio.paused) {
+    bgAudio.play().catch(e => console.warn(e));
   }
 }
 
 function switchMode(mode) {
   currentAppMode = mode;
+  const btn2005 = document.getElementById('btn-ver-2005');
   const btn2014 = document.getElementById('btn-ver-2014');
   const btn2025 = document.getElementById('btn-ver-2025');
+  const view2005 = document.getElementById('view-tn-2005');
   const view2025 = document.getElementById('view-tn-2025');
   const webglCont = document.getElementById('webgl-container');
   const tempBanner = document.getElementById('temp-banner');
+  const btnResetView = document.getElementById('btn-reset-view');
+  const btnSyncAudio = document.getElementById('btn-sync-audio');
 
   switchAudioForMode(mode);
 
-  if (mode === '2025') {
-    if (btn2014) btn2014.classList.remove('active');
-    if (btn2025) btn2025.classList.add('active');
-    if (view2025) view2025.style.display = 'block';
-    const btnMaster = document.getElementById('btn-toggle-master-editor');
-    const pnlMaster = document.getElementById('master-editor-panel');
-    if (btnMaster) btnMaster.style.display = 'inline-flex';
-    if (pnlMaster) pnlMaster.classList.remove('open');
+  if (btnSyncAudio) {
+    btnSyncAudio.style.display = (mode === '2005') ? 'none' : '';
+  }
+
+  if (btn2005) btn2005.classList.toggle('active', mode === '2005');
+  if (btn2014) btn2014.classList.toggle('active', mode === '2014');
+  if (btn2025) btn2025.classList.toggle('active', mode === '2025');
+
+  const tabBtns = document.querySelectorAll('.editor-tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const targetTabId = (mode === '2005') ? 'tab-tn05' : (mode === '2025' ? 'tab-tn2025' : 'tab-color');
+  // Support both tab-tn2005 and tab-tn05
+  const activeTabBtn = document.querySelector(`.editor-tab-btn[data-tab="${(mode === '2005') ? 'tab-tn2005' : targetTabId}"]`);
+  const activeTabContent = document.getElementById((mode === '2005') ? 'tab-tn2005' : targetTabId);
+  if (activeTabBtn && activeTabContent) {
+    tabBtns.forEach(b => b.classList.remove('active'));
+    tabContents.forEach(c => c.classList.remove('active'));
+    activeTabBtn.classList.add('active');
+    activeTabContent.classList.add('active');
+  }
+
+  if (mode === '2005') {
+    if (view2005) view2005.style.display = 'block';
+    if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'none';
     if (tempBanner) tempBanner.style.display = 'none';
+    if (btnResetView) btnResetView.style.display = 'none';
+    initTN05();
+    updateTN05Clock();
+  } else if (mode === '2025') {
+    if (view2005) view2005.style.display = 'none';
+    if (view2025) view2025.style.display = 'block';
+    if (webglCont) webglCont.style.display = 'none';
+    if (tempBanner) tempBanner.style.display = 'none';
+    if (btnResetView) btnResetView.style.display = 'none';
     updateTN25Scale();
     initTN25Ticker();
     updateTN25Colors();
     updateTN25Clock();
   } else {
-    if (btn2025) btn2025.classList.remove('active');
-    if (btn2014) btn2014.classList.add('active');
+    // 2014
+    if (view2005) view2005.style.display = 'none';
     if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'block';
-    const btnMaster = document.getElementById('btn-toggle-master-editor');
-    if (btnMaster) btnMaster.style.display = 'inline-flex';
     if (tempBanner) tempBanner.style.display = 'block';
+    if (btnResetView) btnResetView.style.display = 'inline-flex';
   }
 }
 
@@ -4891,8 +6134,10 @@ centralDialParams.size = 120;
 
       // --- MASTER ACTION: COPIA TOTA LA CONFIGURACIÓ DE COP ---
       // Version Switcher buttons
+const btnVer2005 = document.getElementById('btn-ver-2005');
 const btnVer2014 = document.getElementById('btn-ver-2014');
 const btnVer2025 = document.getElementById('btn-ver-2025');
+if (btnVer2005) btnVer2005.addEventListener('click', () => switchMode('2005'));
 if (btnVer2014) btnVer2014.addEventListener('click', () => switchMode('2014'));
 if (btnVer2025) btnVer2025.addEventListener('click', () => switchMode('2025'));
 
@@ -5140,83 +6385,426 @@ if (selectTn25Easing) {
     });
   }
 
-  const btnCopyAll = document.getElementById('btn-copy-all-config');
-      const copyAllFeedback = document.getElementById('copy-all-feedback');
+  // --- TN 2005 Controls ---
+  // Càmera Engranatges
+  syncNumberSlider(document.getElementById('num-tn05-cam-x'), document.getElementById('slider-tn05-cam-x'), (val) => {
+    tn05Params.camX = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-cam-y'), document.getElementById('slider-tn05-cam-y'), (val) => {
+    tn05Params.camY = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-cam-zoom'), document.getElementById('slider-tn05-cam-zoom'), (val) => {
+    tn05Params.camZoom = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-cam-tilt'), document.getElementById('slider-tn05-cam-tilt'), (val) => {
+    tn05Params.camTilt = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-cam-rot'), document.getElementById('slider-tn05-cam-rot'), (val) => {
+    tn05Params.camRot = val;
+  });
 
-      if (btnCopyAll) {
-        btnCopyAll.addEventListener('click', () => {
-          const b = numB ? numB.value : "89";
-          const c = numC ? numC.value : "157";
-          const s = numS ? numS.value : "113";
-          const l = numL ? numL.value : "85";
-          const cText = cubeTextColor.toUpperCase();
+  // Pack d'engranatges (Loop i moviment)
+  syncNumberSlider(document.getElementById('num-tn05-loop-dur'), document.getElementById('slider-tn05-loop-dur'), (val) => {
+    tn05Params.packLoopDuration = val;
+  });
+  const selPackDir = document.getElementById('select-tn05-pack-dir');
+  if (selPackDir) {
+    selPackDir.addEventListener('change', (e) => {
+      tn05Params.packDir = parseInt(e.target.value, 10) || 1;
+    });
+  }
+  syncNumberSlider(document.getElementById('num-tn05-travel-dist'), document.getElementById('slider-tn05-travel-dist'), (val) => {
+    tn05Params.travelDist = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-pack-y'), document.getElementById('slider-tn05-pack-y'), (val) => {
+    tn05Params.packPosY = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-pack-diag-y'), document.getElementById('slider-tn05-pack-diag-y'), (val) => {
+    tn05Params.packDiagY = val;
+  });
 
-          const cx = camera ? camera.position.x.toFixed(2) : (numCamX ? numCamX.value : "0.02");
-          const cy = camera ? camera.position.y.toFixed(2) : (numCamY ? numCamY.value : "4.55");
-          const cz = camera ? camera.position.z.toFixed(2) : (numCamZ ? numCamZ.value : "13.75");
-          const ty = controls ? controls.target.y.toFixed(2) : (numTgtY ? numTgtY.value : "1.45");
+  // 4 Engranatges (Sense ombres, espaiats)
+  syncNumberSlider(document.getElementById('num-tn05-rot-speed'), document.getElementById('slider-tn05-rot-speed'), (val) => {
+    tn05Params.rotSpeed = val;
+  });
+  const selRotDir = document.getElementById('select-tn05-rot-dir');
+  if (selRotDir) {
+    selRotDir.addEventListener('change', (e) => {
+      tn05Params.rotDir = parseInt(e.target.value, 10) || 1;
+    });
+  }
+  syncNumberSlider(document.getElementById('num-tn05-gear-depth'), document.getElementById('slider-tn05-gear-depth'), (val) => {
+    tn05Params.gearDepth = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-far-light'), document.getElementById('slider-tn05-far-light'), (val) => {
+    tn05Params.farLight = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-gear-scale'), document.getElementById('slider-tn05-gear-scale'), (val) => {
+    tn05Params.gearScale = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-gear-spacing'), document.getElementById('slider-tn05-gear-spacing'), (val) => {
+    tn05Params.gearSpacing = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-gear-opacity'), document.getElementById('slider-tn05-gear-opacity'), (val) => {
+    tn05Params.gearOpacity = val;
+  });
+  syncColorInput(document.getElementById('picker-tn05-gear-c1'), document.getElementById('hex-tn05-gear-c1'), (col) => {
+    tn05Params.gearColor1 = col;
+  });
+  syncColorInput(document.getElementById('picker-tn05-gear-c2'), document.getElementById('hex-tn05-gear-c2'), (col) => {
+    tn05Params.gearColor2 = col;
+  });
+  syncColorInput(document.getElementById('picker-tn05-gear-c3'), document.getElementById('hex-tn05-gear-c3'), (col) => {
+    tn05Params.gearColor3 = col;
+  });
 
-          const clkX = clockParams.x.toFixed(2);
-          const clkY = clockParams.y.toFixed(2);
-          const clkZ = clockParams.z.toFixed(2);
-          const clkScale = Math.round(clockParams.scale * 100);
-          const clkCurv = (clockParams.curvature >= 0 ? '+' : '') + clockParams.curvature.toFixed(3);
+  // Efectes (Mask i Mirror Engranatges sota rellotge)
+  syncNumberSlider(document.getElementById('num-tn05-mask-opacity'), document.getElementById('slider-tn05-mask-opacity'), (val) => {
+    tn05Params.maskOpacity = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-mirror-opacity'), document.getElementById('slider-tn05-mirror-opacity'), (val) => {
+    tn05Params.mirrorOpacity = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-floor-y'), document.getElementById('slider-tn05-floor-y'), (val) => {
+    tn05Params.floorHorizonY = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-mirror-gear-op'), document.getElementById('slider-tn05-mirror-gear-op'), (val) => {
+    tn05Params.mirrorGearAlpha = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-floor-tint-op'), document.getElementById('slider-tn05-floor-tint-op'), (val) => {
+    tn05Params.floorTintOpacity = val;
+  });
+  syncColorInput(document.getElementById('picker-tn05-floor-tint-col'), document.getElementById('hex-tn05-floor-tint-col'), (col) => {
+    tn05Params.floorTintColor = col;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-mirror-blur'), document.getElementById('slider-tn05-mirror-blur'), (val) => {
+    tn05Params.mirrorBlur = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-font-round'), document.getElementById('slider-tn05-font-round'), (val) => {
+    tn05Params.fontRoundness = val;
+    updateTN05Styles();
+  });
 
-          const tSpd = tempParams.speed.toFixed(5);
-          const tFont = tempParams.fontSize;
-          const tStretch = tempParams.stretchX;
-          const tGap = tempParams.gap;
+  // Rellotge
+  syncNumberSlider(document.getElementById('num-tn05-clock-size'), document.getElementById('slider-tn05-clock-size'), (val) => {
+    tn05Params.clockFontSize = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-clock-right'), document.getElementById('slider-tn05-clock-right'), (val) => {
+    tn05Params.clockRight = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-clock-top'), document.getElementById('slider-tn05-clock-top'), (val) => {
+    tn05Params.clockTop = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-slot-w'), document.getElementById('slider-tn05-slot-w'), (val) => {
+    tn05Params.clockSlotWidth = val;
+    updateTN05Styles();
+  });
+  syncColorInput(document.getElementById('picker-tn05-clock-color'), document.getElementById('hex-tn05-clock-color'), (col) => {
+    tn05Params.clockColor = col;
+    updateTN05Styles();
+  });
 
-          const bgWall = bgParams.wallColor.toUpperCase();
-          const bgHoriz = bgParams.horizonColor.toUpperCase();
-          const bgFloor = bgParams.floorNearColor.toUpperCase();
-          const bgSub = bgParams.subtlety;
+  // Ticker (Sense fons)
+  syncNumberSlider(document.getElementById('num-tn05-ticker-speed'), document.getElementById('slider-tn05-ticker-speed'), (val) => {
+    tn05Params.tickerSpeed = val;
+  });
+  syncNumberSlider(document.getElementById('num-tn05-ticker-pos-y'), document.getElementById('slider-tn05-ticker-pos-y'), (val) => {
+    tn05Params.tickerPosY = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-ticker-font'), document.getElementById('slider-tn05-ticker-font'), (val) => {
+    tn05Params.tickerFontSize = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-ticker-gap'), document.getElementById('slider-tn05-ticker-gap'), (val) => {
+    tn05Params.tickerGap = val;
+    updateTN05Styles();
+  });
+  syncColorInput(document.getElementById('picker-tn05-ticker-color'), document.getElementById('hex-tn05-ticker-color'), (col) => {
+    tn05Params.tickerColor = col;
+    updateTN05Styles();
+  });
 
-          const dialSz = Math.round(centralDialParams.size);
-          const dialCol = centralDialParams.faceColor.toUpperCase();
+  // Fons
+  syncColorInput(document.getElementById('picker-tn05-bg-c1'), document.getElementById('hex-tn05-bg-c1'), (col) => {
+    tn05Params.bgCenterColor = col;
+    updateTN05Styles();
+  });
+  syncColorInput(document.getElementById('picker-tn05-bg-c2'), document.getElementById('hex-tn05-bg-c2'), (col) => {
+    tn05Params.bgEdgeColor = col;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-bg-x'), document.getElementById('slider-tn05-bg-x'), (val) => {
+    tn05Params.bgCenterX = val;
+    updateTN05Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn05-bg-y'), document.getElementById('slider-tn05-bg-y'), (val) => {
+    tn05Params.bgCenterY = val;
+    updateTN05Styles();
+  });
 
-          const shOp = cubeShadowParams.opacity;
-          const shBlur = cubeShadowParams.diffusion;
-          const shInt = cubeShadowParams.intensity;
-          const shScale = cubeShadowParams.scale;
+  // Reset TN 2005 defaults
+  const btnResetTn05 = document.getElementById('btn-reset-tn05');
+  if (btnResetTn05) {
+    btnResetTn05.addEventListener('click', () => {
+      tn05Params = {
+        camX: 0,
+        camY: 115,
+        camZoom: 100,
+        camTilt: 21,
+        camRot: 0,
+        packLoopDuration: 10.0,
+        packDir: 1,
+        travelDist: 80,
+        packPosY: 70,
+        packDiagY: 18,
+        rotSpeed: 0.55,
+        rotDir: 1,
+        gearDepth: 16,
+        farLight: 45,
+        gearScale: 110,
+        gearSpacing: 100,
+        gearOpacity: 75,
+        gearColor1: '#FFE8A3',
+        gearColor2: '#F5820D',
+        gearColor3: '#FFB347',
+        maskOpacity: 100,
+        mirrorOpacity: 100,
+        floorHorizonY: 66.5,
+        mirrorBlur: 0,
+        mirrorGearAlpha: 35,
+        fontRoundness: 0,
+        floorTintOpacity: 55,
+        floorTintColor: '#8E2500',
+        clockFontSize: 17.0,
+        clockRight: 12.5,
+        clockTop: 64.7,
+        clockSlotWidth: 0.60,
+        clockColor: '#FFF2D6',
+        tickerSpeed: 95,
+        tickerPosY: 68.0,
+        tickerFontSize: 30,
+        tickerGap: 52,
+        tickerColor: '#FFFFFF',
+        bgCenterColor: '#F7740A',
+        bgEdgeColor: '#7A1D00',
+        bgCenterX: 36,
+        bgCenterY: 38
+      };
+      const pairs05 = [
+        ['num-tn05-cam-x', 'slider-tn05-cam-x', 0],
+        ['num-tn05-cam-y', 'slider-tn05-cam-y', 115],
+        ['num-tn05-cam-zoom', 'slider-tn05-cam-zoom', 100],
+        ['num-tn05-cam-tilt', 'slider-tn05-cam-tilt', 21],
+        ['num-tn05-cam-rot', 'slider-tn05-cam-rot', 0],
+        ['num-tn05-loop-dur', 'slider-tn05-loop-dur', 10.0],
+        ['num-tn05-travel-dist', 'slider-tn05-travel-dist', 80],
+        ['num-tn05-pack-y', 'slider-tn05-pack-y', 70],
+        ['num-tn05-pack-diag-y', 'slider-tn05-pack-diag-y', 18],
+        ['num-tn05-rot-speed', 'slider-tn05-rot-speed', 0.55],
+        ['num-tn05-gear-depth', 'slider-tn05-gear-depth', 16],
+        ['num-tn05-far-light', 'slider-tn05-far-light', 45],
+        ['num-tn05-gear-scale', 'slider-tn05-gear-scale', 110],
+        ['num-tn05-gear-spacing', 'slider-tn05-gear-spacing', 100],
+        ['num-tn05-gear-opacity', 'slider-tn05-gear-opacity', 75],
+        ['num-tn05-mask-opacity', 'slider-tn05-mask-opacity', 100],
+        ['num-tn05-mirror-opacity', 'slider-tn05-mirror-opacity', 100],
+        ['num-tn05-floor-y', 'slider-tn05-floor-y', 66.5],
+        ['num-tn05-mirror-gear-op', 'slider-tn05-mirror-gear-op', 35],
+        ['num-tn05-mirror-blur', 'slider-tn05-mirror-blur', 0],
+        ['num-tn05-floor-tint-op', 'slider-tn05-floor-tint-op', 55],
+        ['num-tn05-font-round', 'slider-tn05-font-round', 0],
+        ['num-tn05-clock-size', 'slider-tn05-clock-size', 17.0],
+        ['num-tn05-clock-right', 'slider-tn05-clock-right', 12.5],
+        ['num-tn05-clock-top', 'slider-tn05-clock-top', 64.7],
+        ['num-tn05-slot-w', 'slider-tn05-slot-w', 0.60],
+        ['num-tn05-ticker-speed', 'slider-tn05-ticker-speed', 95],
+        ['num-tn05-ticker-pos-y', 'slider-tn05-ticker-pos-y', 68.0],
+        ['num-tn05-ticker-font', 'slider-tn05-ticker-font', 30],
+        ['num-tn05-ticker-gap', 'slider-tn05-ticker-gap', 52],
+        ['num-tn05-bg-x', 'slider-tn05-bg-x', 36],
+        ['num-tn05-bg-y', 'slider-tn05-bg-y', 38]
+      ];
+      pairs05.forEach(([nid, sid, val]) => {
+        const ne = document.getElementById(nid), se = document.getElementById(sid);
+        if (ne) ne.value = val;
+        if (se) se.value = val;
+      });
 
-          const botCol = bottomGradParams.color.toUpperCase();
-          const botOp = bottomGradParams.opacity;
-          const botDiff = bottomGradParams.diffusion;
+      const selPDir = document.getElementById('select-tn05-pack-dir');
+      if (selPDir) selPDir.value = "1";
+      const selRDir = document.getElementById('select-tn05-rot-dir');
+      if (selRDir) selRDir.value = "1";
 
-          const text = [
-            `=== CONFIGURACIÓ RELLOTGE 3D TV3 ===`,
-            `Color: Brillo: ${b}% | Contrast: ${c}% | Saturació: ${s}% | Levels: ${l}% | Text Cub: ${cText}`,
-            `Inner Shadow: Opacitat: ${innerShadowParams.opacity}% | Difusió: ${innerShadowParams.depth}px | Fusió: ${innerShadowParams.blendMode}`,
-            `Fons i Terra: Paret=${bgWall} | Horitzó=${bgHoriz} | Terra Proper=${bgFloor} | Subtilesa=${bgSub}%`,
-            `Degradat Inferior: Color=${botCol} | Opacitat=${botOp}% | Difusió=${botDiff}%`,
-            `Càmera: Cam X=${cx}, Cam Y=${cy}, Cam Z=${cz} | Target Y=${ty} | Travelling X=${travellingParams.x.toFixed(2)}, Y=${travellingParams.y.toFixed(2)}`,
-            `Rellotge 3D: Posició X=${clkX}, Y=${clkY}, Z=${clkZ} | Mida=${clkScale}% | Curvatura=${clkCurv} | Vora=${(clockDigitsParams.bevelColor || '#F8E0C5').toUpperCase()}`,
-            `Cub Central: Mida Cercle=${dialSz}% | Cara Esquerra=${dialCol} | Data: X=${orangeTextParams.posX}, Y=${orangeTextParams.posY}, Mida=${orangeTextParams.scale}%, Align=${orangeTextParams.align}`,
-            `Cubs Laterals: Color=${flankCubesParams.color.toUpperCase()}`,
-            `Ombres Cubs: Opacitat=${shOp}% | Difusió=${shBlur} | Intensitat=${shInt}% | Escala=${shScale}%`,
-            `Cub Esquerre: Gir=${cubeAnimParams.angle}º | Velocitat=${cubeAnimParams.duration}ms | Suavitat=${cubeAnimParams.easing} | Mode=${cubeAnimParams.mode}`,
-            `Temperatures: Velocitat=${tSpd} | Mida font=${tFont}px | Amplada=${tStretch}% | Separació=${tGap}px`,
-            ``,
-            `=== CONFIGURACIÓ RELLOTGE TN 2025 ===`,
-            `Colors: Taronja=${tn25Params.orange} | Blanc=${tn25Params.white} | Gris Fosc=${tn25Params.dark} | Gris Clar=${tn25Params.light}`,
-            `Animació: Tall=${tn25Params.slitCrop}% | Velocitat=${tn25Params.duration}ms | Suavitat=${tn25Params.easing}`,
-            `Ajustos Posició: Pack X=${tn25Params.packX}px, Y=${tn25Params.packY}px | Hores X=${tn25Params.hoursX}px, Y=${tn25Params.hoursY}px | Minuts: Desenes X=${tn25Params.min1X}px, Y=${tn25Params.min1Y}px, Unitats X=${tn25Params.min2X}px, Y=${tn25Params.min2Y}px`,
-            `Data 2025: X=${tn25Params.dateX}px, Y=${tn25Params.dateY}px, Mida=${tn25Params.dateScale}% | Divisòries: ${tn25Params.dividerWidth}px | Franja Punt: ${tn25Params.dotColWidth}% | Punt: X=${tn25Params.dotX || 0}px, Y=${tn25Params.dotY || 0}px | Posició Ticker Y: ${tn25Params.tickerPosY || 0}px | Mida Text Ticker: ${tn25Params.tickerFontSize || 21}px`,
-            `Cúpula Data: Línia Sencera=${tn25Params.domeBaseThick}px, Indicador=${tn25Params.domeSegThick}px, Llargada=${tn25Params.domeSegLength || 93}px | Textos: Mida=${tn25Params.dateTextScale}%, X=${tn25Params.dateTextX}px, Y=${tn25Params.dateTextY}px`
-          ].join('\n');
+      const pG1 = document.getElementById('picker-tn05-gear-c1'), hG1 = document.getElementById('hex-tn05-gear-c1');
+      if (pG1 && hG1) { pG1.value = '#ffe8a3'; hG1.value = '#FFE8A3'; }
+      const pG2 = document.getElementById('picker-tn05-gear-c2'), hG2 = document.getElementById('hex-tn05-gear-c2');
+      if (pG2 && hG2) { pG2.value = '#f5820d'; hG2.value = '#F5820D'; }
+      const pG3 = document.getElementById('picker-tn05-gear-c3'), hG3 = document.getElementById('hex-tn05-gear-c3');
+      if (pG3 && hG3) { pG3.value = '#ffb347'; hG3.value = '#FFB347'; }
+      const pTint = document.getElementById('picker-tn05-floor-tint-col'), hTint = document.getElementById('hex-tn05-floor-tint-col');
+      if (pTint && hTint) { pTint.value = '#8e2500'; hTint.value = '#8E2500'; }
+      const pClk = document.getElementById('picker-tn05-clock-color'), hClk = document.getElementById('hex-tn05-clock-color');
+      if (pClk && hClk) { pClk.value = '#fff2d6'; hClk.value = '#FFF2D6'; }
+      const pTck = document.getElementById('picker-tn05-ticker-color'), hTck = document.getElementById('hex-tn05-ticker-color');
+      if (pTck && hTck) { pTck.value = '#ffffff'; hTck.value = '#FFFFFF'; }
+      const pB1 = document.getElementById('picker-tn05-bg-c1'), hB1 = document.getElementById('hex-tn05-bg-c1');
+      if (pB1 && hB1) { pB1.value = '#f7740a'; hB1.value = '#F7740A'; }
+      const pB2 = document.getElementById('picker-tn05-bg-c2'), hB2 = document.getElementById('hex-tn05-bg-c2');
+      if (pB2 && hB2) { pB2.value = '#7a1d00'; hB2.value = '#7A1D00'; }
 
-          navigator.clipboard.writeText(text).then(() => {
-            if (copyAllFeedback) {
-              copyAllFeedback.style.display = 'block';
-              setTimeout(() => { copyAllFeedback.style.display = 'none'; }, 2600);
-            }
-          }).catch(() => {
-            prompt("Copia tota la configuració:", text);
-          });
-        });
+      updateTN05Styles();
+    });
+  }
+
+  // Helper per copiar al porta-retalls amb doble fallback segur
+  function copyConfigToClipboard(text, successMsg) {
+    const feedback = document.getElementById('copy-all-feedback');
+    const showNotice = () => {
+      if (feedback) {
+        feedback.textContent = successMsg || "Configuració copiada al porta-retalls!";
+        feedback.style.display = 'block';
+        setTimeout(() => { feedback.style.display = 'none'; }, 2600);
       }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showNotice).catch(() => {
+        fallbackCopyText(text, showNotice);
+      });
+    } else {
+      fallbackCopyText(text, showNotice);
     }
+  }
+
+  function fallbackCopyText(text, onSuccess) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy');
+      if (onSuccess) onSuccess();
+    } catch (e) {
+      prompt("Copia la configuració:", text);
+    }
+    document.body.removeChild(ta);
+  }
+
+  function getTN05ConfigText() {
+    return [
+      `=== CONFIGURACIÓ RELLOTGE TN 2005 (TN Comarques) ===`,
+      `Càmera: Pan X=${tn05Params.camX}px, Pan Y=${tn05Params.camY}px | Zoom=${tn05Params.camZoom}% | Inclinació=${tn05Params.camTilt}% | Rotació=${tn05Params.camRot}º`,
+      `Pack d'Engranatges: Durada Loop=${tn05Params.packLoopDuration}s | Direcció=${tn05Params.packDir} | Recorregut=${tn05Params.travelDist}% | Posició Y=${tn05Params.packPosY}% | Descens Diag=${tn05Params.packDiagY}%`,
+      `4 Engranatges: Rotació=${tn05Params.rotSpeed} | Direcció Rotació=${tn05Params.rotDir} | Gruix=${tn05Params.gearDepth}px | Il·luminació Llunyà=${tn05Params.farLight}% | Escala=${tn05Params.gearScale}% | Separació=${tn05Params.gearSpacing}% | Opacitat=${tn05Params.gearOpacity}%`,
+      `Colors Engranatges: Daurat=${tn05Params.gearColor1} | Taronja=${tn05Params.gearColor2} | Gruix=${tn05Params.gearColor3}`,
+      `Efectes: Mask Dalt-Esquerra=${tn05Params.maskOpacity}% | Mirall Engranatges=${tn05Params.mirrorOpacity}% | Alçada Efecte Mirror Fons=${tn05Params.floorHorizonY}% | Difusió Mirall=${tn05Params.mirrorBlur}px | Opacitat Reflex=${tn05Params.mirrorGearAlpha}% | Arrodoniment Font=${tn05Params.fontRoundness}px`,
+      `Rellotge Digital: Mida=${tn05Params.clockFontSize}vh | Dreta=${tn05Params.clockRight}vw | Vertical=${tn05Params.clockTop}vh | Ranura=${tn05Params.clockSlotWidth}em | Color=${tn05Params.clockColor}`,
+      `Ticker Temperatures: Velocitat=${tn05Params.tickerSpeed}px/s | Vertical=${tn05Params.tickerPosY}vh | Mida Font=${tn05Params.tickerFontSize}px | Espai=${tn05Params.tickerGap}px | Color=${tn05Params.tickerColor}`,
+      `Fons Càlid: Centre=${tn05Params.bgCenterColor} | Vores=${tn05Params.bgEdgeColor} | Focus X=${tn05Params.bgCenterX}%, Y=${tn05Params.bgCenterY}%`
+    ].join('\n');
+  }
+
+  function getTN25ConfigText() {
+    return [
+      `=== CONFIGURACIÓ RELLOTGE TN 2025 ===`,
+      `Colors: Taronja=${tn25Params.orange} | Blanc=${tn25Params.white} | Gris Fosc=${tn25Params.dark} | Gris Clar=${tn25Params.light}`,
+      `Animació: Tall=${tn25Params.slitCrop}% | Velocitat=${tn25Params.duration}ms | Suavitat=${tn25Params.easing}`,
+      `Ajustos Posició: Pack X=${tn25Params.packX}px, Y=${tn25Params.packY}px | Hores X=${tn25Params.hoursX}px, Y=${tn25Params.hoursY}px | Minuts: Desenes X=${tn25Params.min1X}px, Y=${tn25Params.min1Y}px, Unitats X=${tn25Params.min2X}px, Y=${tn25Params.min2Y}px`,
+      `Data 2025: X=${tn25Params.dateX}px, Y=${tn25Params.dateY}px, Mida=${tn25Params.dateScale}% | Divisòries: ${tn25Params.dividerWidth}px | Franja Punt: ${tn25Params.dotColWidth}% | Punt: X=${tn25Params.dotX || 0}px, Y=${tn25Params.dotY || 0}px | Posició Ticker Y: ${tn25Params.tickerPosY || 0}px | Mida Text Ticker: ${tn25Params.tickerFontSize || 21}px`,
+      `Cúpula Data: Línia Sencera=${tn25Params.domeBaseThick}px, Indicador=${tn25Params.domeSegThick}px, Llargada=${tn25Params.domeSegLength || 93}px | Textos: Mida=${tn25Params.dateTextScale}%, X=${tn25Params.dateTextX}px, Y=${tn25Params.dateTextY}px`
+    ].join('\n');
+  }
+
+  function getTN14ConfigText() {
+    const b = numB ? numB.value : "89";
+    const c = numC ? numC.value : "157";
+    const s = numS ? numS.value : "113";
+    const l = numL ? numL.value : "85";
+    const cText = cubeTextColor.toUpperCase();
+
+    const cx = camera ? camera.position.x.toFixed(2) : (numCamX ? numCamX.value : "0.02");
+    const cy = camera ? camera.position.y.toFixed(2) : (numCamY ? numCamY.value : "4.55");
+    const cz = camera ? camera.position.z.toFixed(2) : (numCamZ ? numCamZ.value : "13.75");
+    const ty = controls ? controls.target.y.toFixed(2) : (numTgtY ? numTgtY.value : "1.45");
+
+    const clkX = clockParams.x.toFixed(2);
+    const clkY = clockParams.y.toFixed(2);
+    const clkZ = clockParams.z.toFixed(2);
+    const clkScale = Math.round(clockParams.scale * 100);
+    const clkCurv = (clockParams.curvature >= 0 ? '+' : '') + clockParams.curvature.toFixed(3);
+
+    const tSpd = tempParams.speed.toFixed(5);
+    const tFont = tempParams.fontSize;
+    const tStretch = tempParams.stretchX;
+    const tGap = tempParams.gap;
+
+    const bgWall = bgParams.wallColor.toUpperCase();
+    const bgHoriz = bgParams.horizonColor.toUpperCase();
+    const bgFloor = bgParams.floorNearColor.toUpperCase();
+    const bgSub = bgParams.subtlety;
+
+    const dialSz = Math.round(centralDialParams.size);
+    const dialCol = centralDialParams.faceColor.toUpperCase();
+
+    const shOp = cubeShadowParams.opacity;
+    const shBlur = cubeShadowParams.diffusion;
+    const shInt = cubeShadowParams.intensity;
+    const shScale = cubeShadowParams.scale;
+
+    const botCol = bottomGradParams.color.toUpperCase();
+    const botOp = bottomGradParams.opacity;
+    const botDiff = bottomGradParams.diffusion;
+
+    return [
+      `=== CONFIGURACIÓ RELLOTGE 3D TN 2014 ===`,
+      `Color: Brillo: ${b}% | Contrast: ${c}% | Saturació: ${s}% | Levels: ${l}% | Text Cub: ${cText}`,
+      `Inner Shadow: Opacitat: ${innerShadowParams.opacity}% | Difusió: ${innerShadowParams.depth}px | Fusió: ${innerShadowParams.blendMode}`,
+      `Fons i Terra: Paret=${bgWall} | Horitzó=${bgHoriz} | Terra Proper=${bgFloor} | Subtilesa=${bgSub}%`,
+      `Degradat Inferior: Color=${botCol} | Opacitat=${botOp}% | Difusió=${botDiff}%`,
+      `Càmera: Cam X=${cx}, Cam Y=${cy}, Cam Z=${cz} | Target Y=${ty} | Travelling X=${travellingParams.x.toFixed(2)}, Y=${travellingParams.y.toFixed(2)}`,
+      `Rellotge 3D: Posició X=${clkX}, Y=${clkY}, Z=${clkZ} | Mida=${clkScale}% | Curvatura=${clkCurv} | Vora=${(clockDigitsParams.bevelColor || '#F8E0C5').toUpperCase()}`,
+      `Cub Central: Mida Cercle=${dialSz}% | Cara Esquerra=${dialCol} | Data: X=${orangeTextParams.posX}, Y=${orangeTextParams.posY}, Mida=${orangeTextParams.scale}%, Align=${orangeTextParams.align}`,
+      `Cubs Laterals: Color=${flankCubesParams.color.toUpperCase()}`,
+      `Ombres Cubs: Opacitat=${shOp}% | Difusió=${shBlur} | Intensitat=${shInt}% | Escala=${shScale}%`,
+      `Cub Esquerre: Gir=${cubeAnimParams.angle}º | Velocitat=${cubeAnimParams.duration}ms | Suavitat=${cubeAnimParams.easing} | Mode=${cubeAnimParams.mode}`,
+      `Temperatures: Velocitat=${tSpd} | Mida font=${tFont}px | Amplada=${tStretch}% | Separació=${tGap}px`
+    ].join('\n');
+  }
+
+  // Botó individual de còpia a la pestanya TN 2005
+  const btnCopyTn05 = document.getElementById('btn-copy-tn05');
+  if (btnCopyTn05) {
+    btnCopyTn05.addEventListener('click', () => {
+      copyConfigToClipboard(getTN05ConfigText(), "Configuració de TN 2005 copiada al porta-retalls!");
+    });
+  }
+
+  // Botó mestre de còpia: copia NOMÉS la configuració del TN actiu
+  const btnCopyAll = document.getElementById('btn-copy-all-config');
+  if (btnCopyAll) {
+    btnCopyAll.addEventListener('click', () => {
+      const activeTab = document.querySelector('.tab-content.active');
+      const activeTabId = activeTab ? activeTab.id : '';
+
+      if (activeTabId === 'tab-tn2005' || currentAppMode === '2005') {
+        copyConfigToClipboard(getTN05ConfigText(), "Configuració de TN 2005 copiada al porta-retalls!");
+      } else if (activeTabId === 'tab-tn2025' || currentAppMode === '2025') {
+        copyConfigToClipboard(getTN25ConfigText(), "Configuració de TN 2025 copiada al porta-retalls!");
+      } else {
+        copyConfigToClipboard(getTN14ConfigText(), "Configuració de TN 2014 copiada al porta-retalls!");
+      }
+    });
+  }
+}
 
     // --- Smooth, Cinematic, Never-Abrupt Camera Recentering Glide ---
     function animateCameraTo(targetPos, targetLookAt) {
