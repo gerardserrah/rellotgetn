@@ -54,6 +54,36 @@
       font-style: normal;
     }
     @font-face {
+      font-family: 'AkzidenzGroteskBQ';
+      src: url('fonts/AkzidenzGroteskBQ-MedExt.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AkzidenzGroteskBQ';
+      src: url('fonts/AkzidenzGroteskBQ-MedExt.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AkzidenzGroteskBQ-MedExt';
+      src: url('fonts/AkzidenzGroteskBQ-MedExt.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AkzidenzGroteskBQ-Ext';
+      src: url('fonts/AkzidenzGroteskBQ-Ext.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AkzidenzGroteskBQ-Ext';
+      src: url('fonts/AkzidenzGroteskBQ-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
       font-family: 'Akkurat Pro';
       src: url('fonts/AkkuratPro-Bold.ttf') format('truetype');
       font-weight: 700;
@@ -69,12 +99,6 @@
       font-family: 'AkkuratPro-Bold';
       src: url('fonts/AkkuratPro-Bold.ttf') format('truetype');
       font-weight: 700;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'HYHeadLine';
-      src: url('fonts/HYHeadLine-Medium.ttf') format('truetype');
-      font-weight: 500;
       font-style: normal;
     }
     @font-face {
@@ -237,17 +261,21 @@
       transition: all 0.2s ease;
     }
 
+    :root {
+      --theme-accent: #F56115;
+    }
+
     .btn-minimal:hover {
       background: #ffffff;
-      color: #F56115;
+      color: var(--theme-accent, #F56115);
       transform: translateY(-1px);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
     }
 
     .btn-minimal.active {
-      background: #F56115;
+      background: var(--theme-accent, #F56115);
       color: #fff;
-      border-color: #F56115;
+      border-color: var(--theme-accent, #F56115);
     }
 
     /* Modo Salvapantalles per Mac (sense UI, sense cursor, 100% net) */
@@ -339,7 +367,7 @@
 
     .editor-tab-btn.active {
       background: #ffffff;
-      color: #F56115;
+      color: var(--theme-accent, #F56115);
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     }
 
@@ -399,6 +427,10 @@
       color: #1e293b;
       background: #ffffff;
       text-align: right;
+    }
+
+    input[type="range"] {
+      accent-color: var(--theme-accent, #F56115) !important;
     }
 
     .color-control-row input[type="range"] {
@@ -676,9 +708,39 @@
 .tn-ver-select:hover,
 .tn-ver-select:focus {
   background: #ffffff;
-  color: #F56115;
-  border-color: rgba(245, 97, 21, 0.4);
-  box-shadow: 0 4px 14px rgba(245, 97, 21, 0.2);
+  color: var(--theme-accent, #F56115);
+  border-color: var(--theme-accent, #F56115);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+[data-mode="2002"] .tn-ver-select {
+  color: #04336F;
+  border-color: rgba(4, 51, 111, 0.4);
+}
+
+[data-mode="2002"] .tn-select-chevron {
+  color: #04336F;
+}
+
+[data-mode="2002"] .tn-ver-select:hover,
+[data-mode="2002"] .tn-ver-select:focus {
+  color: #04336F;
+  border-color: #04336F;
+  box-shadow: 0 4px 14px rgba(4, 51, 111, 0.25);
+}
+
+[data-mode="2002"] .editor-tab-btn[data-tab="tab-tn2002"].active {
+  color: #04336F !important;
+}
+
+#tab-tn2002 .btn-editor-action.primary {
+  background: #04336F !important;
+  border-color: #04336F !important;
+  color: #ffffff !important;
+}
+
+#tab-tn2002 input[type="range"] {
+  accent-color: #04336F !important;
 }
 
 .tn-ver-select option {
@@ -700,7 +762,12 @@
 }
 
 .tn-version-dropdown-wrap:hover .tn-select-chevron {
-  color: #F56115;
+  color: var(--theme-accent, #F56115);
+}
+
+.tn-ver-select:focus {
+  outline: none;
+  border-color: var(--theme-accent, #F56115);
 }
 
 @media (max-width: 640px) {
@@ -734,6 +801,85 @@
 }
 .tn-ver-btn {
   display: none;
+}
+
+/* ==========================================================================
+   TN 2002 - Rellotge TN TV3 (2002) - Fons Vídeo i Doble Rellotge amb Fusió
+   ========================================================================== */
+#view-tn-2002 {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 5;
+  background: #000;
+  display: none;
+  user-select: none;
+  -webkit-user-select: none;
+  isolation: isolate;
+}
+
+.tn02-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1191px;
+  height: 639px;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tn02-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1191px;
+  height: 639px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.tn02-clock-back {
+  position: absolute;
+  top: 25.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'AkzidenzGroteskBQ-MedExt', 'AkzidenzGroteskBQ', -apple-system, sans-serif;
+  font-size: 303px;
+  font-weight: 700;
+  line-height: 1;
+  color: #FFFFFF;
+  opacity: 0.74;
+  mix-blend-mode: overlay;
+  white-space: nowrap;
+  letter-spacing: 2px;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  filter: blur(1.5px);
+}
+
+.tn02-clock-front {
+  position: absolute;
+  top: 58%;
+  left: 14%;
+  font-family: 'AkzidenzGroteskBQ-Ext', -apple-system, sans-serif;
+  font-size: 95px;
+  font-weight: 600;
+  line-height: 1;
+  color: #FFFFFF;
+  opacity: 0.76;
+  mix-blend-mode: normal;
+  white-space: nowrap;
+  letter-spacing: -2px;
+  filter: blur(1.5px);
+  transform: scale(1.02, 0.91);
+  transform-origin: left top;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================================================
@@ -1435,6 +1581,21 @@ html.hide-config #master-editor-panel {
   <!-- WebGL Canvas Container -->
   <div id="webgl-container"></div>
 
+<!-- TN 2002 BROADCAST VIEW (Fons Vídeo i Rellotge Superposat) -->
+<div id="view-tn-2002" style="display: none;">
+  <div id="tn02-stage" class="tn02-stage">
+    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" autoplay loop muted playsinline preload="auto">
+      <source src="video/fons_2002.mp4" type="video/mp4">
+    </video>
+    <div id="tn02-clock-back" class="tn02-clock-back">
+      <span id="tn02-clock-back-text">20:29</span>
+    </div>
+    <div id="tn02-clock-front" class="tn02-clock-front">
+      <span id="tn02-clock-front-text">20:29:58</span>
+    </div>
+  </div>
+</div>
+
 <!-- TN 2005 BROADCAST VIEW (TN Comarques TV3) -->
 <div id="view-tn-2005" style="display: none;">
   <div class="tn05-bg"></div>
@@ -1533,6 +1694,7 @@ html.hide-config #master-editor-panel {
   <div class="minimal-controls" id="controls-container">
   <div class="tn-version-dropdown-wrap" id="tn-version-dropdown-wrap">
     <select id="select-tn-version" class="tn-ver-select" aria-label="Selecciona la versió del rellotge TN">
+      <option value="2002">2002</option>
       <option value="2005">2005</option>
       <option value="2014" selected>2014</option>
       <option value="2025">2025</option>
@@ -1540,6 +1702,7 @@ html.hide-config #master-editor-panel {
     <svg class="tn-select-chevron" width="9" height="5" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 1l4 4 4-4"/>
     </svg>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2002" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2005" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2014" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2025" style="display:none;"></button>
@@ -1614,6 +1777,7 @@ html.hide-config #master-editor-panel {
       <button class="editor-tab-btn" data-tab="tab-clock">Rellotge</button>
       <button class="editor-tab-btn" data-tab="tab-cubs">Cubs</button>
       <button class="editor-tab-btn" data-tab="tab-temps">Temps</button>
+      <button class="editor-tab-btn" data-tab="tab-tn2002">2002</button>
       <button class="editor-tab-btn" data-tab="tab-tn2005">2005</button>
       <button class="editor-tab-btn" data-tab="tab-tn2025">2025</button>
     </div>
@@ -2235,6 +2399,160 @@ html.hide-config #master-editor-panel {
 
   <div class="tab-actions" style="margin-top: 14px;">
     <button type="button" class="btn-editor-action" id="btn-reset-tn25">Restableix 2025</button>
+  </div>
+</div>
+
+<!-- TAB 7: TN 2002 (RELLOTGE NORMAL I RELLOTGE DE FONS AMB FUSIÓ) -->
+<div id="tab-tn2002" class="tab-content">
+  <div class="panel-section-title">Rellotge Principal (Davant)</div>
+  <div class="coord-row">
+    <label>Mida (vw)</label>
+    <input type="number" id="num-tn02-front-size" min="2" max="25" step="0.5" value="8">
+    <input type="range" id="slider-tn02-front-size" min="2" max="25" step="0.5" value="8">
+  </div>
+  <div class="coord-row">
+    <label>Escala X (%)</label>
+    <input type="number" id="num-tn02-front-scale-x" min="10" max="300" step="1" value="102">
+    <input type="range" id="slider-tn02-front-scale-x" min="10" max="300" step="1" value="102">
+  </div>
+  <div class="coord-row">
+    <label>Escala Y (%)</label>
+    <input type="number" id="num-tn02-front-scale-y" min="10" max="300" step="1" value="91">
+    <input type="range" id="slider-tn02-front-scale-y" min="10" max="300" step="1" value="91">
+  </div>
+  <div class="coord-row">
+    <label>Posició X (%)</label>
+    <input type="number" id="num-tn02-front-x" min="0" max="100" step="0.5" value="14">
+    <input type="range" id="slider-tn02-front-x" min="0" max="100" step="0.5" value="14">
+  </div>
+  <div class="coord-row">
+    <label>Posició Y (%)</label>
+    <input type="number" id="num-tn02-front-y" min="0" max="100" step="0.5" value="58">
+    <input type="range" id="slider-tn02-front-y" min="0" max="100" step="0.5" value="58">
+  </div>
+  <div class="coord-row">
+    <label>Opacitat (%)</label>
+    <input type="number" id="num-tn02-front-opacity" min="0" max="100" step="1" value="76">
+    <input type="range" id="slider-tn02-front-opacity" min="0" max="100" step="1" value="76">
+  </div>
+  <div class="coord-row">
+    <label>Espaiat lletres (px)</label>
+    <input type="number" id="num-tn02-front-spacing" min="-10" max="30" step="1" value="-2">
+    <input type="range" id="slider-tn02-front-spacing" min="-10" max="30" step="1" value="-2">
+  </div>
+  <div class="coord-row">
+    <label>Desenfocament (px)</label>
+    <input type="number" id="num-tn02-front-blur" min="0" max="20" step="0.5" value="1.5">
+    <input type="range" id="slider-tn02-front-blur" min="0" max="20" step="0.5" value="1.5">
+  </div>
+  <div class="coord-row">
+    <label>Mode fusió</label>
+    <select id="select-tn02-front-blend" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="normal" selected>Normal</option>
+      <option value="screen">Screen (Trama)</option>
+      <option value="overlay">Overlay (Superposició)</option>
+      <option value="lighten">Lighten (Aclarir)</option>
+      <option value="color-dodge">Color Dodge</option>
+      <option value="difference">Difference</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Format</label>
+    <select id="select-tn02-front-format" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="HH:MM:SS" selected>HH:MM:SS (amb segons)</option>
+      <option value="HH:MM">HH:MM (sense segons)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Gruix font</label>
+    <select id="select-tn02-front-weight" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="400">Regular (400)</option>
+      <option value="600" selected>Semibold (600)</option>
+      <option value="700">Bold (700)</option>
+      <option value="800">ExtraBold (800)</option>
+      <option value="900">Black (900)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Color text</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn02-front-color" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn02-front-color" value="#FFFFFF" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Rellotge Fons (Fusió / Gegant)</div>
+  <div class="coord-row">
+    <label>Mida (vw)</label>
+    <input type="number" id="num-tn02-back-size" min="5" max="50" step="0.5" value="25.5">
+    <input type="range" id="slider-tn02-back-size" min="5" max="50" step="0.5" value="25.5">
+  </div>
+  <div class="coord-row">
+    <label>Posició X (Centrada)</label>
+    <input type="number" id="num-tn02-back-x" min="0" max="100" step="0.5" value="50" disabled title="Sempre centrat horitzontalment">
+    <input type="range" id="slider-tn02-back-x" min="0" max="100" step="0.5" value="50" disabled title="Sempre centrat horitzontalment">
+  </div>
+  <div class="coord-row">
+    <label>Posició Y (%)</label>
+    <input type="number" id="num-tn02-back-y" min="0" max="100" step="0.5" value="25.5">
+    <input type="range" id="slider-tn02-back-y" min="0" max="100" step="0.5" value="25.5">
+  </div>
+  <div class="coord-row">
+    <label>Opacitat (%)</label>
+    <input type="number" id="num-tn02-back-opacity" min="0" max="100" step="1" value="74">
+    <input type="range" id="slider-tn02-back-opacity" min="0" max="100" step="1" value="74">
+  </div>
+  <div class="coord-row">
+    <label>Espaiat lletres (px)</label>
+    <input type="number" id="num-tn02-back-spacing" min="-10" max="30" step="1" value="2">
+    <input type="range" id="slider-tn02-back-spacing" min="-10" max="30" step="1" value="2">
+  </div>
+  <div class="coord-row">
+    <label>Desenfocament (px)</label>
+    <input type="number" id="num-tn02-back-blur" min="0" max="20" step="0.5" value="1.5">
+    <input type="range" id="slider-tn02-back-blur" min="0" max="20" step="0.5" value="1.5">
+  </div>
+  <div class="coord-row">
+    <label>Mode fusió</label>
+    <select id="select-tn02-back-blend" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="overlay" selected>Overlay (Superposició)</option>
+      <option value="screen">Screen (Trama)</option>
+      <option value="color-dodge">Color Dodge</option>
+      <option value="lighten">Lighten (Aclarir)</option>
+      <option value="soft-light">Soft Light</option>
+      <option value="hard-light">Hard Light</option>
+      <option value="difference">Difference</option>
+      <option value="normal">Normal</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Format</label>
+    <select id="select-tn02-back-format" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="HH:MM" selected>HH:MM (sense segons)</option>
+      <option value="HH:MM:SS">HH:MM:SS (amb segons)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Gruix font</label>
+    <select id="select-tn02-back-weight" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="400">Regular (400)</option>
+      <option value="600">Semibold (600)</option>
+      <option value="700" selected>Bold (700)</option>
+      <option value="800">ExtraBold (800)</option>
+      <option value="900">Black (900)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Color text</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn02-back-color" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn02-back-color" value="#FFFFFF" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="tab-actions" style="margin-top: 14px;">
+    <button type="button" class="btn-editor-action" id="btn-copy-tn02">Copia config 2002</button>
+    <button type="button" class="btn-editor-action" id="btn-reset-tn02">Restableix 2002</button>
   </div>
 </div>
 
@@ -3587,7 +3905,7 @@ let flankCubesParams = {
           const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
           initialMode = autoModes[day];
         }
-        if (initialMode && (initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
+        if (initialMode && (initialMode === '2002' || initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
           if (initialMode !== '2014') {
             applyModeSwitch(initialMode);
           } else {
@@ -4301,6 +4619,10 @@ rightMat = new THREE.MeshStandardMaterial({
     function animate() {
       requestAnimationFrame(animate);
 
+      if (currentAppMode === '2002') {
+        updateTN02Clock();
+        return; // Stop Three.js render loop when in 2D video TN 2002 mode to save CPU/GPU!
+      }
       if (currentAppMode === '2005') {
         updateTN05Clock();
         updateTN05Animation();
@@ -4431,6 +4753,91 @@ rightMat = new THREE.MeshStandardMaterial({
     let isSyncActive = false;
     let syncIntervalId = null;
 
+    // --- Web Audio API Seamless Gapless Looper for TN 2002 ---
+    let tn02AudioCtx = null;
+    let tn02AudioBuffer = null;
+    let tn02AudioSource = null;
+    let tn02GainNode = null;
+    let isTN02AudioActive = false;
+
+    async function loadTN02AudioBuffer() {
+      if (tn02AudioBuffer) return tn02AudioBuffer;
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtxClass) return null;
+      if (!tn02AudioCtx) {
+        tn02AudioCtx = new AudioCtxClass();
+      }
+      try {
+        const resp = await fetch('audio/music_2002.m4a');
+        const ab = await resp.arrayBuffer();
+        const decoded = await tn02AudioCtx.decodeAudioData(ab);
+
+        // Smooth crossfade (256 samples) at loop boundary to guarantee zero click/gap
+        const fade = Math.min(256, Math.floor(decoded.length * 0.005));
+        for (let ch = 0; ch < decoded.numberOfChannels; ch++) {
+          const chData = decoded.getChannelData(ch);
+          const len = chData.length;
+          for (let i = 0; i < fade; i++) {
+            const factor = i / fade;
+            chData[i] = (1 - factor) * chData[len - fade + i] + factor * chData[i];
+          }
+        }
+        tn02AudioBuffer = decoded;
+        return decoded;
+      } catch (err) {
+        console.warn("Could not load seamless TN 2002 audio:", err);
+        return null;
+      }
+    }
+
+    async function playTN02SeamlessAudio() {
+      isTN02AudioActive = true;
+      if (bgAudio) {
+        bgAudio.pause();
+      }
+      const buf = await loadTN02AudioBuffer();
+      if (!buf || !isTN02AudioActive) return;
+
+      if (tn02AudioCtx && tn02AudioCtx.state === 'suspended') {
+        await tn02AudioCtx.resume().catch(() => {});
+      }
+
+      if (tn02AudioSource) {
+        try { tn02AudioSource.stop(); } catch (e) {}
+        tn02AudioSource.disconnect();
+        tn02AudioSource = null;
+      }
+
+      if (!tn02GainNode) {
+        tn02GainNode = tn02AudioCtx.createGain();
+        tn02GainNode.connect(tn02AudioCtx.destination);
+      }
+      const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+      tn02GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn02AudioCtx.currentTime);
+
+      tn02AudioSource = tn02AudioCtx.createBufferSource();
+      tn02AudioSource.buffer = buf;
+      tn02AudioSource.loop = true;
+      tn02AudioSource.connect(tn02GainNode);
+      tn02AudioSource.start(0);
+    }
+
+    function stopTN02SeamlessAudio() {
+      isTN02AudioActive = false;
+      if (tn02AudioSource) {
+        try { tn02AudioSource.stop(); } catch (e) {}
+        tn02AudioSource.disconnect();
+        tn02AudioSource = null;
+      }
+    }
+
+    function updateTN02AudioVolume() {
+      if (tn02GainNode && tn02AudioCtx) {
+        const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+        tn02GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn02AudioCtx.currentTime);
+      }
+    }
+
     // --- Web Audio API Seamless Gapless Looper for TN 2005 ---
     let tn05AudioCtx = null;
     let tn05AudioBuffer = null;
@@ -4557,7 +4964,15 @@ rightMat = new THREE.MeshStandardMaterial({
         const unlockSound = () => {
           bgAudio.muted = false;
           isAudioMuted = false;
-          if (currentAppMode === '2005') {
+          if (currentAppMode === '2002') {
+            if (tn02AudioCtx && tn02AudioCtx.state === 'suspended') {
+              tn02AudioCtx.resume().catch(() => {});
+            }
+            updateTN02AudioVolume();
+            if (!tn02AudioSource || !isTN02AudioActive) {
+              playTN02SeamlessAudio();
+            }
+          } else if (currentAppMode === '2005') {
             if (tn05AudioCtx && tn05AudioCtx.state === 'suspended') {
               tn05AudioCtx.resume().catch(() => {});
             }
@@ -4586,6 +5001,14 @@ rightMat = new THREE.MeshStandardMaterial({
       if (!bgAudio) return;
       isAudioMuted = !isAudioMuted;
       bgAudio.muted = isAudioMuted;
+      if (currentAppMode === '2002') {
+        updateTN02AudioVolume();
+        updateAudioUI();
+        if (!isAudioMuted && (!tn02AudioSource || !isTN02AudioActive)) {
+          playTN02SeamlessAudio();
+        }
+        return;
+      }
       if (currentAppMode === '2005') {
         updateTN05AudioVolume();
         updateAudioUI();
@@ -4734,6 +5157,7 @@ while (targetSongTimeNow < 0) {
       if (!bgAudio || currentAppMode !== '2025') return;
       const now = new Date();
       const curMs = now.getMilliseconds() / 1000.0;
+      bgAudio.playbackRate = 1.0;
       if (isSyncActive) {
         const targetDate = getTargetSyncDate();
         const diffSec = (targetDate.getTime() - now.getTime()) / 1000.0;
@@ -4741,8 +5165,6 @@ while (targetSongTimeNow < 0) {
         while (targetSongNow < 0) targetSongNow += 199.0;
         bgAudio.currentTime = targetSongNow;
       } else {
-        // La sinto 2025 té referència a 3:19 (199.0s) a :00 i marca cada segon enter (120 BPM)
-        // Alinea la posició de l'àudio amb els segons reals del rellotge
         const secToNextMin = 60.0 - (now.getSeconds() + curMs);
         let targetSongNow = (199.0 - secToNextMin) % 199.0;
         while (targetSongNow < 0) targetSongNow += 199.0;
@@ -5141,27 +5563,108 @@ function updateTN25Clock() {
   if (dnEl) dnEl.textContent = d.dayName.toUpperCase();
   if (dmEl) dmEl.textContent = `${d.dayNum} ${d.monthName.toUpperCase()}`;
   if (yrEl) yrEl.textContent = String(d.yearNum);
+}
 
-  // Sincronització contínua de fase del tempo de la sinto 2025 amb els segons del rellotge
-  if (bgAudio && !bgAudio.paused && !isAudioMuted && !bgAudio.muted) {
-    if (bgAudio.currentTime >= 199.5) {
-      alignTN25AudioToClock();
-    } else {
-      const wallMs = now.getMilliseconds() / 1000.0;
-      let phaseDiff = (bgAudio.currentTime % 1.0) - wallMs;
-      while (phaseDiff > 0.5) phaseDiff -= 1.0;
-      while (phaseDiff < -0.5) phaseDiff += 1.0;
+// ==========================================================================
+// --- TN 2002 ENGINE (TN TV3 - 2002) - Fons Vídeo i Rellotges Superposats ---
+// ==========================================================================
+let tn02Params = {
+  // Rellotge Principal (Davant)
+  frontSize: 8.0,
+  frontScaleX: 102,
+  frontScaleY: 91,
+  frontX: 14.0,
+  frontY: 58.0,
+  frontColor: '#FFFFFF',
+  frontOpacity: 76,
+  frontBlend: 'normal',
+  frontFormat: 'HH:MM:SS',
+  frontWeight: '600',
+  frontSpacing: -2,
+  frontBlur: 1.5,
+  frontShadow: true,
 
-      if (Math.abs(phaseDiff) > 0.12) {
-        // Correcció de desfasament important (reanudació de pestanya, etc.)
-        bgAudio.currentTime -= phaseDiff;
-      } else if (Math.abs(phaseDiff) > 0.02) {
-        // Microajust suau i imperceptible de la velocitat per clavar la fase al mil·lisegon
-        bgAudio.playbackRate = (phaseDiff > 0) ? 0.985 : 1.015;
-      } else if (bgAudio.playbackRate !== 1.0) {
-        bgAudio.playbackRate = 1.0;
-      }
-    }
+  // Rellotge Secundari (Fons / Fusió)
+  backSize: 25.5,
+  backX: 50,
+  backY: 25.5,
+  backColor: '#FFFFFF',
+  backOpacity: 74,
+  backBlend: 'overlay',
+  backFormat: 'HH:MM',
+  backWeight: '700',
+  backSpacing: 2,
+  backBlur: 1.5
+};
+
+let lastTN02Second = -1;
+function updateTN02Scale() {
+  const stage = document.getElementById('tn02-stage');
+  if (!stage) return;
+  const scale = Math.max(window.innerWidth / 1191, window.innerHeight / 639);
+  stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+window.addEventListener('resize', updateTN02Scale);
+
+function applyTN02Styles() {
+  const front = document.getElementById('tn02-clock-front');
+  if (front) {
+    front.style.fontFamily = "'AkzidenzGroteskBQ-Ext', -apple-system, sans-serif";
+    front.style.fontSize = `${(tn02Params.frontSize / 100) * 1191}px`;
+    front.style.left = `${tn02Params.frontX}%`;
+    front.style.top = `${tn02Params.frontY}%`;
+    const sx = ((tn02Params.frontScaleX !== undefined ? tn02Params.frontScaleX : 100) / 100);
+    const sy = ((tn02Params.frontScaleY !== undefined ? tn02Params.frontScaleY : 100) / 100);
+    front.style.transform = `scale(${sx}, ${sy})`;
+    front.style.transformOrigin = 'left top';
+    front.style.color = tn02Params.frontColor;
+    front.style.opacity = (tn02Params.frontOpacity / 100).toFixed(2);
+    front.style.mixBlendMode = tn02Params.frontBlend;
+    front.style.fontWeight = tn02Params.frontWeight || '600';
+    front.style.letterSpacing = `${tn02Params.frontSpacing}px`;
+    front.style.filter = tn02Params.frontBlur > 0 ? `blur(${tn02Params.frontBlur}px)` : 'none';
+    front.style.textShadow = tn02Params.frontShadow ? '0 2px 10px rgba(0, 0, 0, 0.4)' : 'none';
+  }
+
+  const back = document.getElementById('tn02-clock-back');
+  if (back) {
+    back.style.fontFamily = "'AkzidenzGroteskBQ-MedExt', 'AkzidenzGroteskBQ', -apple-system, sans-serif";
+    back.style.fontSize = `${(tn02Params.backSize / 100) * 1191}px`;
+    back.style.left = '50%';
+    back.style.transform = 'translateX(-50%)';
+    back.style.top = `${tn02Params.backY}%`;
+    back.style.color = tn02Params.backColor;
+    back.style.opacity = (tn02Params.backOpacity / 100).toFixed(2);
+    back.style.mixBlendMode = tn02Params.backBlend;
+    back.style.fontWeight = tn02Params.backWeight || '700';
+    back.style.letterSpacing = `${tn02Params.backSpacing}px`;
+    back.style.filter = tn02Params.backBlur > 0 ? `blur(${tn02Params.backBlur}px)` : 'none';
+  }
+
+  updateTN02Scale();
+  lastTN02Second = -1;
+  updateTN02Clock();
+}
+
+function updateTN02Clock() {
+  if (currentAppMode !== '2002') return;
+  const now = new Date();
+  const sec = now.getSeconds();
+  if (sec === lastTN02Second) return;
+  lastTN02Second = sec;
+
+  const hStr = String(now.getHours()).padStart(2, '0');
+  const mStr = String(now.getMinutes()).padStart(2, '0');
+  const sStr = String(sec).padStart(2, '0');
+
+  const frontEl = document.getElementById('tn02-clock-front-text');
+  if (frontEl) {
+    frontEl.textContent = (tn02Params.frontFormat === 'HH:MM') ? `${hStr}:${mStr}` : `${hStr}:${mStr}:${sStr}`;
+  }
+
+  const backEl = document.getElementById('tn02-clock-back-text');
+  if (backEl) {
+    backEl.textContent = (tn02Params.backFormat === 'HH:MM:SS') ? `${hStr}:${mStr}:${sStr}` : `${hStr}:${mStr}`;
   }
 }
 
@@ -5972,15 +6475,26 @@ function updateTN05Ticker(dt) {
 }
 
 function switchAudioForMode(mode) {
+  if (mode === '2002') {
+    if (bgAudio) {
+      bgAudio.pause();
+    }
+    stopTN05SeamlessAudio();
+    playTN02SeamlessAudio();
+    return;
+  }
+
   if (mode === '2005') {
     if (bgAudio) {
       bgAudio.pause();
     }
+    stopTN02SeamlessAudio();
     playTN05SeamlessAudio();
     return;
   }
 
-  // Si sortim del mode 2005, atura el bucle Web Audio seamless
+  // Si sortim dels modes 2002 o 2005, atura els bucles Web Audio seamless
+  stopTN02SeamlessAudio();
   stopTN05SeamlessAudio();
 
   if (!bgAudio) return;
@@ -6026,6 +6540,11 @@ let isYearTransitioning = false;
 let tvNoiseRaf = null;
 
 const TV_YEAR_LOGOS = {
+  '2002': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" width="100%" height="100%" fill="none">
+  <path fill="#FFFFFF" d="M 7 4 L 271 4 L 271 52 L 179 52 L 179 236 L 99 236 L 99 52 L 7 52 Z" />
+  <path fill="#FFFFFF" d="M 301 4 L 393 4 L 516 158 L 516 4 L 593 4 L 593 236 L 502 236 L 379 83 L 379 236 L 301 236 Z" />
+</svg>`,
+
   '2005': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658 170" width="100%" height="100%" fill="none">
   <path fill="#FFFFFF" d="M 0 0 L 306 0 L 306 58 L 197 58 L 197 170 L 109 170 L 109 58 L 0 58 Z" />
   <path fill="#FFFFFF" d="M 338 0 L 570 0 L 658 88 L 658 170 L 570 170 L 570 58 L 427 58 L 427 170 L 338 170 Z" />
@@ -6064,7 +6583,7 @@ const TV_YEAR_LOGOS = {
 };
 
 function updateDynamicFavicon(mode) {
-  const targetMode = (mode === '2005' || mode === '2025') ? mode : '2014';
+  const targetMode = (mode === '2002' || mode === '2005' || mode === '2025') ? mode : '2014';
   const targetFile = `favicon-${targetMode}.png`;
 
   // 1. Elimina tots els links de favicon existents perquè el navegador detecti la nova icona
@@ -6174,37 +6693,65 @@ function switchMode(mode) {
 
 function applyModeSwitch(mode) {
   currentAppMode = mode;
+  document.documentElement.setAttribute('data-mode', mode);
+  document.body.setAttribute('data-mode', mode);
   updateDynamicFavicon(mode);
   const selectVer = document.getElementById('select-tn-version');
-  if (selectVer && selectVer.value !== mode) {
-    selectVer.value = mode;
+  if (selectVer) {
+    if (selectVer.value !== mode) selectVer.value = mode;
+    if (mode === '2002') {
+      selectVer.style.color = '#04336F';
+      selectVer.style.borderColor = 'rgba(4, 51, 111, 0.4)';
+    } else if (mode === '2005') {
+      selectVer.style.color = '#F5820D';
+      selectVer.style.borderColor = 'rgba(245, 130, 13, 0.4)';
+    } else {
+      selectVer.style.color = '';
+      selectVer.style.borderColor = '';
+    }
   }
+  const selectChevron = document.querySelector('.tn-select-chevron');
+  if (selectChevron) {
+    selectChevron.style.color = (mode === '2002') ? '#04336F' : (mode === '2005' ? '#F5820D' : '');
+  }
+  const btn2002 = document.getElementById('btn-ver-2002');
   const btn2005 = document.getElementById('btn-ver-2005');
   const btn2014 = document.getElementById('btn-ver-2014');
   const btn2025 = document.getElementById('btn-ver-2025');
+  const view2002 = document.getElementById('view-tn-2002');
   const view2005 = document.getElementById('view-tn-2005');
   const view2025 = document.getElementById('view-tn-2025');
+  const video02 = document.getElementById('tn02-bg-video');
   const webglCont = document.getElementById('webgl-container');
   const tempBanner = document.getElementById('temp-banner');
   const btnResetView = document.getElementById('btn-reset-view');
   const btnSyncAudio = document.getElementById('btn-sync-audio');
 
+  // Accent color per mode (#04336F per a 2002!)
+  if (mode === '2002') {
+    document.documentElement.style.setProperty('--theme-accent', '#04336F');
+  } else if (mode === '2005') {
+    document.documentElement.style.setProperty('--theme-accent', '#F5820D');
+  } else {
+    document.documentElement.style.setProperty('--theme-accent', '#F56115');
+  }
+
   switchAudioForMode(mode);
 
   if (btnSyncAudio) {
-    btnSyncAudio.style.display = (mode === '2005') ? 'none' : '';
+    btnSyncAudio.style.display = (mode === '2002' || mode === '2005') ? 'none' : '';
   }
 
+  if (btn2002) btn2002.classList.toggle('active', mode === '2002');
   if (btn2005) btn2005.classList.toggle('active', mode === '2005');
   if (btn2014) btn2014.classList.toggle('active', mode === '2014');
   if (btn2025) btn2025.classList.toggle('active', mode === '2025');
 
   const tabBtns = document.querySelectorAll('.editor-tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
-  const targetTabId = (mode === '2005') ? 'tab-tn05' : (mode === '2025' ? 'tab-tn2025' : 'tab-color');
-  // Support both tab-tn2005 and tab-tn05
-  const activeTabBtn = document.querySelector(`.editor-tab-btn[data-tab="${(mode === '2005') ? 'tab-tn2005' : targetTabId}"]`);
-  const activeTabContent = document.getElementById((mode === '2005') ? 'tab-tn2005' : targetTabId);
+  const targetTabId = (mode === '2002') ? 'tab-tn2002' : ((mode === '2005') ? 'tab-tn2005' : (mode === '2025' ? 'tab-tn2025' : 'tab-color'));
+  const activeTabBtn = document.querySelector(`.editor-tab-btn[data-tab="${targetTabId}"]`);
+  const activeTabContent = document.getElementById(targetTabId);
   if (activeTabBtn && activeTabContent) {
     tabBtns.forEach(b => b.classList.remove('active'));
     tabContents.forEach(c => c.classList.remove('active'));
@@ -6212,7 +6759,49 @@ function applyModeSwitch(mode) {
     activeTabContent.classList.add('active');
   }
 
-  if (mode === '2005') {
+  if (mode === '2002') {
+    if (view2002) view2002.style.display = 'block';
+    if (video02) {
+      video02.muted = true;
+      video02.loop = true;
+      video02.playsInline = true;
+      if (video02.readyState === 0) {
+        video02.load();
+      }
+      if (!video02._loopBound) {
+        video02._loopBound = true;
+        video02.addEventListener('ended', function() {
+          video02.currentTime = 0;
+          video02.play().catch(function(){});
+        });
+      }
+      if (video02.ended || video02.currentTime >= (video02.duration || 29)) {
+        video02.currentTime = 0;
+      }
+      const playPromise = video02.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function() {
+          const onUserGesture = function() {
+            if (currentAppMode === '2002') {
+              video02.currentTime = 0;
+              video02.play().catch(function(){});
+            }
+          };
+          window.addEventListener('click', onUserGesture, { once: true });
+          window.addEventListener('touchstart', onUserGesture, { once: true });
+        });
+      }
+    }
+    if (view2005) view2005.style.display = 'none';
+    if (view2025) view2025.style.display = 'none';
+    if (webglCont) webglCont.style.display = 'none';
+    if (tempBanner) tempBanner.style.display = 'none';
+    if (btnResetView) btnResetView.style.display = 'none';
+    applyTN02Styles();
+    updateTN02Clock();
+  } else if (mode === '2005') {
+    if (view2002) view2002.style.display = 'none';
+    if (video02) video02.pause();
     if (view2005) view2005.style.display = 'block';
     if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'none';
@@ -6221,6 +6810,8 @@ function applyModeSwitch(mode) {
     initTN05();
     updateTN05Clock();
   } else if (mode === '2025') {
+    if (view2002) view2002.style.display = 'none';
+    if (video02) video02.pause();
     if (view2005) view2005.style.display = 'none';
     if (view2025) view2025.style.display = 'block';
     if (webglCont) webglCont.style.display = 'none';
@@ -6232,6 +6823,8 @@ function applyModeSwitch(mode) {
     updateTN25Clock();
   } else {
     // 2014
+    if (view2002) view2002.style.display = 'none';
+    if (video02) video02.pause();
     if (view2005) view2005.style.display = 'none';
     if (view2025) view2025.style.display = 'none';
     if (webglCont) webglCont.style.display = 'block';
@@ -6538,9 +7131,9 @@ function applyModeSwitch(mode) {
       function applyCamFromInputs() {
         if (!camera || !controls) return;
         const x = parseFloat(numCamX.value) || 0;
-        const y = parseFloat(numCamY.value) || 4.55;
-        const z = parseFloat(numCamZ.value) || 13.75;
-        const ty = parseFloat(numTgtY.value) || 1.45;
+        const y = parseFloat(numCamY.value) || 4.58;
+        const z = parseFloat(numCamZ.value) || 13.72;
+        const ty = parseFloat(numTgtY.value) || 0.90;
         camera.position.set(x, y, z);
         controls.target.set(0, ty, 0);
         controls.update();
@@ -7280,6 +7873,191 @@ if (selectTn25Easing) {
     });
   }
 
+  // --- TN 2002 Controls ---
+  // Front Clock
+  syncNumberSlider(document.getElementById('num-tn02-front-size'), document.getElementById('slider-tn02-front-size'), (val) => {
+    tn02Params.frontSize = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-scale-x'), document.getElementById('slider-tn02-front-scale-x'), (val) => {
+    tn02Params.frontScaleX = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-scale-y'), document.getElementById('slider-tn02-front-scale-y'), (val) => {
+    tn02Params.frontScaleY = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-x'), document.getElementById('slider-tn02-front-x'), (val) => {
+    tn02Params.frontX = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-y'), document.getElementById('slider-tn02-front-y'), (val) => {
+    tn02Params.frontY = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-opacity'), document.getElementById('slider-tn02-front-opacity'), (val) => {
+    tn02Params.frontOpacity = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-spacing'), document.getElementById('slider-tn02-front-spacing'), (val) => {
+    tn02Params.frontSpacing = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-blur'), document.getElementById('slider-tn02-front-blur'), (val) => {
+    tn02Params.frontBlur = val;
+    applyTN02Styles();
+  });
+  const sel02FrontBlend = document.getElementById('select-tn02-front-blend');
+  if (sel02FrontBlend) {
+    sel02FrontBlend.addEventListener('change', (e) => {
+      tn02Params.frontBlend = e.target.value;
+      applyTN02Styles();
+    });
+  }
+  const sel02FrontFormat = document.getElementById('select-tn02-front-format');
+  if (sel02FrontFormat) {
+    sel02FrontFormat.addEventListener('change', (e) => {
+      tn02Params.frontFormat = e.target.value;
+      applyTN02Styles();
+    });
+  }
+  const sel02FrontWeight = document.getElementById('select-tn02-front-weight');
+  if (sel02FrontWeight) {
+    sel02FrontWeight.addEventListener('change', (e) => {
+      tn02Params.frontWeight = e.target.value;
+      applyTN02Styles();
+    });
+  }
+  syncColorInput(document.getElementById('picker-tn02-front-color'), document.getElementById('hex-tn02-front-color'), (col) => {
+    tn02Params.frontColor = col;
+    applyTN02Styles();
+  });
+
+  // Back Clock
+  syncNumberSlider(document.getElementById('num-tn02-back-size'), document.getElementById('slider-tn02-back-size'), (val) => {
+    tn02Params.backSize = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-x'), document.getElementById('slider-tn02-back-x'), (val) => {
+    tn02Params.backX = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-y'), document.getElementById('slider-tn02-back-y'), (val) => {
+    tn02Params.backY = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-opacity'), document.getElementById('slider-tn02-back-opacity'), (val) => {
+    tn02Params.backOpacity = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-spacing'), document.getElementById('slider-tn02-back-spacing'), (val) => {
+    tn02Params.backSpacing = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-blur'), document.getElementById('slider-tn02-back-blur'), (val) => {
+    tn02Params.backBlur = val;
+    applyTN02Styles();
+  });
+  const sel02BackBlend = document.getElementById('select-tn02-back-blend');
+  if (sel02BackBlend) {
+    sel02BackBlend.addEventListener('change', (e) => {
+      tn02Params.backBlend = e.target.value;
+      applyTN02Styles();
+    });
+  }
+  const sel02BackFormat = document.getElementById('select-tn02-back-format');
+  if (sel02BackFormat) {
+    sel02BackFormat.addEventListener('change', (e) => {
+      tn02Params.backFormat = e.target.value;
+      applyTN02Styles();
+    });
+  }
+  const sel02BackWeight = document.getElementById('select-tn02-back-weight');
+  if (sel02BackWeight) {
+    sel02BackWeight.addEventListener('change', (e) => {
+      tn02Params.backWeight = e.target.value;
+      applyTN02Styles();
+    });
+  }
+  syncColorInput(document.getElementById('picker-tn02-back-color'), document.getElementById('hex-tn02-back-color'), (col) => {
+    tn02Params.backColor = col;
+    applyTN02Styles();
+  });
+
+  // Reset 2002 defaults
+  const btnResetTn02 = document.getElementById('btn-reset-tn02');
+  if (btnResetTn02) {
+    btnResetTn02.addEventListener('click', () => {
+      tn02Params.frontSize = 8.0;
+      tn02Params.frontScaleX = 102;
+      tn02Params.frontScaleY = 91;
+      tn02Params.frontX = 14.0;
+      tn02Params.frontY = 58.0;
+      tn02Params.frontColor = '#FFFFFF';
+      tn02Params.frontOpacity = 76;
+      tn02Params.frontBlend = 'normal';
+      tn02Params.frontFormat = 'HH:MM:SS';
+      tn02Params.frontWeight = '600';
+      tn02Params.frontSpacing = -2;
+      tn02Params.frontBlur = 1.5;
+      tn02Params.frontShadow = true;
+
+      tn02Params.backSize = 25.5;
+      tn02Params.backX = 50;
+      tn02Params.backY = 25.5;
+      tn02Params.backColor = '#FFFFFF';
+      tn02Params.backOpacity = 74;
+      tn02Params.backBlend = 'overlay';
+      tn02Params.backFormat = 'HH:MM';
+      tn02Params.backWeight = '700';
+      tn02Params.backSpacing = 2;
+      tn02Params.backBlur = 1.5;
+
+      const pairs02 = [
+        ['num-tn02-front-size', 'slider-tn02-front-size', 8.0],
+        ['num-tn02-front-scale-x', 'slider-tn02-front-scale-x', 102],
+        ['num-tn02-front-scale-y', 'slider-tn02-front-scale-y', 91],
+        ['num-tn02-front-x', 'slider-tn02-front-x', 14.0],
+        ['num-tn02-front-y', 'slider-tn02-front-y', 58.0],
+        ['num-tn02-front-opacity', 'slider-tn02-front-opacity', 76],
+        ['num-tn02-front-spacing', 'slider-tn02-front-spacing', -2],
+        ['num-tn02-front-blur', 'slider-tn02-front-blur', 1.5],
+        ['num-tn02-back-size', 'slider-tn02-back-size', 25.5],
+        ['num-tn02-back-x', 'slider-tn02-back-x', 50],
+        ['num-tn02-back-y', 'slider-tn02-back-y', 25.5],
+        ['num-tn02-back-opacity', 'slider-tn02-back-opacity', 74],
+        ['num-tn02-back-spacing', 'slider-tn02-back-spacing', 2],
+        ['num-tn02-back-blur', 'slider-tn02-back-blur', 1.5]
+      ];
+      pairs02.forEach(([nid, sid, val]) => {
+        const ne = document.getElementById(nid), se = document.getElementById(sid);
+        if (ne) ne.value = val;
+        if (se) se.value = val;
+      });
+
+      const sel02FrontBlend = document.getElementById('select-tn02-front-blend');
+      const sel02FrontFormat = document.getElementById('select-tn02-front-format');
+      const sel02FrontWeight = document.getElementById('select-tn02-front-weight');
+      const sel02BackBlend = document.getElementById('select-tn02-back-blend');
+      const sel02BackFormat = document.getElementById('select-tn02-back-format');
+      const sel02BackWeight = document.getElementById('select-tn02-back-weight');
+
+      if (sel02FrontBlend) sel02FrontBlend.value = 'normal';
+      if (sel02FrontFormat) sel02FrontFormat.value = 'HH:MM:SS';
+      if (sel02FrontWeight) sel02FrontWeight.value = '600';
+      if (sel02BackBlend) sel02BackBlend.value = 'overlay';
+      if (sel02BackFormat) sel02BackFormat.value = 'HH:MM';
+      if (sel02BackWeight) sel02BackWeight.value = '700';
+
+      const pF = document.getElementById('picker-tn02-front-color'), hF = document.getElementById('hex-tn02-front-color');
+      if (pF && hF) { pF.value = '#ffffff'; hF.value = '#FFFFFF'; }
+      const pB = document.getElementById('picker-tn02-back-color'), hB = document.getElementById('hex-tn02-back-color');
+      if (pB && hB) { pB.value = '#ffffff'; hB.value = '#FFFFFF'; }
+
+      applyTN02Styles();
+    });
+  }
+
   // --- TN 2005 Controls ---
   // Càmera Engranatges
   syncNumberSlider(document.getElementById('num-tn05-cam-x'), document.getElementById('slider-tn05-cam-x'), (val) => {
@@ -7594,6 +8372,21 @@ if (selectTn25Easing) {
     document.body.removeChild(ta);
   }
 
+    function getTN02ConfigText() {
+    return [
+      `=== CONFIGURACIÓ RELLOTGE TN 2002 ===`,
+      `Rellotge Davant: Mida=${tn02Params.frontSize}vw | EscalaX=${tn02Params.frontScaleX}% | EscalaY=${tn02Params.frontScaleY}% | Pos X=${tn02Params.frontX}% | Pos Y=${tn02Params.frontY}% | Opacitat=${tn02Params.frontOpacity}% | Espaiat=${tn02Params.frontSpacing}px | Desenfoc=${tn02Params.frontBlur}px | Fusió=${tn02Params.frontBlend} | Format=${tn02Params.frontFormat} | Gruix=${tn02Params.frontWeight} | Color=${tn02Params.frontColor.toUpperCase()}`,
+      `Rellotge Fons: Mida=${tn02Params.backSize}vw | Pos X=Centrat | Pos Y=${tn02Params.backY}% | Opacitat=${tn02Params.backOpacity}% | Espaiat=${tn02Params.backSpacing}px | Desenfoc=${tn02Params.backBlur}px | Fusió=${tn02Params.backBlend} | Format=${tn02Params.backFormat} | Gruix=${tn02Params.backWeight} | Color=${tn02Params.backColor.toUpperCase()}`
+    ].join("\n");
+  }
+
+  const btnCopyTn02 = document.getElementById('btn-copy-tn02');
+  if (btnCopyTn02) {
+    btnCopyTn02.addEventListener('click', () => {
+      copyConfigToClipboard(getTN02ConfigText(), "Configuració de TN 2002 copiada al porta-retalls!");
+    });
+  }
+
   function getTN05ConfigText() {
     return [
       `=== CONFIGURACIÓ RELLOTGE TN 2005 (TN Comarques) ===`,
@@ -7690,7 +8483,9 @@ if (selectTn25Easing) {
       const activeTab = document.querySelector('.tab-content.active');
       const activeTabId = activeTab ? activeTab.id : '';
 
-      if (activeTabId === 'tab-tn2005' || currentAppMode === '2005') {
+      if (activeTabId === 'tab-tn2002' || currentAppMode === '2002') {
+        copyConfigToClipboard(getTN02ConfigText(), "Configuració de TN 2002 copiada al porta-retalls!");
+      } else if (activeTabId === 'tab-tn2005' || currentAppMode === '2005') {
         copyConfigToClipboard(getTN05ConfigText(), "Configuració de TN 2005 copiada al porta-retalls!");
       } else if (activeTabId === 'tab-tn2025' || currentAppMode === '2025') {
         copyConfigToClipboard(getTN25ConfigText(), "Configuració de TN 2025 copiada al porta-retalls!");
