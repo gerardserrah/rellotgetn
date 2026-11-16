@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 412" width="412" height="412" fill="none">
+  <!-- Fons blanc circular opcional -->
+  <circle id="fons-blanc" cx="206" cy="206" r="201" fill="#FFFFFF" />
+
+  <!-- Anell fi exterior complet -->
+  <circle id="anell-exterior" cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="4.5" />
+
+  <!-- Segment gruixut accentuat a dalt a la dreta -->
+  <circle id="segment-accent" cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="19"
+          stroke-linecap="round" stroke-dasharray="142 1272" stroke-dashoffset="-1050" />
+
+  <!-- Lletres "tn" vectorials en color corporatiu -->
+  <g id="lletres-tn" fill="#F56115">
+    <!-- Lletra t -->
+    <path id="lletra-t" d="M 96 146 L 196 146 L 197 147 L 197 182 L 196 183 L 168 183 L 167 184 L 167 259 L 124 259 L 124 184 L 123 183 L 96 183 L 95 182 L 95 147 Z" />
+    <!-- Lletra n -->
+    <path id="lletra-n" d="M 271 144 L 282 145 L 295 150 L 304 158 L 309 166 L 313 181 L 313 215 L 317 221 L 322 224 L 327 225 L 327 261 L 305 261 L 301 260 L 289 255 L 280 247 L 273 235 L 270 224 L 270 191 L 268 186 L 265 183 L 260 181 L 252 183 L 249 186 L 247 192 L 247 259 L 204 259 L 204 147 L 205 146 L 243 146 L 243 153 L 245 155 L 248 152 L 257 147 L 264 145 L 270 145 Z" />
+  </g>
+</svg>

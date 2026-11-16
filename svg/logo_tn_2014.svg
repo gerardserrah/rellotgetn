@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 330" width="740" height="330" fill="none">
+  <defs>
+    <!-- Degradat taronja corporatiu del cub -->
+    <linearGradient id="tvCubeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF3820"/>
+      <stop offset="65%" stop-color="#FF6B10"/>
+      <stop offset="100%" stop-color="#FC943B"/>
+    </linearGradient>
+    <!-- Reflex / brillantor inferior en forma de cúpula -->
+    <radialGradient id="tvCubeGloss" cx="50%" cy="100%" r="65%">
+      <stop offset="0%" stop-color="#FFA845" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FFA845" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Cub 1: Lletra T -->
+  <g id="cub-T" transform="translate(0, 0)">
+    <rect width="330" height="330" rx="46" fill="url(#tvCubeGrad)"/>
+    <rect width="330" height="330" rx="46" fill="url(#tvCubeGloss)"/>
+    <path fill="#FFFFFF" d="M 54 65 H 276 V 107 H 198 V 266 H 132 V 107 H 54 Z"/>
+  </g>
+
+  <!-- Cub 2: Lletra n -->
+  <g id="cub-n" transform="translate(366, 0)">
+    <rect width="330" height="330" rx="46" fill="url(#tvCubeGrad)"/>
+    <rect width="330" height="330" rx="46" fill="url(#tvCubeGloss)"/>
+    <path fill="#FFFFFF" d="M 40 65 H 106 V 112 C 122 80 162 65 214 65 C 265 65 290 95 290 142 V 266 H 224 V 142 C 224 115 208 107 185 107 C 145 107 106 128 106 160 V 266 H 40 Z"/>
+  </g>
+</svg>
