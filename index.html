@@ -6,9 +6,10 @@
   <title>Rellotge TN</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
 
-  <!-- Favicon i Apple Touch Icon -->
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- Favicon i Apple Touch Icon Dinàmics (canvien segons l'any del TN) -->
+  <link rel="icon" type="image/svg+xml" id="dynamic-favicon-svg">
+  <link rel="icon" type="image/png" id="dynamic-favicon-png" href="favicon.png">
+  <link rel="apple-touch-icon" id="dynamic-apple-touch" href="apple-touch-icon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
   <!-- Open Graph / Compartir link a xarxes (16:9) -->
@@ -55,6 +56,18 @@
     }
     @font-face {
       font-family: 'Akkurat Pro';
+      src: url('fonts/AkkuratPro-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AkkuratPro-Bold';
+      src: url('fonts/AkkuratPro-Bold.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'AkkuratPro-Bold';
       src: url('fonts/AkkuratPro-Bold.ttf') format('truetype');
       font-weight: 700;
       font-style: normal;
@@ -1362,8 +1375,11 @@ html.hide-config #master-editor-panel {
 
   <!-- Hidden font preload elements to force browser font cache -->
   <div style="position: absolute; left: -9999px; top: -9999px; visibility: hidden; pointer-events: none;">
+    <span style="font-family: 'Museo Slab'; font-weight: 500;">diumenge 15 novembre 2026</span>
+    <span style="font-family: 'Museo Slab'; font-weight: 400;">diumenge 15 novembre 2026</span>
     <span style="font-family: 'MuseoSlab-500';">diumenge 15 novembre 2026</span>
     <span style="font-family: 'MuseoSlab-100';">diumenge 15 novembre 2026</span>
+    <span style="font-family: 'Akkurat Pro'; font-weight: 700;">0123456789</span>
     <span style="font-family: 'AkkuratPro-Bold';">0123456789</span>
     <span style="font-family: 'AkkuratPro-Regular';">0123456789</span>
     <span style="font-family: '3Cat'; font-weight: 400;">3Cat Regular</span>
@@ -3048,10 +3064,10 @@ let flankCubesParams = {
       const colX = orangeTextParams.posX;
       const offY = orangeTextParams.posY;
 
-      // 1. Day of Week: MUSEO SLAB REGULAR reading UPWARDS along left edge
+      // 1. Day of Week: MUSEO SLAB 500 reading UPWARDS along left edge
       ctx.save();
       const dnSize = Math.round(orangeTextParams.dayNameSize * s);
-      ctx.font = `400 ${dnSize}px "Museo Slab", "MuseoSlab-500", "MuseoSlab-100", serif`;
+      ctx.font = `500 ${dnSize}px "Museo Slab", "MuseoSlab-500", "MuseoSlab-100", serif`;
       ctx.fillStyle = cubeTextColor;
       const dWidth = ctx.measureText(dayName.toLowerCase()).width;
       const startY = 480 + offY;
@@ -3068,17 +3084,17 @@ let flankCubesParams = {
       ctx.textAlign = align;
       ctx.fillText(String(dayNum), colX, 480 + offY);
 
-      // 3. Month Name: MUSEO SLAB REGULAR
+      // 3. Month Name: MUSEO SLAB 500
       ctx.fillStyle = cubeTextColor;
       const mSize = Math.round(orangeTextParams.monthSize * s);
-      ctx.font = `400 ${mSize}px "Museo Slab", "MuseoSlab-500", "MuseoSlab-100", serif`;
+      ctx.font = `500 ${mSize}px "Museo Slab", "MuseoSlab-500", "MuseoSlab-100", serif`;
       ctx.textAlign = align;
       ctx.fillText(monthName.toLowerCase(), colX, 615 + offY);
 
-      // 4. Year: MUSEO SLAB REGULAR
+      // 4. Year: MUSEO SLAB 500
       ctx.fillStyle = cubeTextColor;
       const ySize = Math.round(orangeTextParams.yearSize * s);
-      ctx.font = `400 ${ySize}px "Museo Slab", "MuseoSlab-500", "MuseoSlab-100", serif`;
+      ctx.font = `500 ${ySize}px "Museo Slab", "MuseoSlab-500", "MuseoSlab-100", serif`;
       ctx.textAlign = align;
       ctx.fillText(String(yearNum), colX, 730 + offY);
 
@@ -3475,22 +3491,38 @@ let flankCubesParams = {
       // 7. Load Weather Data in background (no bloqueja l'arrencada)
       loadWeatherData().catch(e => console.warn("Weather data load warning:", e));
 
-      // Carregar tipografies locals en segon pla per no congelar l'arrencada
+      // Carregar tipografies locals i assegurar que el cub central i anell les renderitzin perfectament
       if (typeof FontFace !== 'undefined' && document.fonts) {
         try {
-          const ff1 = new FontFace('MuseoSlab-500', 'url(fonts/MuseoSlab-500.ttf)');
-          const ff2 = new FontFace('MuseoSlab-100', 'url(fonts/MuseoSlab-100.ttf)');
-          const ff3 = new FontFace('AkkuratPro-Bold', 'url(fonts/AkkuratPro-Bold.ttf)');
-          Promise.all([ff1.load(), ff2.load(), ff3.load()]).then(([f1, f2, f3]) => {
+          const ff1 = new FontFace('Museo Slab', 'url(fonts/MuseoSlab-500.ttf)', { weight: '500' });
+          const ff2 = new FontFace('MuseoSlab-500', 'url(fonts/MuseoSlab-500.ttf)');
+          const ff3 = new FontFace('Akkurat Pro', 'url(fonts/AkkuratPro-Bold.ttf)', { weight: '700' });
+          const ff4 = new FontFace('AkkuratPro-Bold', 'url(fonts/AkkuratPro-Bold.ttf)');
+          Promise.all([ff1.load(), ff2.load(), ff3.load(), ff4.load()]).then(([f1, f2, f3, f4]) => {
             if (f1) document.fonts.add(f1);
             if (f2) document.fonts.add(f2);
             if (f3) document.fonts.add(f3);
+            if (f4) document.fonts.add(f4);
+            if (typeof refreshOrangeDateTexture === 'function') refreshOrangeDateTexture();
+            if (typeof rebuildTemperatureRing === 'function') rebuildTemperatureRing();
             if (typeof updateClockDigits === 'function') updateClockDigits(true);
           }).catch(e => console.warn("Local font load catch:", e));
         } catch (e) {
           console.warn("Fonts setup warning:", e);
         }
       }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          if (typeof refreshOrangeDateTexture === 'function') refreshOrangeDateTexture();
+          if (typeof rebuildTemperatureRing === 'function') rebuildTemperatureRing();
+        });
+      }
+
+      // Safeguards escalonats per garantir que el cub central tingui la tipografia 100% carregada
+      setTimeout(() => { if (typeof refreshOrangeDateTexture === 'function') refreshOrangeDateTexture(); }, 120);
+      setTimeout(() => { if (typeof refreshOrangeDateTexture === 'function') refreshOrangeDateTexture(); }, 400);
+      setTimeout(() => { if (typeof refreshOrangeDateTexture === 'function') refreshOrangeDateTexture(); }, 1200);
 
       // 8. Reliable 3D Font Loading (usa l'objecte incrustat si existeix per màxima rapidesa i offline total)
       const onFontLoaded = (font) => {
@@ -3559,7 +3591,11 @@ let flankCubesParams = {
         if (initialMode && (initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
           if (initialMode !== '2014') {
             applyModeSwitch(initialMode);
+          } else {
+            updateDynamicFavicon('2014');
           }
+        } else {
+          updateDynamicFavicon(currentAppMode || '2014');
         }
       } catch (e) {}
 
@@ -5939,6 +5975,98 @@ const TV_YEAR_LOGOS = {
 </svg>`
 };
 
+const FAVICON_SVGS = {
+  '2005': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <rect width="512" height="512" rx="112" fill="#DE4C00"/>
+  <g transform="translate(42, 196) scale(0.65)">
+    <path fill="#FFFFFF" d="M 0 0 L 306 0 L 306 58 L 197 58 L 197 170 L 109 170 L 109 58 L 0 58 Z" />
+    <path fill="#FFFFFF" d="M 338 0 L 570 0 L 658 88 L 658 170 L 570 170 L 570 58 L 427 58 L 427 170 L 338 170 Z" />
+  </g>
+</svg>`,
+
+  '2014': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <rect width="512" height="512" rx="112" fill="#202326"/>
+  <defs>
+    <linearGradient id="favCubeGrad1" gradientUnits="userSpaceOnUse" x1="3356.1233" y1="22.3586" x2="3130.5" y2="299.3288" gradientTransform="matrix(-1 0 0 1 3437.3398 0)">
+      <stop offset="0" stop-color="#666666"/>
+      <stop offset="1" stop-color="#DDDDDD"/>
+    </linearGradient>
+    <linearGradient id="favCubeGrad2" gradientUnits="userSpaceOnUse" x1="658.7852" y1="22.3439" x2="433.1592" y2="299.3171">
+      <stop offset="0" stop-color="#666666"/>
+      <stop offset="1" stop-color="#DDDDDD"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(34, 157) scale(0.60)">
+    <!-- Cub 1 (T) -->
+    <path fill="url(#favCubeGrad1)" d="M33.5,294.1c0,19.2,15.1,34.8,33.6,34.8h260.6c18.5,0,33.6-15.6,33.6-34.8V35.9c0-19.2-15.1-34.8-33.6-34.8H67.1c-18.6,0-33.6,15.6-33.6,34.8v132.1v33.4V294.1z"/>
+    <path fill="#FFFFFF" opacity="0.16" d="M190.8,186.2c-78.1,0-134.8,82.6-149.7,130c10.4,13,24.4,12.7,24.4,12.7h263.9c0,0,13.9,0.3,24.4-12.7c-14.9-47.4-71.6-130-149.7-130C202.6,186.2,192.3,186.2,190.8,186.2z"/>
+    <path fill="#FFFFFF" d="M232.4,109.7v156.8h-69.5V109.7H85.6V63.5h223.7v46.2H232.4z"/>
+    <!-- Cub 2 (n) -->
+    <path fill="url(#favCubeGrad2)" d="M706.5,294.1c0,19.2-15,34.8-33.6,34.8H412.3c-18.6,0-33.6-15.6-33.6-34.8V35.9c0-19.2,15.1-34.8,33.6-34.8h260.6c18.6,0,33.6,15.6,33.6,34.8v132.1v33.4V294.1z"/>
+    <path fill="#FFFFFF" opacity="0.16" d="M549.2,186.2c78.1,0,134.8,82.7,149.7,130c-10.4,13-24.4,12.7-24.4,12.7H410.6c0,0-13.9,0.3-24.3-12.7c14.9-47.4,71.6-130,149.7-130C537.4,186.2,547.7,186.2,549.2,186.2z"/>
+    <path fill="#FFFFFF" d="M599,266.5V154.9c0-16.8-3.7-28.6-11.2-35.4c-7.5-6.8-21.2-10-41.5-9.8c-12.3,0.1-60.3,0-60.3,0l0.1,156.8h-69.6V63.5h63.2c0,0,60.8,0,83.8,0c21.7,0,39.4,1.9,53,5.8c13.6,3.9,24.3,9.5,32.1,16.7c7.8,7.3,13,16.2,15.8,26.7c2.8,10.5,4.1,22.6,4.1,36.2v117.5H599z"/>
+  </g>
+</svg>`,
+
+  '2025': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <rect width="512" height="512" rx="112" fill="#F56115"/>
+  <g transform="translate(56, 56) scale(0.97)" fill="#FFFFFF">
+    <polygon points="95.8,182.9 124.9,182.9 124.9,259.6 168.5,259.6 168.5,182.9 197.6,182.9 197.6,146.2 95.8,146.2 "/>
+    <path d="M313.8,209.7v-24c0-8.3-1.9-15.5-5.2-21.7c-3.3-6.2-7.9-11.1-14-14.6c-6-3.5-12.8-5.2-20.5-5.2c-11.9,0-21.7,3.9-29.4,11.6l0,0l-0.6-9.6h-39.2v113.5h43.6v-66.2c0-3.5,1-6.4,3-8.6c2-2.2,4.6-3.2,7.9-3.2s5.8,1.1,7.9,3.2c2,2.2,3,5,3,8.6v21.3c0,9.4,1.9,17.6,5.6,24.7c3.7,7.1,8.9,12.5,15.5,16.4c6.7,3.9,14.4,5.8,23.3,5.8c4.9,0,13.8,0,13.8,0v-37.2c-4.3-0.1-7.8-1.4-10.5-4.1C315.2,217.6,313.8,214.1,313.8,209.7z"/>
+    <path d="M387.2,108.6c4-3.3,5-9,2.3-13.5c-8.9-14.8-19.7-28.5-32-40.8c-12.6-12.6-26.6-23.5-41.7-32.5c-4.5-2.7-10.3-1.6-13.5,2.4C273,8.6,240.1,0.3,206,0.3c-54.9,0-106.5,21.4-145.3,60.2S0.5,150.9,0.5,205.8s21.4,106.5,60.2,145.3s90.4,60.2,145.3,60.2s106.5-21.4,145.3-60.2s60.2-90.4,60.2-145.3C411.5,171.3,403.1,138.1,387.2,108.6z M348.8,348.7c-78.8,78.8-206.9,78.8-285.7,0s-78.8-206.9,0-285.7C102.5,23.6,154.3,3.9,206,3.9c32.5,0,65.1,7.8,94.5,23.4c-1.6,4.6,0.1,9.9,4.5,12.5c13.6,8.1,26.3,18,37.6,29.4c11.1,11.1,20.8,23.5,28.9,36.8c2,3.3,5.4,5.1,9,5.1c1.2,0,2.4-0.2,3.5-0.6C425,186.8,413.2,284.3,348.8,348.7z"/>
+  </g>
+</svg>`
+};
+
+function updateDynamicFavicon(mode) {
+  const targetMode = (mode === '2005' || mode === '2025') ? mode : '2014';
+  const svgContent = FAVICON_SVGS[targetMode];
+  if (!svgContent) return;
+  const svgDataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgContent);
+
+  // 1. Icona SVG moderna per pestanyes d'alta resolució
+  let linkSvg = document.getElementById('dynamic-favicon-svg') || document.querySelector("link[rel='icon'][type='image/svg+xml']");
+  if (!linkSvg) {
+    linkSvg = document.createElement('link');
+    linkSvg.id = 'dynamic-favicon-svg';
+    linkSvg.rel = 'icon';
+    linkSvg.type = 'image/svg+xml';
+    document.head.appendChild(linkSvg);
+  }
+  linkSvg.href = svgDataUri;
+
+  // 2. Icona PNG renderitzada amb canvas per màxima compatibilitat (Safari, Chrome, Firefox)
+  const img = new Image();
+  img.onload = function() {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 64, 64);
+      const pngDataUri = canvas.toDataURL('image/png');
+
+      let linkPng = document.getElementById('dynamic-favicon-png') || document.querySelector("link[rel='icon']:not([type='image/svg+xml'])");
+      if (!linkPng) {
+        linkPng = document.createElement('link');
+        linkPng.id = 'dynamic-favicon-png';
+        linkPng.rel = 'icon';
+        linkPng.type = 'image/png';
+        document.head.appendChild(linkPng);
+      }
+      linkPng.href = pngDataUri;
+
+      let appleTouch = document.getElementById('dynamic-apple-touch') || document.querySelector("link[rel='apple-touch-icon']");
+      if (appleTouch) {
+        appleTouch.href = pngDataUri;
+      }
+    } catch (e) {
+      console.warn("Favicon canvas render error:", e);
+    }
+  };
+  img.src = svgDataUri;
+}
+
 function triggerYearTransition(targetMode, onMidpoint) {
   const overlay = document.getElementById('tv-transition-overlay');
   const canvas = document.getElementById('tv-static-canvas');
@@ -6024,6 +6152,7 @@ function switchMode(mode) {
 
 function applyModeSwitch(mode) {
   currentAppMode = mode;
+  updateDynamicFavicon(mode);
   const selectVer = document.getElementById('select-tn-version');
   if (selectVer && selectVer.value !== mode) {
     selectVer.value = mode;
