@@ -238,6 +238,20 @@
       border-color: #F56115;
     }
 
+    /* Modo Salvapantalles per Mac (sense UI, sense cursor, 100% net) */
+    html.screensaver-mode .minimal-controls,
+    html.screensaver-mode .editor-panel,
+    html.screensaver-mode #editor-panel,
+    html.screensaver-mode #btn-open-editor,
+    html.screensaver-mode #controls-container,
+    html.screensaver-mode .config-fab {
+      display: none !important;
+    }
+    html.screensaver-mode,
+    html.screensaver-mode * {
+      cursor: none !important;
+    }
+
     /* Unified Floating Master Settings & Sync Panels */
     .editor-panel {
       position: fixed;
@@ -1322,6 +1336,9 @@ html.hide-config #master-editor-panel {
         var forceHide = params.has('hide_config') || (isVercelOrProd && !forceShow);
         if (forceHide) {
           document.documentElement.classList.add('hide-config');
+        }
+        if (params.has('screensaver') || params.get('screensaver') === '1' || params.has('saver')) {
+          document.documentElement.classList.add('screensaver-mode');
         }
       } catch (e) {}
     })();
@@ -3467,6 +3484,23 @@ let flankCubesParams = {
       window.addEventListener('resize', onWindowResize);
       onWindowResize();
       setupUIEvents();
+
+      // Suport per arrencar directament en un any concret (mode salvapantalles o paràmetre ?mode=...)
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        let initialMode = urlParams.get('mode') || urlParams.get('year');
+        if (initialMode === 'auto') {
+          const day = new Date().getDay();
+          const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
+          initialMode = autoModes[day];
+        }
+        if (initialMode && (initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
+          if (initialMode !== '2014') {
+            applyModeSwitch(initialMode);
+          }
+        }
+      } catch (e) {}
+
       initAudio();
     }
 
@@ -4386,6 +4420,14 @@ rightMat = new THREE.MeshStandardMaterial({
     async function initAudio() {
       bgAudio = document.getElementById('bg-audio');
       if (!bgAudio) return;
+
+      if (document.documentElement.classList.contains('screensaver-mode') || window.location.search.indexOf('screensaver') !== -1 || window.location.search.indexOf('muted') !== -1) {
+        bgAudio.muted = true;
+        bgAudio.pause();
+        isAudioMuted = true;
+        updateAudioUI();
+        return;
+      }
 
       bgAudio.loop = true;
       bgAudio.volume = 0.85;
