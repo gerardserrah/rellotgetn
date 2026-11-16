@@ -2779,6 +2779,8 @@ let flankCubesParams = {
         { capital: "Vilafranca del Penedès", comarca: "Alt Penedès", temp: 12 }
       ];
     }
+    // Inicialitza immediatament les capitals perquè la textura 3D del terra mai quedi buida
+    initHardcodedCapitals();
 
     // --- Texture Generators ---
 
@@ -3312,7 +3314,13 @@ let flankCubesParams = {
     };
 
     function rebuildTemperatureRing() {
-      if (!ringMesh || !capitalsData || capitalsData.length === 0) return;
+      if (!capitalsData || capitalsData.length === 0) {
+        initHardcodedCapitals();
+      }
+      if (!ringMesh) {
+        buildTemperatureRing();
+        return;
+      }
       const sortedCapitals = [...capitalsData].sort((a, b) => cleanSortKey(a.capital).localeCompare(cleanSortKey(b.capital)));
       if (ringTexture) ringTexture.dispose();
       ringTexture = createContinuousRingStripTexture(sortedCapitals);
@@ -4169,7 +4177,9 @@ rightMat = new THREE.MeshStandardMaterial({
       ringGroup = new THREE.Group();
       scene.add(ringGroup);
 
-      if (!capitalsData || capitalsData.length === 0) return;
+      if (!capitalsData || capitalsData.length === 0) {
+        initHardcodedCapitals();
+      }
 
       const sortedCapitals = [...capitalsData].sort((a, b) => cleanSortKey(a.capital).localeCompare(cleanSortKey(b.capital)));
 
