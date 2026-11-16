@@ -605,39 +605,95 @@
   --tn25-date-text-y: 53px;
 }
 
-.tn-version-toggle {
+.tn-version-dropdown-wrap {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  pointer-events: auto;
+}
+
+.tn-ver-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background: rgba(255, 255, 255, 0.48);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 20px;
-  padding: 3px;
-  gap: 3px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  pointer-events: auto;
-}
-.tn-ver-btn {
-  border: none;
-  background: transparent;
-  padding: 5px 14px;
-  font-size: 11px;
+  padding: 8px 30px 8px 14px;
+  font-family: '3Cat', -apple-system, sans-serif;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: #555;
-  border-radius: 16px;
+  color: #1e293b;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
-  font-family: inherit;
+  outline: none;
 }
-.tn-ver-btn:hover {
+
+.tn-ver-select:hover,
+.tn-ver-select:focus {
+  background: #ffffff;
+  color: #F56115;
+  border-color: rgba(245, 97, 21, 0.4);
+  box-shadow: 0 4px 14px rgba(245, 97, 21, 0.2);
+}
+
+.tn-ver-select option {
+  background: #ffffff;
+  color: #1e293b;
+  font-weight: 600;
+  font-family: '3Cat', -apple-system, sans-serif;
+  padding: 8px;
+}
+
+.tn-select-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748b;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.tn-version-dropdown-wrap:hover .tn-select-chevron {
   color: #F56115;
 }
-.tn-ver-btn.active {
-  background: #F56115;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(245, 97, 21, 0.35);
+
+@media (max-width: 640px) {
+  .minimal-controls {
+    top: 10px;
+    right: 10px;
+    gap: 5px;
+  }
+  .btn-minimal {
+    padding: 7px 9px;
+    font-size: 11px;
+    border-radius: 16px;
+  }
+  .tn-ver-select {
+    padding: 7px 24px 7px 10px;
+    font-size: 11px;
+    border-radius: 16px;
+  }
+  .tn-select-chevron {
+    right: 8px;
+    width: 8px;
+    height: 5px;
+  }
+  #sync-label {
+    display: none;
+  }
+}
+
+.tn-version-toggle {
+  display: none;
+}
+.tn-ver-btn {
+  display: none;
 }
 
 /* ==========================================================================
@@ -1427,10 +1483,18 @@ html.hide-config #master-editor-panel {
 
   <!-- Minimal Discreet Controls (Autohides when mouse is idle) -->
   <div class="minimal-controls" id="controls-container">
-  <div class="tn-version-toggle" id="tn-version-toggle">
-    <button type="button" class="tn-ver-btn" id="btn-ver-2005" title="Rellotge 2005 (TN Comarques)">2005</button>
-    <button type="button" class="tn-ver-btn active" id="btn-ver-2014" title="Rellotge 2014 3D">2014</button>
-    <button type="button" class="tn-ver-btn" id="btn-ver-2025" title="Rellotge 2025 2D">2025</button>
+  <div class="tn-version-dropdown-wrap" id="tn-version-dropdown-wrap">
+    <select id="select-tn-version" class="tn-ver-select" aria-label="Selecciona la versió del rellotge TN">
+      <option value="2005">2005</option>
+      <option value="2014" selected>2014</option>
+      <option value="2025">2025</option>
+    </select>
+    <svg class="tn-select-chevron" width="9" height="5" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 1l4 4 4-4"/>
+    </svg>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2005" style="display:none;"></button>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2014" style="display:none;"></button>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2025" style="display:none;"></button>
   </div>
     <button class="btn-minimal" id="btn-sync-audio" title="Sincronitza la sintonia amb l'emissió">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -4891,8 +4955,7 @@ function updateTN25Clock() {
     const cycleSec = (secVal % 60);
 
     const sCenter = C * (cycleSec / 60.0);
-    let sStart = sCenter - segLen / 2;
-    if (sStart < 0) sStart += C;
+    const sStart = sCenter - segLen / 2;
 
     arcInd.setAttribute('stroke-dasharray', `${segLen} ${C - segLen}`);
     if (cycleSec === 0) {
@@ -5082,6 +5145,7 @@ window.addEventListener('resize', () => {
   if (currentAppMode === '2005') {
     resizeTN05Canvas();
     cachedTN05TickerSingleWidth = 0;
+    updateTN05Styles();
   }
 });
 
@@ -5092,6 +5156,11 @@ function updateTN05Styles() {
   const bg = document.querySelector('.tn05-bg');
   const mask = document.getElementById('tn05-top-left-mask');
 
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const aspect = w / h;
+  const isNarrow = (aspect < 1.15) || (w < 680);
+
   document.documentElement.style.setProperty('--tn05-font-stroke', `${tn05Params.fontRoundness}px`);
   document.documentElement.style.setProperty('--tn05-ticker-stroke', `${(tn05Params.fontRoundness * 0.65).toFixed(1)}px`);
 
@@ -5099,11 +5168,24 @@ function updateTN05Styles() {
     mask.style.opacity = (tn05Params.maskOpacity / 100).toString();
   }
   if (clockContainer) {
-    clockContainer.style.right = `${tn05Params.clockRight}vw`;
+    if (isNarrow) {
+      clockContainer.style.right = '0';
+      clockContainer.style.left = '0';
+      clockContainer.style.margin = '0 auto';
+      clockContainer.style.alignItems = 'center';
+    } else {
+      clockContainer.style.right = `${tn05Params.clockRight}vw`;
+      clockContainer.style.left = 'auto';
+      clockContainer.style.margin = '0';
+      clockContainer.style.alignItems = 'flex-end';
+    }
     clockContainer.style.top = `${tn05Params.clockTop}vh`;
   }
   if (clockDigits) {
-    clockDigits.style.fontSize = `${tn05Params.clockFontSize}vh`;
+    // 6 dígits @ 0.60em + 2 punts @ 0.28em = 4.16em total width
+    const maxFontForWidth = (w * 0.88) / 4.16;
+    const fontPx = Math.min(h * (tn05Params.clockFontSize / 100), maxFontForWidth);
+    clockDigits.style.fontSize = `${fontPx}px`;
     clockDigits.style.color = tn05Params.clockColor;
     document.querySelectorAll('#tn05-clock-digits .tn05-digit').forEach(d => {
       d.style.width = `${tn05Params.clockSlotWidth}em`;
@@ -5111,9 +5193,12 @@ function updateTN05Styles() {
   }
   if (tickerBar) {
     tickerBar.style.top = `${tn05Params.tickerPosY}vh`;
+    const tickerScale = Math.min(1, Math.max(0.65, w / 720));
+    const fontPx = Math.max(14, Math.round(tn05Params.tickerFontSize * tickerScale));
+    const gapPx = Math.max(26, Math.round(tn05Params.tickerGap * tickerScale));
     document.querySelectorAll('.tn05-ticker-item').forEach(item => {
-      item.style.marginRight = `${tn05Params.tickerGap}px`;
-      item.style.fontSize = `${tn05Params.tickerFontSize}px`;
+      item.style.marginRight = `${gapPx}px`;
+      item.style.fontSize = `${fontPx}px`;
       item.style.color = tn05Params.tickerColor;
     });
   }
@@ -5180,7 +5265,7 @@ function drawClockworkGear3D(ctx, cx, cy, radius, teeth, angle, options = {}) {
   const holeRadius = radius * (options.holeRadiusRel || 0.13);
   const rimInner = radius * (options.rimInnerRel || 0.80);
 
-  const depth = tn05Params.gearDepth;
+  const depth = tn05Params.gearDepth * (options.aspectScale !== undefined ? options.aspectScale : 1.0);
 
   // Desactiva qualsevol ombra fosca o drop-shadow
   ctx.shadowColor = 'transparent';
@@ -5272,7 +5357,7 @@ function drawClockworkGear3D(ctx, cx, cy, radius, teeth, angle, options = {}) {
 }
 
 // Funció auxiliar per dibuixar tots 4 engranatges amb el seu espaiat
-function drawAllTN05Gears(ctx, cx, packY, h, globalScale, isMirror) {
+function drawAllTN05Gears(ctx, cx, packY, h, globalScale, isMirror, aspectScale = 1.0) {
   const spacing = tn05Params.gearSpacing / 100;
   tn05Gears.forEach(g => {
     const gx = cx + (g.relX * h * spacing * globalScale);
@@ -5299,7 +5384,8 @@ function drawAllTN05Gears(ctx, cx, packY, h, globalScale, isMirror) {
       hubRadiusRel: g.hubRadiusRel,
       rimInnerRel: g.rimInnerRel,
       holeRadiusRel: g.holeRadiusRel,
-      hasPinion: g.hasPinion
+      hasPinion: g.hasPinion,
+      aspectScale: aspectScale
     });
     ctx.restore();
   });
@@ -5317,17 +5403,19 @@ function updateTN05Animation() {
 
   const w = window.innerWidth;
   const h = window.innerHeight;
+  const refH = (w / h < 1.777) ? (w / 1.777) : h;
+  const aspectScale = refH / h;
 
   tn05Ctx.clearRect(0, 0, w, h);
 
   const loopDur = Math.max(1, tn05Params.packLoopDuration);
   const travelSpan = Math.max(100, (tn05Params.travelDist / 100) * w);
   const dir = tn05Params.packDir; // 1: d'esquerra a dreta, -1: de dreta a esquerra
-  const globalScale = tn05Params.gearScale / 100;
+  const globalScale = (tn05Params.gearScale / 100) * aspectScale;
 
   // Moviment diagonal descendent en bucle 100% SEAMLESS (infinit i continu, mai fa salts abruptes)
   const cycleW = travelSpan;
-  const cycleH = ((tn05Params.packDiagY !== undefined ? tn05Params.packDiagY : 18) / 100) * h;
+  const cycleH = ((tn05Params.packDiagY !== undefined ? tn05Params.packDiagY : 18) / 100) * h * aspectScale;
   const speedX = cycleW / loopDur;
   const speedY = cycleH / loopDur;
 
@@ -5352,8 +5440,8 @@ function updateTN05Animation() {
   const maxR = 0.85 * h * globalScale;
 
   // CÀMERA TN 2005
-  const camX = tn05Params.camX;
-  const camY = tn05Params.camY;
+  const camX = tn05Params.camX * aspectScale;
+  const camY = tn05Params.camY * aspectScale;
   const camZoom = tn05Params.camZoom / 100;
   const camTilt = tn05Params.camTilt / 100;
   const camRotRad = (tn05Params.camRot * Math.PI) / 180;
@@ -5381,7 +5469,7 @@ function updateTN05Animation() {
     const cx = packCurrentX + off.x;
     const cy = packCurrentY + off.y;
     if (cx + maxR < -w * 0.6 || cx - maxR > w * 1.6) return;
-    drawAllTN05Gears(tn05Ctx, cx, cy, h, globalScale, false);
+    drawAllTN05Gears(tn05Ctx, cx, cy, h, globalScale, false, aspectScale);
   });
   tn05Ctx.restore();
 
@@ -5431,7 +5519,7 @@ function updateTN05Animation() {
       const cx = packCurrentX + off.x;
       const cy = packCurrentY + off.y;
       if (cx + maxR < -w * 0.6 || cx - maxR > w * 1.6) return;
-      drawAllTN05Gears(tn05Ctx, cx, cy, h, globalScale, true);
+      drawAllTN05Gears(tn05Ctx, cx, cy, h, globalScale, true, aspectScale);
     });
 
     tn05Ctx.restore();
@@ -5579,6 +5667,8 @@ function buildTN05TickerBatch() {
       <span class="tn05-temp">${Math.round(w.temp)}º</span>
     </span>
   `).join('');
+
+  updateTN05Styles();
 
   tn05TickerTrackWidth = track.scrollWidth;
   tn05TickerPos = window.innerWidth;
@@ -5816,7 +5906,11 @@ function triggerYearTransition(targetMode, onMidpoint) {
 }
 
 function switchMode(mode) {
-  if (mode === currentAppMode || isYearTransitioning) return;
+  if (mode === currentAppMode || isYearTransitioning) {
+    const sel = document.getElementById('select-tn-version');
+    if (sel) sel.value = currentAppMode;
+    return;
+  }
   triggerYearTransition(mode, () => {
     applyModeSwitch(mode);
   });
@@ -5824,6 +5918,10 @@ function switchMode(mode) {
 
 function applyModeSwitch(mode) {
   currentAppMode = mode;
+  const selectVer = document.getElementById('select-tn-version');
+  if (selectVer && selectVer.value !== mode) {
+    selectVer.value = mode;
+  }
   const btn2005 = document.getElementById('btn-ver-2005');
   const btn2014 = document.getElementById('btn-ver-2014');
   const btn2025 = document.getElementById('btn-ver-2025');
@@ -6669,7 +6767,11 @@ centralDialParams.size = 120;
       }
 
       // --- MASTER ACTION: COPIA TOTA LA CONFIGURACIÓ DE COP ---
-      // Version Switcher buttons
+      // Version Switcher buttons & dropdown
+const selectTnVersion = document.getElementById('select-tn-version');
+if (selectTnVersion) {
+  selectTnVersion.addEventListener('change', (e) => switchMode(e.target.value));
+}
 const btnVer2005 = document.getElementById('btn-ver-2005');
 const btnVer2014 = document.getElementById('btn-ver-2014');
 const btnVer2025 = document.getElementById('btn-ver-2025');
