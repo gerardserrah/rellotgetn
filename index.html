@@ -1180,10 +1180,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(30vw, 140px);
-  height: min(10vh, 65px);
+  width: min(45vw, 220px);
+  height: min(16vh, 105px);
   pointer-events: none;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.85));
+  filter: grayscale(100%);
+  animation: tvLogoFade 0.18s ease-out forwards;
 }
 @keyframes tvLogoFade {
   0% { opacity: 0; }
@@ -1196,7 +1197,57 @@
   max-height: 100%;
   object-fit: contain;
   display: block;
-  animation: tvLogoFade 0.2s ease-out forwards;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  animation: tvLogoGlitch 0.42s ease-in-out infinite;
+}
+@keyframes tvLogoGlitch {
+  0%, 100% {
+    transform: translate(0, 0) skewX(0deg);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  10% {
+    transform: translate(-2px, 0.5px) skewX(-1.2deg);
+    filter: drop-shadow(-2px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  15% {
+    transform: translate(1.5px, -0.5px) skewX(0.8deg);
+    filter: drop-shadow(2px 0 0 rgba(255, 255, 255, 0.4)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  20%, 35% {
+    transform: translate(0, 0) skewX(0deg);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  38% {
+    transform: translate(-3px, 0) skewX(-2deg) scaleY(0.98);
+    filter: drop-shadow(-3px 0 0 rgba(255, 255, 255, 0.7)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  42% {
+    transform: translate(2.5px, 0.5px) skewX(1.5deg) scaleY(1.02);
+    filter: drop-shadow(2px 0 0 rgba(255, 255, 255, 0.6)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  48%, 65% {
+    transform: translate(0, 0) skewX(0deg);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  68% {
+    transform: translate(1.5px, -0.5px) skewX(1deg);
+    filter: drop-shadow(1.5px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  72% {
+    transform: translate(-1.5px, 0.5px) skewX(-0.8deg);
+  }
+  78%, 88% {
+    transform: translate(0, 0) skewX(0deg);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  90% {
+    transform: translate(2px, 0) skewX(1.4deg);
+    filter: drop-shadow(2px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
+  94% {
+    transform: translate(-2px, 0) skewX(-1deg);
+    filter: drop-shadow(-2px 0 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.95));
+  }
 }
 
 /* Amaga les configuracions en producció / Vercel */
@@ -5566,12 +5617,12 @@ const TV_YEAR_LOGOS = {
   '2014': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 330" width="100%" height="100%" fill="none">
   <defs>
     <linearGradient id="tvCubeGrad1" gradientUnits="userSpaceOnUse" x1="3356.1233" y1="22.3586" x2="3130.5" y2="299.3288" gradientTransform="matrix(-1 0 0 1 3437.3398 0)">
-      <stop offset="0" stop-color="#E3462E"/>
-      <stop offset="1" stop-color="#F09700"/>
+      <stop offset="0" stop-color="#555555"/>
+      <stop offset="1" stop-color="#CCCCCC"/>
     </linearGradient>
     <linearGradient id="tvCubeGrad2" gradientUnits="userSpaceOnUse" x1="658.7852" y1="22.3439" x2="433.1592" y2="299.3171">
-      <stop offset="0" stop-color="#E3462E"/>
-      <stop offset="1" stop-color="#F09700"/>
+      <stop offset="0" stop-color="#555555"/>
+      <stop offset="1" stop-color="#CCCCCC"/>
     </linearGradient>
   </defs>
   <g>
