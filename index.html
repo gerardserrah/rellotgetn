@@ -2472,6 +2472,7 @@ html.hide-config #master-editor-panel {
   <script src="libs/three.min.js"></script>
   <script src="libs/OrbitControls.js"></script>
   <script src="libs/Reflector.js"></script>
+  <script src="libs/helvetiker_bold.js"></script>
   <script src="map_paths.js"></script>
 
   <script>
@@ -3466,9 +3467,8 @@ let flankCubesParams = {
         }
       }
 
-      // 8. Reliable 3D Font Loading with Three.js FontLoader
-      const fontLoader = new THREE.FontLoader();
-      fontLoader.load('libs/helvetiker_bold.typeface.json', (font) => {
+      // 8. Reliable 3D Font Loading (usa l'objecte incrustat si existeix per màxima rapidesa i offline total)
+      const onFontLoaded = (font) => {
         font3D = font;
         buildSceneObjects();
         const loader = document.getElementById('loader');
@@ -3477,9 +3477,46 @@ let flankCubesParams = {
           setTimeout(() => loader.style.display = 'none', 300);
         }
         animate();
-      }, undefined, (err) => {
-        console.error("FontLoader error:", err);
-      });
+      };
+
+      if (typeof THREE !== 'undefined' && THREE.Font && window.HELVETIKER_BOLD) {
+        try {
+          const font = new THREE.Font(window.HELVETIKER_BOLD);
+          onFontLoaded(font);
+        } catch (e) {
+          console.warn("Fallback to FontLoader:", e);
+          const fontLoader = new THREE.FontLoader();
+          fontLoader.load('libs/helvetiker_bold.typeface.json', onFontLoaded, undefined, (err) => {
+            console.error("FontLoader error:", err);
+            const loader = document.getElementById('loader');
+            if (loader) {
+              loader.style.opacity = '0';
+              setTimeout(() => loader.style.display = 'none', 300);
+            }
+            animate();
+          });
+        }
+      } else {
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load('libs/helvetiker_bold.typeface.json', onFontLoaded, undefined, (err) => {
+          console.error("FontLoader error:", err);
+          const loader = document.getElementById('loader');
+          if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 300);
+          }
+          animate();
+        });
+      }
+
+      // Timer de seguretat perquè en mode salvapantalles mai quedi la pantalla negra
+      setTimeout(() => {
+        const loader = document.getElementById('loader');
+        if (loader && loader.style.display !== 'none') {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.style.display = 'none', 300);
+        }
+      }, 2000);
 
       window.addEventListener('resize', onWindowResize);
       onWindowResize();
@@ -3488,7 +3525,7 @@ let flankCubesParams = {
       // Suport per arrencar directament en un any concret (mode salvapantalles o paràmetre ?mode=...)
       try {
         const urlParams = new URLSearchParams(window.location.search);
-        let initialMode = urlParams.get('mode') || urlParams.get('year');
+        let initialMode = window.__SCREENSAVER_YEAR__ || urlParams.get('mode') || urlParams.get('year');
         if (initialMode === 'auto') {
           const day = new Date().getDay();
           const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
@@ -4421,7 +4458,7 @@ rightMat = new THREE.MeshStandardMaterial({
       bgAudio = document.getElementById('bg-audio');
       if (!bgAudio) return;
 
-      if (document.documentElement.classList.contains('screensaver-mode') || window.location.search.indexOf('screensaver') !== -1 || window.location.search.indexOf('muted') !== -1) {
+      if (window.__SCREENSAVER_MODE__ || document.documentElement.classList.contains('screensaver-mode') || window.location.search.indexOf('screensaver') !== -1 || window.location.search.indexOf('muted') !== -1) {
         bgAudio.muted = true;
         bgAudio.pause();
         isAudioMuted = true;
