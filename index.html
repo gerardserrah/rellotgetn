@@ -4921,7 +4921,10 @@ let tn05Ctx = null;
 let tn05GearAngle = 0;
 let lastTN05AnimTime = performance.now();
 let tn05TickerPos = 0;
-let cachedTN05TickerSingleWidth = 0;
+let tn05TickerTrackWidth = 0;
+let tn05TickerState = 'scrolling'; // 'scrolling' | 'waiting'
+let tn05TickerWaitTimer = 0;
+let tn05CurrentBatch = [];
 
 let tn05Params = {
   // Càmera Engranatges 2005
@@ -5467,101 +5470,195 @@ function updateTN05Clock() {
   if (dS0 && dS0.textContent !== s0) dS0.textContent = s0;
   if (dS1 && dS1.textContent !== s1) dS1.textContent = s1;
 
-  const secVal = parseInt(t.seconds, 10);
   const tickerBar = document.getElementById('tn05-ticker-bar');
   if (tickerBar) {
-    if (secVal >= 58 || secVal === 0) {
-      tickerBar.classList.add('hidden');
-    } else {
-      tickerBar.classList.remove('hidden');
-    }
+    tickerBar.classList.remove('hidden');
   }
 }
 
-function initTN05Ticker(forceRebuild = false) {
+const TN05_DEFAULT_CITIES = [
+  { capital: "Barcelona", temp: 16 },
+  { capital: "Girona", temp: 15 },
+  { capital: "Lleida", temp: 13 },
+  { capital: "Tarragona", temp: 17 },
+  { capital: "Amposta", temp: 16 },
+  { capital: "Balaguer", temp: 12 },
+  { capital: "Banyoles", temp: 15 },
+  { capital: "Berga", temp: 14 },
+  { capital: "Cervera", temp: 11 },
+  { capital: "El Pont de Suert", temp: 10 },
+  { capital: "El Vendrell", temp: 17 },
+  { capital: "Falset", temp: 14 },
+  { capital: "Figueres", temp: 15 },
+  { capital: "Gandesa", temp: 14 },
+  { capital: "Granollers", temp: 15 },
+  { capital: "Igualada", temp: 13 },
+  { capital: "La Bisbal d'Empordà", temp: 14 },
+  { capital: "La Seu d'Urgell", temp: 11 },
+  { capital: "Les Borges Blanques", temp: 12 },
+  { capital: "Manresa", temp: 16 },
+  { capital: "Mataró", temp: 16 },
+  { capital: "Moià", temp: 12 },
+  { capital: "Mollerussa", temp: 12 },
+  { capital: "Montblanc", temp: 14 },
+  { capital: "Móra d'Ebre", temp: 16 },
+  { capital: "Olot", temp: 12 },
+  { capital: "Prats de Lluçanès", temp: 12 },
+  { capital: "Puigcerdà", temp: 10 },
+  { capital: "Reus", temp: 17 },
+  { capital: "Ripoll", temp: 11 },
+  { capital: "Sabadell", temp: 15 },
+  { capital: "Sant Feliu de Llobregat", temp: 16 },
+  { capital: "Santa Coloma de Farners", temp: 14 },
+  { capital: "Solsona", temp: 13 },
+  { capital: "Sort", temp: 11 },
+  { capital: "Tàrrega", temp: 12 },
+  { capital: "Terrassa", temp: 15 },
+  { capital: "Tortosa", temp: 16 },
+  { capital: "Tremp", temp: 12 },
+  { capital: "Valls", temp: 15 },
+  { capital: "Vic", temp: 13 },
+  { capital: "Vielha", temp: 9 },
+  { capital: "Vilafranca del Penedès", temp: 15 },
+  { capital: "Vilanova i la Geltrú", temp: 16 }
+];
+
+function getTN05BatchCities() {
+  const allData = (typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0)
+    ? capitalsData
+    : TN05_DEFAULT_CITIES;
+
+  const getClean = (name) => {
+    if (typeof cleanSortKey === 'function') return cleanSortKey(name).toLowerCase();
+    return name.toLowerCase().trim();
+  };
+
+  const findCity = (name) => {
+    const targetKey = getClean(name);
+    return allData.find(c => getClean(c.capital) === targetKey);
+  };
+
+  // 1. Les 4 capitals principals en l'ordre estricte: Barcelona, Girona, Lleida, Tarragona
+  const targetCapitals = ["Barcelona", "Girona", "Lleida", "Tarragona"];
+  const fixedFour = targetCapitals.map(name => {
+    const found = findCity(name);
+    return {
+      capital: name,
+      temp: found ? found.temp : 16
+    };
+  });
+
+  // 2. Totes les altres ciutats disponibles sense les 4 capitals
+  const capitalKeys = new Set(targetCapitals.map(c => getClean(c)));
+  const otherCities = allData.filter(c => !capitalKeys.has(getClean(c.capital)));
+
+  // 3. Barregem (Fisher-Yates) i seleccionem exactament 15 ciutats aleatòries
+  const shuffled = [...otherCities];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const randomFifteen = shuffled.slice(0, 15).map(c => ({
+    capital: c.capital,
+    temp: c.temp
+  }));
+
+  // Retornem exactament 19 ciutats (4 capitals + 15 aleatòries)
+  return [...fixedFour, ...randomFifteen];
+}
+
+function buildTN05TickerBatch() {
   const track = document.getElementById('tn05-ticker-track');
   if (!track) return;
 
-  // Extreu les dades del mateix lloc que 2014 i 2025 (capitalsData ordenada alfabèticament)
-  let list = [];
-  if (typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0) {
-    list = [...capitalsData].sort((a, b) => cleanSortKey(a.capital).localeCompare(cleanSortKey(b.capital)));
-  } else {
-    list = [
-      { capital: "Balaguer", temp: 12 },
-      { capital: "Banyoles", temp: 15 },
-      { capital: "Barcelona", temp: 17 },
-      { capital: "Berga", temp: 14 },
-      { capital: "Cervera", temp: 11 },
-      { capital: "El Vendrell", temp: 17 },
-      { capital: "Girona", temp: 15 },
-      { capital: "Igualada", temp: 11 },
-      { capital: "La Bisbal d'Empordà", temp: 14 },
-      { capital: "Les Borges Blanques", temp: 12 },
-      { capital: "Lleida", temp: 13 },
-      { capital: "Manresa", temp: 16 },
-      { capital: "Mollerussa", temp: 12 },
-      { capital: "Móra d'Ebre", temp: 16 },
-      { capital: "Pla d'Urgell", temp: 12 },
-      { capital: "Puigcerdà", temp: 12 },
-      { capital: "Reus", temp: 17 },
-      { capital: "Ripoll", temp: 11 },
-      { capital: "Sant Feliu de Guíxols", temp: 15 },
-      { capital: "Santa Coloma de Farners", temp: 14 },
-      { capital: "Solsona", temp: 13 },
-      { capital: "Sort", temp: 12 },
-      { capital: "Tarragona", temp: 16 },
-      { capital: "Tàrrega", temp: 12 },
-      { capital: "Terrassa", temp: 16 },
-      { capital: "Tortosa", temp: 16 },
-      { capital: "Tremp", temp: 12 },
-      { capital: "Vilafranca del Penedès", temp: 14 }
-    ];
-  }
+  tn05CurrentBatch = getTN05BatchCities();
 
-  const existingItems = track.querySelectorAll('.tn05-ticker-item');
-  if (!forceRebuild && existingItems.length > 0 && typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0) {
-    // Actualització suau in-place sense salt de scroll
-    const tempMap = new Map();
-    capitalsData.forEach(c => tempMap.set(c.capital.toLowerCase(), Math.round(c.temp)));
-    existingItems.forEach(item => {
-      const cityEl = item.querySelector('.tn05-city');
-      const tempEl = item.querySelector('.tn05-temp');
-      if (cityEl && tempEl) {
-        const city = cityEl.textContent.trim().toLowerCase();
-        if (tempMap.has(city)) {
-          tempEl.textContent = `${tempMap.get(city)}º`;
-        }
-      }
-    });
-    return;
-  }
-
-  const items = list.map(w => `
+  track.innerHTML = tn05CurrentBatch.map(w => `
     <span class="tn05-ticker-item">
       <span class="tn05-city">${w.capital}</span>
       <span class="tn05-temp">${Math.round(w.temp)}º</span>
     </span>
   `).join('');
 
-  track.innerHTML = items + items + items;
-  cachedTN05TickerSingleWidth = 0;
+  tn05TickerTrackWidth = track.scrollWidth;
+  tn05TickerPos = window.innerWidth;
+  tn05TickerState = 'scrolling';
+  tn05TickerWaitTimer = 0;
+
+  track.style.transform = `translate3d(${tn05TickerPos.toFixed(1)}px, 0, 0)`;
+}
+
+function initTN05Ticker(forceRebuild = false) {
+  const track = document.getElementById('tn05-ticker-track');
+  if (!track) return;
+
+  if (forceRebuild || tn05CurrentBatch.length === 0 || track.children.length === 0) {
+    buildTN05TickerBatch();
+    return;
+  }
+
+  // Si ja hi ha un lot scrollant i s'actualitzen dades meteorològiques, actualitzem in-place
+  if (typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0) {
+    const getClean = (name) => typeof cleanSortKey === 'function' ? cleanSortKey(name).toLowerCase() : name.toLowerCase().trim();
+    const tempMap = new Map();
+    capitalsData.forEach(c => tempMap.set(getClean(c.capital), Math.round(c.temp)));
+
+    const existingItems = track.querySelectorAll('.tn05-ticker-item');
+    existingItems.forEach(item => {
+      const cityEl = item.querySelector('.tn05-city');
+      const tempEl = item.querySelector('.tn05-temp');
+      if (cityEl && tempEl) {
+        const cityKey = getClean(cityEl.textContent);
+        if (tempMap.has(cityKey)) {
+          tempEl.textContent = `${tempMap.get(cityKey)}º`;
+        }
+      }
+    });
+  }
 }
 
 function updateTN05Ticker(dt) {
   const track = document.getElementById('tn05-ticker-track');
   if (!track) return;
 
-  const pxPerSec = tn05Params.tickerSpeed;
-  tn05TickerPos -= pxPerSec * Math.min(dt, 0.1);
+  if (tn05CurrentBatch.length === 0 || track.children.length === 0) {
+    buildTN05TickerBatch();
+    return;
+  }
 
-  if (!cachedTN05TickerSingleWidth) {
-    cachedTN05TickerSingleWidth = track.scrollWidth / 3;
+  if (tn05TickerTrackWidth === 0) {
+    tn05TickerTrackWidth = track.scrollWidth;
+    if (tn05TickerTrackWidth > 0 && tn05TickerPos === 0) {
+      tn05TickerPos = window.innerWidth;
+    }
   }
-  if (cachedTN05TickerSingleWidth > 0 && Math.abs(tn05TickerPos) >= cachedTN05TickerSingleWidth) {
-    tn05TickerPos += cachedTN05TickerSingleWidth;
+
+  const clampedDt = Math.min(dt, 0.1);
+
+  if (tn05TickerState === 'waiting') {
+    tn05TickerWaitTimer -= clampedDt;
+    if (tn05TickerWaitTimer <= 0) {
+      // 4 segons d'espera complerts: nou lot (4 capitals + 15 noves ciutats aleatòries) entrant per la dreta
+      buildTN05TickerBatch();
+    }
+    return;
   }
-  track.style.transform = `translate3d(${tn05TickerPos.toFixed(1)}px, 0, 0)`;
+
+  if (tn05TickerState === 'scrolling') {
+    const pxPerSec = tn05Params.tickerSpeed;
+    tn05TickerPos -= pxPerSec * clampedDt;
+
+    // Quan l'última ciutat surt completament per l'esquerra de la pantalla
+    if (tn05TickerTrackWidth > 0 && (tn05TickerPos + tn05TickerTrackWidth <= 0)) {
+      tn05TickerState = 'waiting';
+      tn05TickerWaitTimer = 4.0; // 4 segons sense sortir res
+      track.innerHTML = '';
+      tn05TickerTrackWidth = 0;
+      return;
+    }
+
+    track.style.transform = `translate3d(${tn05TickerPos.toFixed(1)}px, 0, 0)`;
+  }
 }
 
 function switchAudioForMode(mode) {
