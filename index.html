@@ -506,21 +506,47 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 14px;
       transition: opacity 0.3s ease;
       pointer-events: none;
     }
 
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3.5px solid rgba(207, 71, 40, 0.2);
-      border-top-color: #F56115;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .tn-loader-box {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    @keyframes spin {
+    .tn-loader-ring,
+    .tn-loader-spinner,
+    .tn-loader-letters {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tn-loader-ring {
+      pointer-events: none;
+    }
+
+    .tn-loader-spinner {
+      pointer-events: none;
+      animation: spin-tn-loader 0.65s linear infinite;
+      transform-origin: center center;
+    }
+
+    .tn-loader-letters {
+      pointer-events: none;
+      user-select: none;
+      object-fit: contain;
+    }
+
+    @keyframes spin-tn-loader {
+      from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
   /* --- TN 2025 Styles --- */
@@ -720,7 +746,7 @@
   font-family: 'OpinionPro', 'AddressSansPro', -apple-system, sans-serif;
   font-size: clamp(14px, 3.2vh, 32px);
   font-weight: normal;
-  color: #FFFFFF;
+  color: #FFF2D6;
   -webkit-text-stroke: var(--tn05-ticker-stroke, 0.4px) currentColor;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -1114,7 +1140,19 @@ html.hide-config #master-editor-panel {
 
   <!-- Loading Screen -->
   <div id="loader">
-    <div class="spinner"></div>
+    <div class="tn-loader-box">
+      <!-- Fixed thin complete circle -->
+      <svg class="tn-loader-ring" viewBox="0 0 412 412">
+        <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="3.6" />
+      </svg>
+      <!-- Rapidly rotating thick segment -->
+      <svg class="tn-loader-spinner" viewBox="0 0 412 412">
+        <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="19"
+                stroke-linecap="round" stroke-dasharray="142 1272" stroke-dashoffset="-1050" />
+      </svg>
+      <!-- Fixed central "tn" letters -->
+      <img src="libs/tn_letters.png" class="tn-loader-letters" alt="TN">
+    </div>
   </div>
 
   <!-- Background Audio (Autoplays, loop) -->
@@ -2075,8 +2113,8 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Arrodoniment Tipografia (px)</label>
-    <input type="number" id="num-tn05-font-round" min="0" max="3" step="0.1" value="0">
-    <input type="range" id="slider-tn05-font-round" min="0" max="3" step="0.1" value="0">
+    <input type="number" id="num-tn05-font-round" min="0" max="3" step="0.1" value="2.3">
+    <input type="range" id="slider-tn05-font-round" min="0" max="3" step="0.1" value="2.3">
   </div>
 
   <div class="panel-section-title" style="margin-top: 14px;">Rellotge Digital 2005 (Sense Mirror)</div>
@@ -2111,8 +2149,8 @@ html.hide-config #master-editor-panel {
   <div class="panel-section-title" style="margin-top: 14px;">Ticker de Temperatures (Sense Fons)</div>
   <div class="coord-row">
     <label>Velocitat Ticker (px/s)</label>
-    <input type="number" id="num-tn05-ticker-speed" min="20" max="200" step="5" value="95">
-    <input type="range" id="slider-tn05-ticker-speed" min="20" max="200" step="5" value="95">
+    <input type="number" id="num-tn05-ticker-speed" min="20" max="250" step="5" value="155">
+    <input type="range" id="slider-tn05-ticker-speed" min="20" max="250" step="5" value="155">
   </div>
   <div class="coord-row">
     <label>Posició Vertical (vh)</label>
@@ -2126,14 +2164,14 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Espai Ciutats (px)</label>
-    <input type="number" id="num-tn05-ticker-gap" min="20" max="120" step="2" value="52">
-    <input type="range" id="slider-tn05-ticker-gap" min="20" max="120" step="2" value="52">
+    <input type="number" id="num-tn05-ticker-gap" min="20" max="120" step="2" value="62">
+    <input type="range" id="slider-tn05-ticker-gap" min="20" max="120" step="2" value="62">
   </div>
   <div class="coord-row">
     <label>Color Text Ticker</label>
     <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-      <input type="color" id="picker-tn05-ticker-color" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
-      <input type="text" id="hex-tn05-ticker-color" value="#FFFFFF" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+      <input type="color" id="picker-tn05-ticker-color" value="#fff2d6" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn05-ticker-color" value="#FFF2D6" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
     </div>
   </div>
 
@@ -4748,7 +4786,7 @@ let tn05Params = {
   floorHorizonY: 66.5,    // % alçada linia terra/horitzó del mirall (66.5%, estrictament horitzontal)
   mirrorBlur: 0,          // px difusió reflex
   mirrorGearAlpha: 35,    // % opacitat relativa dels engranatges reflectits (es veuen menys que els directes)
-  fontRoundness: 0,       // px arrodoniment tipografia
+  fontRoundness: 2.3,     // px arrodoniment tipografia
   floorTintOpacity: 55,   // % opacitat capa taronja més fosc per matissar el reflex
   floorTintColor: '#8E2500', // Color taronja fosc del terra
 
@@ -4760,11 +4798,11 @@ let tn05Params = {
   clockColor: '#FFF2D6',
 
   // Ticker (Sense fons)
-  tickerSpeed: 95,        // px/s
+  tickerSpeed: 155,       // px/s
   tickerPosY: 68.0,       // vh
   tickerFontSize: 30,     // px
-  tickerGap: 52,          // px
-  tickerColor: '#FFFFFF',
+  tickerGap: 62,          // px
+  tickerColor: '#FFF2D6',
 
   // Background
   bgCenterColor: '#F7740A',
@@ -6685,7 +6723,7 @@ if (selectTn25Easing) {
         floorHorizonY: 66.5,
         mirrorBlur: 0,
         mirrorGearAlpha: 35,
-        fontRoundness: 0,
+        fontRoundness: 2.3,
         floorTintOpacity: 55,
         floorTintColor: '#8E2500',
         clockFontSize: 17.0,
@@ -6693,11 +6731,11 @@ if (selectTn25Easing) {
         clockTop: 64.7,
         clockSlotWidth: 0.60,
         clockColor: '#FFF2D6',
-        tickerSpeed: 95,
+        tickerSpeed: 155,
         tickerPosY: 68.0,
         tickerFontSize: 30,
-        tickerGap: 52,
-        tickerColor: '#FFFFFF',
+        tickerGap: 62,
+        tickerColor: '#FFF2D6',
         bgCenterColor: '#F7740A',
         bgEdgeColor: '#7A1D00',
         bgCenterX: 36,
@@ -6725,15 +6763,15 @@ if (selectTn25Easing) {
         ['num-tn05-mirror-gear-op', 'slider-tn05-mirror-gear-op', 35],
         ['num-tn05-mirror-blur', 'slider-tn05-mirror-blur', 0],
         ['num-tn05-floor-tint-op', 'slider-tn05-floor-tint-op', 55],
-        ['num-tn05-font-round', 'slider-tn05-font-round', 0],
+        ['num-tn05-font-round', 'slider-tn05-font-round', 2.3],
         ['num-tn05-clock-size', 'slider-tn05-clock-size', 17.0],
         ['num-tn05-clock-right', 'slider-tn05-clock-right', 12.5],
         ['num-tn05-clock-top', 'slider-tn05-clock-top', 64.7],
         ['num-tn05-slot-w', 'slider-tn05-slot-w', 0.60],
-        ['num-tn05-ticker-speed', 'slider-tn05-ticker-speed', 95],
+        ['num-tn05-ticker-speed', 'slider-tn05-ticker-speed', 155],
         ['num-tn05-ticker-pos-y', 'slider-tn05-ticker-pos-y', 68.0],
         ['num-tn05-ticker-font', 'slider-tn05-ticker-font', 30],
-        ['num-tn05-ticker-gap', 'slider-tn05-ticker-gap', 52],
+        ['num-tn05-ticker-gap', 'slider-tn05-ticker-gap', 62],
         ['num-tn05-bg-x', 'slider-tn05-bg-x', 36],
         ['num-tn05-bg-y', 'slider-tn05-bg-y', 38]
       ];
@@ -6759,7 +6797,7 @@ if (selectTn25Easing) {
       const pClk = document.getElementById('picker-tn05-clock-color'), hClk = document.getElementById('hex-tn05-clock-color');
       if (pClk && hClk) { pClk.value = '#fff2d6'; hClk.value = '#FFF2D6'; }
       const pTck = document.getElementById('picker-tn05-ticker-color'), hTck = document.getElementById('hex-tn05-ticker-color');
-      if (pTck && hTck) { pTck.value = '#ffffff'; hTck.value = '#FFFFFF'; }
+      if (pTck && hTck) { pTck.value = '#fff2d6'; hTck.value = '#FFF2D6'; }
       const pB1 = document.getElementById('picker-tn05-bg-c1'), hB1 = document.getElementById('hex-tn05-bg-c1');
       if (pB1 && hB1) { pB1.value = '#f7740a'; hB1.value = '#F7740A'; }
       const pB2 = document.getElementById('picker-tn05-bg-c2'), hB2 = document.getElementById('hex-tn05-bg-c2');
