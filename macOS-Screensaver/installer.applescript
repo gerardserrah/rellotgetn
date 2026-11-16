@@ -32,13 +32,19 @@ do shell script "rm -rf " & quoted form of (destDir & "/RellotgeTN.saver")
 do shell script "if [ -d " & quoted form of actualSaver & " ]; then cp -R " & quoted form of actualSaver & " " & quoted form of destDir & "/; fi"
 do shell script "xattr -cr " & quoted form of (destDir & "/RellotgeTN.saver") & " 2>/dev/null || true"
 
+-- Copia també l'aplicació de configuració a Aplicacions de l'usuari
+set configAppSrc to scriptDir & "/Configuració Rellotge TN.app"
+set userAppsDir to (POSIX path of (path to home folder)) & "Applications"
+do shell script "mkdir -p " & quoted form of userAppsDir
+do shell script "if [ -d " & quoted form of configAppSrc & " ]; then rm -rf " & quoted form of (userAppsDir & "/Configuració Rellotge TN.app") & " && cp -R " & quoted form of configAppSrc & " " & quoted form of userAppsDir & "/ && xattr -cr " & quoted form of (userAppsDir & "/Configuració Rellotge TN.app") & " 2>/dev/null || true; fi"
+
 -- Guarda configuració a defaults i fitxer de suport
 do shell script "defaults write cat.tv3.rellotgetn.saver SelectedYear " & quoted form of yearValue
 do shell script "mkdir -p ~/Library/Application\\ Support/RellotgeTN && echo " & quoted form of yearValue & " > ~/Library/Application\\ Support/RellotgeTN/year.txt"
 
 tell application "System Events"
     activate
-    display dialog "El Salvapantalles del Rellotge TN s'ha instal·lat correctament!\n\nEdició seleccionada: " & selectedItem & "\n\nRecorda que un cop a Configuració del Sistema pots fer clic a 'Opcions del salvapantalles...' per triar qualsevol altre model." with title "Instal·lació completada" buttons {"Obre Configuració del Sistema"} default button 1 with icon note
+    display dialog "El Salvapantalles del Rellotge TN s'ha instal·lat correctament!\n\nEdició activa: " & selectedItem & "\n\nPots canviar de model en qualsevol moment amb l'aplicació 'Configuració Rellotge TN' (instal·lada a Aplicacions i inclosa a la carpeta)." with title "Instal·lació completada" buttons {"Obre Configuració del Sistema"} default button 1 with icon note
 end tell
 
 do shell script "open /System/Library/PreferencePanes/ScreenSaver.prefPane 2>/dev/null || open 'x-apple.systempreferences:com.apple.preference.desktopscreeneffect' 2>/dev/null || true"

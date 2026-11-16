@@ -556,6 +556,7 @@
     }
 
     .tn-loader-ring,
+    .tn-loader-spinner-wrap,
     .tn-loader-spinner,
     .tn-loader-letters {
       position: absolute;
@@ -569,10 +570,19 @@
       pointer-events: none;
     }
 
-    .tn-loader-spinner {
+    .tn-loader-spinner-wrap {
       pointer-events: none;
       animation: spin-tn-loader 0.65s linear infinite;
-      transform-origin: center center;
+      -webkit-animation: spin-tn-loader 0.65s linear infinite;
+      transform-origin: 50% 50%;
+      -webkit-transform-origin: 50% 50%;
+    }
+
+    .tn-loader-spinner {
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     .tn-loader-letters {
@@ -581,6 +591,10 @@
       object-fit: contain;
     }
 
+    @-webkit-keyframes spin-tn-loader {
+      from { -webkit-transform: rotate(0deg); }
+      to { -webkit-transform: rotate(360deg); }
+    }
     @keyframes spin-tn-loader {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
@@ -1380,10 +1394,12 @@ html.hide-config #master-editor-panel {
         <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="3.6" />
       </svg>
       <!-- Rapidly rotating thick segment -->
-      <svg class="tn-loader-spinner" viewBox="0 0 412 412">
-        <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="19"
-                stroke-linecap="round" stroke-dasharray="142 1272" stroke-dashoffset="-1050" />
-      </svg>
+      <div class="tn-loader-spinner-wrap">
+        <svg class="tn-loader-spinner" viewBox="0 0 412 412">
+          <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="19"
+                  stroke-linecap="round" stroke-dasharray="142 1272" stroke-dashoffset="-1050" />
+        </svg>
+      </div>
       <!-- Fixed central "tn" letters -->
       <img src="libs/tn_letters.png" class="tn-loader-letters" alt="TN">
     </div>
@@ -3448,22 +3464,23 @@ let flankCubesParams = {
       setupFloor();
       setupCubeGroundShadows();
 
-      // 7. Load Weather Data
-      await loadWeatherData();
+      // 7. Load Weather Data in background (no bloqueja l'arrencada)
+      loadWeatherData().catch(e => console.warn("Weather data load warning:", e));
 
-      // Ensure Museo Slab & Akkurat Pro webfonts are loaded before drawing canvas textures
+      // Carregar tipografies locals en segon pla per no congelar l'arrencada
       if (typeof FontFace !== 'undefined' && document.fonts) {
         try {
           const ff1 = new FontFace('MuseoSlab-500', 'url(fonts/MuseoSlab-500.ttf)');
           const ff2 = new FontFace('MuseoSlab-100', 'url(fonts/MuseoSlab-100.ttf)');
           const ff3 = new FontFace('AkkuratPro-Bold', 'url(fonts/AkkuratPro-Bold.ttf)');
-          await Promise.all([ff1.load(), ff2.load(), ff3.load()]);
-          document.fonts.add(ff1);
-          document.fonts.add(ff2);
-          document.fonts.add(ff3);
-          await document.fonts.ready;
+          Promise.all([ff1.load(), ff2.load(), ff3.load()]).then(([f1, f2, f3]) => {
+            if (f1) document.fonts.add(f1);
+            if (f2) document.fonts.add(f2);
+            if (f3) document.fonts.add(f3);
+            if (typeof updateClockDigits === 'function') updateClockDigits(true);
+          }).catch(e => console.warn("Local font load catch:", e));
         } catch (e) {
-          console.warn("Fonts ready warning:", e);
+          console.warn("Fonts setup warning:", e);
         }
       }
 
@@ -3514,9 +3531,9 @@ let flankCubesParams = {
         const loader = document.getElementById('loader');
         if (loader && loader.style.display !== 'none') {
           loader.style.opacity = '0';
-          setTimeout(() => loader.style.display = 'none', 300);
+          setTimeout(() => loader.style.display = 'none', 200);
         }
-      }, 2000);
+      }, 600);
 
       window.addEventListener('resize', onWindowResize);
       onWindowResize();

@@ -26,6 +26,6 @@ Recreació fidel dels tres mítics rellotges del Telenotícies de TV3 (**2005**,
 ---
 
 ### ⚙️ Canviar d'any més endavant
-Pots canviar l'any sempre que vulguis:
-1. Vés a **Configuració del Sistema > Salvapantalles**.
-2. Selecciona **Rellotge TN** i fes clic al botó **Opcions del salvapantalles...** per triar una altra edició.
+Pots canviar l'any sempre que vulguis de dues maneres molt fàcils:
+1. **Amb l'app `Configuració Rellotge TN.app`**: Fes-hi doble clic (és a la mateixa carpeta o a la carpeta *Aplicacions*) per canviar de model i aplicar-lo a l'instant.
+2. O bé des de **Configuració del Sistema > Salvapantalles**, fent clic a **Opcions del salvapantalles...**.

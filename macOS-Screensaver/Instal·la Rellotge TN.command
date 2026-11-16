@@ -47,6 +47,13 @@ mkdir -p "$DEST_DIR"
 rm -rf "$DEST_DIR/RellotgeTN.saver"
 cp -R "$SAVER_SRC" "$DEST_DIR/"
 
+mkdir -p "$HOME/Applications"
+if [ -d "$DIR/Configuració Rellotge TN.app" ]; then
+  rm -rf "$HOME/Applications/Configuració Rellotge TN.app"
+  cp -R "$DIR/Configuració Rellotge TN.app" "$HOME/Applications/"
+  xattr -cr "$HOME/Applications/Configuració Rellotge TN.app" 2>/dev/null || true
+fi
+
 echo "-> Eliminant atributs de quarantena de macOS..."
 xattr -cr "$DEST_DIR/RellotgeTN.saver" 2>/dev/null || true
 
