@@ -2246,27 +2246,44 @@ let flankCubesParams = {
 
     // --- Weather Data from ICGC / MeteoTV3 ---
     const API_GEOJSON_URL = "https://meteotv3.icgc.cat/api/80f4ef80-bb56-4e26-98be-7eab0f7475f0_dynamic_0_.geojson";
+    let lastWeatherUpdate = 0;
+    let isFetchingWeather = false;
 
     async function loadWeatherData() {
+      if (isFetchingWeather) return;
+      isFetchingWeather = true;
+
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-        const resp = await fetch(API_GEOJSON_URL, { signal: controller.signal });
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const liveUrl = `${API_GEOJSON_URL}?_=${Date.now()}`;
+        const resp = await fetch(liveUrl, {
+          cache: 'no-store',
+          signal: controller.signal
+        });
         clearTimeout(timeoutId);
 
         if (resp.ok) {
           const geojson = await resp.json();
           processLiveGeoJson(geojson);
+          lastWeatherUpdate = Date.now();
+          console.log(`[Meteo TV3] Dades a temps real sincronitzades (${capitalsData.length} capitals):`, new Date().toLocaleTimeString());
+          applyWeatherDataToAllViews();
+          isFetchingWeather = false;
           return;
         }
       } catch (err) {
-        console.warn("Connexió directa no disponible, carregant dades locals:", err);
+        console.warn("[Meteo TV3] Connexió directa en temps real no disponible, provant font local de reserva:", err);
       }
 
       try {
-        const respLocal = await fetch('data.json');
+        const respLocal = await fetch(`data.json?_=${Date.now()}`, { cache: 'no-store' });
         if (respLocal.ok) {
           capitalsData = await respLocal.json();
+          lastWeatherUpdate = Date.now();
+          console.log("[Meteo TV3] Dades carregades des de data.json");
+          applyWeatherDataToAllViews();
+          isFetchingWeather = false;
           return;
         }
       } catch (e) {
@@ -2274,10 +2291,46 @@ let flankCubesParams = {
       }
 
       initHardcodedCapitals();
+      applyWeatherDataToAllViews();
+      isFetchingWeather = false;
     }
-    if (document.getElementById('tn25-ticker-track')) {
-      initTN25Ticker();
+
+    function applyWeatherDataToAllViews() {
+      if (!capitalsData || capitalsData.length === 0) return;
+
+      // 1. Actualitza 2014 (Texture anell 3D de terra)
+      if (typeof rebuildTemperatureRing === 'function') {
+        rebuildTemperatureRing();
+      }
+
+      // 2. Actualitza 2025 (Ticker 2D pla)
+      if (typeof initTN25Ticker === 'function') {
+        initTN25Ticker();
+      }
+
+      // 3. Actualitza 2005 (Ticker TN Comarques)
+      if (typeof initTN05Ticker === 'function') {
+        initTN05Ticker();
+        if (typeof updateTN05Styles === 'function') {
+          updateTN05Styles();
+        }
+      }
     }
+
+    // Actualització periòdica automàtica cada 5 minuts (les estacions de TV3/Meteocat renoven dades cada 30 minuts)
+    const WEATHER_POLL_INTERVAL_MS = 5 * 60 * 1000;
+    setInterval(() => {
+      loadWeatherData();
+    }, WEATHER_POLL_INTERVAL_MS);
+
+    // Actualització immediata en tornar a la pestanya si ha passat més de 3 minuts
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (Date.now() - lastWeatherUpdate > 3 * 60 * 1000) {
+          loadWeatherData();
+        }
+      }
+    });
 
     function processLiveGeoJson(geojson) {
       const features = geojson.features || [];
@@ -2329,12 +2382,29 @@ let flankCubesParams = {
 
       capitalsData = comarquesConfig.map(cfg => {
         let matched = null;
+        const cfgComarca = cfg.comarca.toLowerCase();
+
+        // 1. Match nom d'estació i comarca coincident
         for (const t of cfg.match) {
-          matched = features.find(f => (f.properties?.nomok || "").toLowerCase().includes(t));
+          matched = features.find(f => {
+            const nom = (f.properties?.nomok || "").toLowerCase();
+            const com = (f.properties?.comarca || "").toLowerCase();
+            return nom.includes(t) && (com.includes(cfgComarca) || cfgComarca.includes(com));
+          });
           if (matched) break;
         }
+
+        // 2. Si no es troba amb comarca, match nom d'estació directe
         if (!matched) {
-          matched = features.find(f => (f.properties?.comarca || "").toLowerCase() === cfg.comarca.toLowerCase());
+          for (const t of cfg.match) {
+            matched = features.find(f => (f.properties?.nomok || "").toLowerCase().includes(t));
+            if (matched) break;
+          }
+        }
+
+        // 3. Fallback: qualsevol estació de la mateixa comarca
+        if (!matched) {
+          matched = features.find(f => (f.properties?.comarca || "").toLowerCase() === cfgComarca);
         }
 
         const tVal = matched ? (matched.properties.temp_value ?? 14.0) : 14.0;
@@ -2342,7 +2412,8 @@ let flankCubesParams = {
           capital: cfg.capital,
           comarca: cfg.comarca,
           temp: parseFloat(tVal.toFixed(1)),
-          temp_round: Math.round(tVal)
+          temp_round: Math.round(tVal),
+          station: matched?.properties?.nomok || ""
         };
       });
 
@@ -4471,7 +4542,7 @@ function slideDigitSlot(trackId, slotPrefix, newText, colKey) {
   tn25State.activeSlot[colKey] = nextSlotKey;
 }
 
-function initTN25Ticker() {
+function initTN25Ticker(forceRebuild = false) {
   const track = document.getElementById('tn25-ticker-track');
   if (!track) return;
 
@@ -4486,6 +4557,24 @@ function initTN25Ticker() {
     { capital: "Manresa", temp: 11 }
   ];
 
+  const existingItems = track.querySelectorAll('.tn25-ticker-item');
+  if (!forceRebuild && existingItems.length > 0 && typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0) {
+    // Actualització suau in-place sense trencar la posició del scroll
+    const tempMap = new Map();
+    capitalsData.forEach(c => tempMap.set(c.capital.toLowerCase(), Math.round(c.temp)));
+    existingItems.forEach(item => {
+      const cityEl = item.querySelector('.tn25-ticker-city');
+      const tempEl = item.querySelector('.tn25-ticker-temp');
+      if (cityEl && tempEl) {
+        const city = cityEl.textContent.trim().toLowerCase();
+        if (tempMap.has(city)) {
+          tempEl.textContent = `${tempMap.get(city)}º`;
+        }
+      }
+    });
+    return;
+  }
+
   // Format: Població primer, després temperatura. Entre poblacions un puntet taronja.
   const items = list.map(w => `
     <div class="tn25-ticker-item">
@@ -4496,6 +4585,7 @@ function initTN25Ticker() {
   `).join('');
 
   track.innerHTML = items + items + items + items;
+  cachedTickerSingleWidth = 0;
 }
 
 let tn25TickerPos = 0;
@@ -5180,7 +5270,7 @@ function updateTN05Clock() {
   }
 }
 
-function initTN05Ticker() {
+function initTN05Ticker(forceRebuild = false) {
   const track = document.getElementById('tn05-ticker-track');
   if (!track) return;
 
@@ -5219,6 +5309,24 @@ function initTN05Ticker() {
       { capital: "Tremp", temp: 12 },
       { capital: "Vilafranca del Penedès", temp: 14 }
     ];
+  }
+
+  const existingItems = track.querySelectorAll('.tn05-ticker-item');
+  if (!forceRebuild && existingItems.length > 0 && typeof capitalsData !== 'undefined' && capitalsData && capitalsData.length > 0) {
+    // Actualització suau in-place sense salt de scroll
+    const tempMap = new Map();
+    capitalsData.forEach(c => tempMap.set(c.capital.toLowerCase(), Math.round(c.temp)));
+    existingItems.forEach(item => {
+      const cityEl = item.querySelector('.tn05-city');
+      const tempEl = item.querySelector('.tn05-temp');
+      if (cityEl && tempEl) {
+        const city = cityEl.textContent.trim().toLowerCase();
+        if (tempMap.has(city)) {
+          tempEl.textContent = `${tempMap.get(city)}º`;
+        }
+      }
+    });
+    return;
   }
 
   const items = list.map(w => `

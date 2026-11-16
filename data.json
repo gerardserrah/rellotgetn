@@ -2,302 +2,302 @@
   {
     "capital": "Amposta",
     "comarca": "Montsià",
-    "temp": 14.2,
-    "temp_round": 14,
+    "temp": 15.9,
+    "temp_round": 16,
     "station": "Amposta 3m"
   },
   {
     "capital": "Balaguer",
     "comarca": "Noguera",
-    "temp": 9.8,
-    "temp_round": 10,
-    "station": "Os de Balaguer 520m"
+    "temp": 7.8,
+    "temp_round": 8,
+    "station": "Os de Balaguer - Monestir d'Avellanes 576m"
   },
   {
     "capital": "Banyoles",
     "comarca": "Pla de l'Estany",
-    "temp": 10.0,
+    "temp": 10.3,
     "temp_round": 10,
     "station": "Banyoles 176m"
   },
   {
     "capital": "Barcelona",
     "comarca": "Barcelonès",
-    "temp": 14.5,
-    "temp_round": 15,
+    "temp": 15.5,
+    "temp_round": 16,
     "station": "Barcelona - Dexeus"
   },
   {
     "capital": "Berga",
     "comarca": "Berguedà",
-    "temp": 8.8,
-    "temp_round": 9,
+    "temp": 8.2,
+    "temp_round": 8,
     "station": "Berga"
   },
   {
     "capital": "La Bisbal d'Empordà",
     "comarca": "Baix Empordà",
-    "temp": 8.6,
+    "temp": 9.0,
     "temp_round": 9,
     "station": "la Bisbal d'Empordà 28m"
   },
   {
     "capital": "Les Borges Blanques",
     "comarca": "Garrigues",
-    "temp": 12.1,
-    "temp_round": 12,
+    "temp": 13.4,
+    "temp_round": 13,
     "station": "Les Borges Blanques 283m"
   },
   {
     "capital": "Cervera",
     "comarca": "Segarra",
-    "temp": 10.4,
+    "temp": 9.8,
     "temp_round": 10,
     "station": "Cervera 554m"
   },
   {
     "capital": "Falset",
     "comarca": "Priorat",
-    "temp": 11.1,
-    "temp_round": 11,
+    "temp": 11.7,
+    "temp_round": 12,
     "station": "Falset 359m"
   },
   {
     "capital": "Figueres",
     "comarca": "Alt Empordà",
-    "temp": 10.9,
-    "temp_round": 11,
+    "temp": 12.0,
+    "temp_round": 12,
     "station": "Figueres 45m"
   },
   {
     "capital": "Gandesa",
     "comarca": "Terra Alta",
-    "temp": 11.8,
-    "temp_round": 12,
+    "temp": 12.7,
+    "temp_round": 13,
     "station": "Gandesa 349m"
   },
   {
     "capital": "Girona",
     "comarca": "Gironès",
-    "temp": 10.5,
+    "temp": 10.6,
     "temp_round": 11,
     "station": "Girona 76m"
   },
   {
     "capital": "Granollers",
     "comarca": "Vallès Oriental",
-    "temp": 11.9,
-    "temp_round": 12,
+    "temp": 13.1,
+    "temp_round": 13,
     "station": "Granollers 210m"
   },
   {
     "capital": "Igualada",
     "comarca": "Anoia",
-    "temp": 12.3,
-    "temp_round": 12,
+    "temp": 9.2,
+    "temp_round": 9,
     "station": "Òdena 333m"
   },
   {
     "capital": "Lleida",
     "comarca": "Segrià",
-    "temp": 11.2,
+    "temp": 10.5,
     "temp_round": 11,
     "station": "Lleida - Ciutat Jardi"
   },
   {
     "capital": "Manresa",
     "comarca": "Bages",
-    "temp": 9.0,
+    "temp": 8.7,
     "temp_round": 9,
     "station": "Manresa - Est"
   },
   {
     "capital": "Mataró",
     "comarca": "Maresme",
-    "temp": 13.1,
-    "temp_round": 13,
+    "temp": 13.5,
+    "temp_round": 14,
     "station": "Mataró 87m"
   },
   {
     "capital": "Moià",
     "comarca": "Moianès",
-    "temp": 9.4,
+    "temp": 9.0,
     "temp_round": 9,
     "station": "Moià 742m"
   },
   {
     "capital": "Mollerussa",
     "comarca": "Pla d'Urgell",
-    "temp": 9.9,
-    "temp_round": 10,
+    "temp": 11.6,
+    "temp_round": 12,
     "station": "Mollerussa 247m"
   },
   {
     "capital": "Montblanc",
     "comarca": "Conca de Barberà",
-    "temp": 14.9,
-    "temp_round": 15,
+    "temp": 11.6,
+    "temp_round": 12,
     "station": "Montblanc"
   },
   {
     "capital": "Móra d'Ebre",
     "comarca": "Ribera d'Ebre",
-    "temp": 13.7,
-    "temp_round": 14,
+    "temp": 10.4,
+    "temp_round": 10,
     "station": "Ascó 257m"
   },
   {
     "capital": "Olot",
     "comarca": "Garrotxa",
-    "temp": 5.5,
-    "temp_round": 6,
+    "temp": 5.2,
+    "temp_round": 5,
     "station": "Olot - Pla de dalt 452m"
   },
   {
     "capital": "El Pont de Suert",
     "comarca": "Alta Ribagorça",
-    "temp": 6.5,
-    "temp_round": 7,
+    "temp": 5.3,
+    "temp_round": 5,
     "station": "el Pont de Suert 823m"
   },
   {
     "capital": "Prats de Lluçanès",
     "comarca": "Lluçanès",
-    "temp": 9.7,
-    "temp_round": 10,
+    "temp": 8.9,
+    "temp_round": 9,
     "station": "Prats de Lluçanès 700m"
   },
   {
     "capital": "Puigcerdà",
     "comarca": "Cerdanya",
-    "temp": 6.4,
-    "temp_round": 6,
+    "temp": 4.3,
+    "temp_round": 4,
     "station": "Puigcerdà 1213m"
   },
   {
     "capital": "Reus",
     "comarca": "Baix Camp",
-    "temp": 15.5,
+    "temp": 15.8,
     "temp_round": 16,
     "station": "Reus - Antic Velòdrom"
   },
   {
     "capital": "Ripoll",
     "comarca": "Ripollès",
-    "temp": 6.7,
-    "temp_round": 7,
+    "temp": 4.5,
+    "temp_round": 5,
     "station": "Sant Pau de Segúries 851m"
   },
   {
     "capital": "Sabadell",
     "comarca": "Vallès Occidental",
-    "temp": 12.4,
-    "temp_round": 12,
+    "temp": 14.6,
+    "temp_round": 15,
     "station": "Sabadell-Centre"
   },
   {
     "capital": "Sant Feliu de Llobregat",
     "comarca": "Baix Llobregat",
-    "temp": 6.7,
-    "temp_round": 7,
+    "temp": 7.7,
+    "temp_round": 8,
     "station": "Sant Feliu de Pallerols"
   },
   {
     "capital": "Santa Coloma de Farners",
     "comarca": "Selva",
-    "temp": 9.1,
-    "temp_round": 9,
+    "temp": 9.5,
+    "temp_round": 10,
     "station": "Santa Coloma de Farners 162m"
   },
   {
     "capital": "La Seu d'Urgell",
     "comarca": "Alt Urgell",
-    "temp": 9.1,
-    "temp_round": 9,
+    "temp": 4.9,
+    "temp_round": 5,
     "station": "La Seu d'Urgell"
   },
   {
     "capital": "Solsona",
     "comarca": "Solsonès",
-    "temp": 9.2,
-    "temp_round": 9,
+    "temp": 8.1,
+    "temp_round": 8,
     "station": "Solsona 691m"
   },
   {
     "capital": "Sort",
     "comarca": "Pallars Sobirà",
-    "temp": 8.4,
-    "temp_round": 8,
+    "temp": 7.0,
+    "temp_round": 7,
     "station": "Sort 679m"
   },
   {
     "capital": "Tarragona",
     "comarca": "Tarragonès",
-    "temp": 15.4,
-    "temp_round": 15,
+    "temp": 16.3,
+    "temp_round": 16,
     "station": "Tarragona - Complex Educatiu 5m"
   },
   {
     "capital": "Tàrrega",
     "comarca": "Urgell",
-    "temp": 10.6,
-    "temp_round": 11,
+    "temp": 10.1,
+    "temp_round": 10,
     "station": "Tàrrega 427m"
   },
   {
     "capital": "Tortosa",
     "comarca": "Baix Ebre",
-    "temp": 14.1,
-    "temp_round": 14,
+    "temp": 16.6,
+    "temp_round": 17,
     "station": "Tortosa 50m"
   },
   {
     "capital": "Tremp",
     "comarca": "Pallars Jussà",
-    "temp": 10.3,
-    "temp_round": 10,
+    "temp": 6.8,
+    "temp_round": 7,
     "station": "Tremp 473m"
   },
   {
     "capital": "Valls",
     "comarca": "Alt Camp",
-    "temp": 13.0,
-    "temp_round": 13,
+    "temp": 11.9,
+    "temp_round": 12,
     "station": "Valls 233m"
   },
   {
     "capital": "El Vendrell",
     "comarca": "Baix Penedès",
-    "temp": 10.6,
-    "temp_round": 11,
+    "temp": 14.1,
+    "temp_round": 14,
     "station": "el Vendrell 59m"
   },
   {
     "capital": "Vic",
     "comarca": "Osona",
-    "temp": 10.9,
-    "temp_round": 11,
+    "temp": 9.3,
+    "temp_round": 9,
     "station": "Vic zona esportiva"
   },
   {
     "capital": "Vielha",
     "comarca": "Val d'Aran",
-    "temp": 4.4,
+    "temp": 3.9,
     "temp_round": 4,
     "station": "Vielha - Elipòrt 1.027m"
   },
   {
     "capital": "Vilafranca del Penedès",
     "comarca": "Alt Penedès",
-    "temp": 10.9,
-    "temp_round": 11,
+    "temp": 13.4,
+    "temp_round": 13,
     "station": "Vilafranca del penedès 177m"
   },
   {
     "capital": "Vilanova i la Geltrú",
     "comarca": "Garraf",
-    "temp": 9.9,
-    "temp_round": 10,
+    "temp": 15.3,
+    "temp_round": 15,
     "station": "Vilanova i la Geltrú 31m"
   }
 ]
