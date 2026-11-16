@@ -1180,21 +1180,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: min(30vw, 140px);
+  height: min(10vh, 65px);
   pointer-events: none;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.85));
-  animation: tvLogoFade 0.22s ease-out forwards;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.85));
 }
 @keyframes tvLogoFade {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
 .tv-trans-logo {
-  display: block;
-  max-width: min(32vw, 180px);
-  max-height: min(12vh, 75px);
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
+  display: block;
+  animation: tvLogoFade 0.2s ease-out forwards;
 }
 
 /* Amaga les configuracions en producció / Vercel */
@@ -5556,12 +5558,12 @@ let isYearTransitioning = false;
 let tvNoiseRaf = null;
 
 const TV_YEAR_LOGOS = {
-  '2005': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658 170" fill="none">
+  '2005': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658 170" width="100%" height="100%" fill="none">
   <path fill="#FFFFFF" d="M 0 0 L 306 0 L 306 58 L 197 58 L 197 170 L 109 170 L 109 58 L 0 58 Z" />
   <path fill="#FFFFFF" d="M 338 0 L 570 0 L 658 88 L 658 170 L 570 170 L 570 58 L 427 58 L 427 170 L 338 170 Z" />
 </svg>`,
 
-  '2014': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 330" fill="none">
+  '2014': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 330" width="100%" height="100%" fill="none">
   <defs>
     <linearGradient id="tvCubeGrad1" gradientUnits="userSpaceOnUse" x1="3356.1233" y1="22.3586" x2="3130.5" y2="299.3288" gradientTransform="matrix(-1 0 0 1 3437.3398 0)">
       <stop offset="0" stop-color="#E3462E"/>
@@ -5584,7 +5586,7 @@ const TV_YEAR_LOGOS = {
   </g>
 </svg>`,
 
-  '2025': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 412" fill="none">
+  '2025': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 412" width="100%" height="100%" fill="none">
   <g fill="#FFFFFF">
     <polygon points="95.8,182.9 124.9,182.9 124.9,259.6 168.5,259.6 168.5,182.9 197.6,182.9 197.6,146.2 95.8,146.2 "/>
     <path d="M313.8,209.7v-24c0-8.3-1.9-15.5-5.2-21.7c-3.3-6.2-7.9-11.1-14-14.6c-6-3.5-12.8-5.2-20.5-5.2c-11.9,0-21.7,3.9-29.4,11.6l0,0l-0.6-9.6h-39.2v113.5h43.6v-66.2c0-3.5,1-6.4,3-8.6c2-2.2,4.6-3.2,7.9-3.2s5.8,1.1,7.9,3.2c2,2.2,3,5,3,8.6v21.3c0,9.4,1.9,17.6,5.6,24.7c3.7,7.1,8.9,12.5,15.5,16.4c6.7,3.9,14.4,5.8,23.3,5.8c4.9,0,13.8,0,13.8,0v-37.2c-4.3-0.1-7.8-1.4-10.5-4.1C315.2,217.6,313.8,214.1,313.8,209.7z"/>
