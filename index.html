@@ -4,8 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rellotge TN</title>
+  <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
+
+  <!-- Favicon i Apple Touch Icon -->
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+  <!-- Open Graph / Compartir link a xarxes (16:9) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rellotge TN">
+  <meta property="og:description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
+  <meta property="og:image" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta property="og:image:secure_url" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="576">
+  <meta property="og:image:alt" content="Rellotge TN 3D">
+
+  <!-- Twitter Card (16:9 resum gran) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rellotge TN">
+  <meta name="twitter:description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
+  <meta name="twitter:image" content="https://rellotgetn.vercel.app/og-image.jpg">
 
   <!-- Webfonts for Museo Slab & Akkurat / Sans-serif -->
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/museo-slab">
@@ -167,10 +188,10 @@
 
     /* Minimal discreet controls at top-right (Autohides when mouse is idle) */
     .minimal-controls {
-      position: absolute;
+      position: fixed;
       top: 18px;
       right: 22px;
-      z-index: 10;
+      z-index: 9999;
       display: flex;
       gap: 8px;
       opacity: 0;
@@ -179,7 +200,8 @@
       font-family: '3Cat', -apple-system, sans-serif;
     }
 
-    .minimal-controls.visible {
+    .minimal-controls.visible,
+    .minimal-controls:hover {
       opacity: 1;
       pointer-events: auto;
     }
@@ -1158,25 +1180,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(80vw, 540px);
-  height: min(35vh, 260px);
   pointer-events: none;
-  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.9));
-  animation: tvLogoPop 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.85));
+  animation: tvLogoFade 0.22s ease-out forwards;
 }
-@keyframes tvLogoPop {
-  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0; }
-  30% { transform: translate(-50%, -50%) scale(1.04); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.0); opacity: 1; }
+@keyframes tvLogoFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 .tv-trans-logo {
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
   display: block;
-  overflow: visible;
+  max-width: min(32vw, 180px);
+  max-height: min(12vh, 75px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 /* Amaga les configuracions en producció / Vercel */
@@ -5538,46 +5556,41 @@ let isYearTransitioning = false;
 let tvNoiseRaf = null;
 
 const TV_YEAR_LOGOS = {
-  '2005': `<svg class="tv-trans-logo" viewBox="0 0 658 170" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path fill="#FFFFFF" d="M 0 0 L 306 0 L 306 58 L 197 58 L 197 170 L 109 170 L 109 58 L 0 58 Z" />
-    <path fill="#FFFFFF" d="M 338 0 L 570 0 L 658 88 L 658 170 L 570 170 L 570 58 L 427 58 L 427 170 L 338 170 Z" />
-  </svg>`,
+  '2005': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658 170" fill="none">
+  <path fill="#FFFFFF" d="M 0 0 L 306 0 L 306 58 L 197 58 L 197 170 L 109 170 L 109 58 L 0 58 Z" />
+  <path fill="#FFFFFF" d="M 338 0 L 570 0 L 658 88 L 658 170 L 570 170 L 570 58 L 427 58 L 427 170 L 338 170 Z" />
+</svg>`,
 
-  '2014': `<svg class="tv-trans-logo" viewBox="0 0 740 330" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="tvCubeGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#FF3820"/>
-        <stop offset="65%" stop-color="#FF6B10"/>
-        <stop offset="100%" stop-color="#FC943B"/>
-      </linearGradient>
-      <radialGradient id="tvCubeGloss" cx="50%" cy="100%" r="65%">
-        <stop offset="0%" stop-color="#FFA845" stop-opacity="0.6"/>
-        <stop offset="100%" stop-color="#FFA845" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <!-- Cube 1 (T) -->
-    <g transform="translate(0, 0)">
-      <rect width="330" height="330" rx="46" fill="url(#tvCubeGrad)"/>
-      <rect width="330" height="330" rx="46" fill="url(#tvCubeGloss)"/>
-      <path fill="#FFFFFF" d="M 54 65 H 276 V 107 H 198 V 266 H 132 V 107 H 54 Z"/>
-    </g>
-    <!-- Cube 2 (n) -->
-    <g transform="translate(366, 0)">
-      <rect width="330" height="330" rx="46" fill="url(#tvCubeGrad)"/>
-      <rect width="330" height="330" rx="46" fill="url(#tvCubeGloss)"/>
-      <path fill="#FFFFFF" d="M 40 65 H 106 V 112 C 122 80 162 65 214 65 C 265 65 290 95 290 142 V 266 H 224 V 142 C 224 115 208 107 185 107 C 145 107 106 128 106 160 V 266 H 40 Z"/>
-    </g>
-  </svg>`,
+  '2014': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 330" fill="none">
+  <defs>
+    <linearGradient id="tvCubeGrad1" gradientUnits="userSpaceOnUse" x1="3356.1233" y1="22.3586" x2="3130.5" y2="299.3288" gradientTransform="matrix(-1 0 0 1 3437.3398 0)">
+      <stop offset="0" stop-color="#E3462E"/>
+      <stop offset="1" stop-color="#F09700"/>
+    </linearGradient>
+    <linearGradient id="tvCubeGrad2" gradientUnits="userSpaceOnUse" x1="658.7852" y1="22.3439" x2="433.1592" y2="299.3171">
+      <stop offset="0" stop-color="#E3462E"/>
+      <stop offset="1" stop-color="#F09700"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <!-- Cub 1 (T) -->
+    <path fill="url(#tvCubeGrad1)" d="M33.5,294.1c0,19.2,15.1,34.8,33.6,34.8h260.6c18.5,0,33.6-15.6,33.6-34.8V35.9c0-19.2-15.1-34.8-33.6-34.8H67.1c-18.6,0-33.6,15.6-33.6,34.8v132.1v33.4V294.1z"/>
+    <path fill="#FFFFFF" opacity="0.16" d="M190.8,186.2c-78.1,0-134.8,82.6-149.7,130c10.4,13,24.4,12.7,24.4,12.7h263.9c0,0,13.9,0.3,24.4-12.7c-14.9-47.4-71.6-130-149.7-130C202.6,186.2,192.3,186.2,190.8,186.2z"/>
+    <path fill="#FFFFFF" d="M232.4,109.7v156.8h-69.5V109.7H85.6V63.5h223.7v46.2H232.4z"/>
+    <!-- Cub 2 (n) -->
+    <path fill="url(#tvCubeGrad2)" d="M706.5,294.1c0,19.2-15,34.8-33.6,34.8H412.3c-18.6,0-33.6-15.6-33.6-34.8V35.9c0-19.2,15.1-34.8,33.6-34.8h260.6c18.6,0,33.6,15.6,33.6,34.8v132.1v33.4V294.1z"/>
+    <path fill="#FFFFFF" opacity="0.16" d="M549.2,186.2c78.1,0,134.8,82.7,149.7,130c-10.4,13-24.4,12.7-24.4,12.7H410.6c0,0-13.9,0.3-24.3-12.7c14.9-47.4,71.6-130,149.7-130C537.4,186.2,547.7,186.2,549.2,186.2z"/>
+    <path fill="#FFFFFF" d="M599,266.5V154.9c0-16.8-3.7-28.6-11.2-35.4c-7.5-6.8-21.2-10-41.5-9.8c-12.3,0.1-60.3,0-60.3,0l0.1,156.8h-69.6V63.5h63.2c0,0,60.8,0,83.8,0c21.7,0,39.4,1.9,53,5.8c13.6,3.9,24.3,9.5,32.1,16.7c7.8,7.3,13,16.2,15.8,26.7c2.8,10.5,4.1,22.6,4.1,36.2v117.5H599z"/>
+  </g>
+</svg>`,
 
-  '2025': `<svg class="tv-trans-logo" viewBox="0 0 412 412" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="206" cy="206" r="201" fill="#FFFFFF" />
-    <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="4.5" />
-    <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="19" stroke-linecap="round" stroke-dasharray="142 1272" stroke-dashoffset="-1050" />
-    <g fill="#F56115">
-      <path d="M 96 146 L 196 146 L 197 147 L 197 182 L 196 183 L 168 183 L 167 184 L 167 259 L 124 259 L 124 184 L 123 183 L 96 183 L 95 182 L 95 147 Z" />
-      <path d="M 271 144 L 282 145 L 295 150 L 304 158 L 309 166 L 313 181 L 313 215 L 317 221 L 322 224 L 327 225 L 327 261 L 305 261 L 301 260 L 289 255 L 280 247 L 273 235 L 270 224 L 270 191 L 268 186 L 265 183 L 260 181 L 252 183 L 249 186 L 247 192 L 247 259 L 204 259 L 204 147 L 205 146 L 243 146 L 243 153 L 245 155 L 248 152 L 257 147 L 264 145 L 270 145 Z" />
-    </g>
-  </svg>`
+  '2025': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 412" fill="none">
+  <g fill="#FFFFFF">
+    <polygon points="95.8,182.9 124.9,182.9 124.9,259.6 168.5,259.6 168.5,182.9 197.6,182.9 197.6,146.2 95.8,146.2 "/>
+    <path d="M313.8,209.7v-24c0-8.3-1.9-15.5-5.2-21.7c-3.3-6.2-7.9-11.1-14-14.6c-6-3.5-12.8-5.2-20.5-5.2c-11.9,0-21.7,3.9-29.4,11.6l0,0l-0.6-9.6h-39.2v113.5h43.6v-66.2c0-3.5,1-6.4,3-8.6c2-2.2,4.6-3.2,7.9-3.2s5.8,1.1,7.9,3.2c2,2.2,3,5,3,8.6v21.3c0,9.4,1.9,17.6,5.6,24.7c3.7,7.1,8.9,12.5,15.5,16.4c6.7,3.9,14.4,5.8,23.3,5.8c4.9,0,13.8,0,13.8,0v-37.2c-4.3-0.1-7.8-1.4-10.5-4.1C315.2,217.6,313.8,214.1,313.8,209.7z"/>
+    <path d="M387.2,108.6c4-3.3,5-9,2.3-13.5c-8.9-14.8-19.7-28.5-32-40.8c-12.6-12.6-26.6-23.5-41.7-32.5c-4.5-2.7-10.3-1.6-13.5,2.4C273,8.6,240.1,0.3,206,0.3c-54.9,0-106.5,21.4-145.3,60.2S0.5,150.9,0.5,205.8s21.4,106.5,60.2,145.3s90.4,60.2,145.3,60.2s106.5-21.4,145.3-60.2s60.2-90.4,60.2-145.3C411.5,171.3,403.1,138.1,387.2,108.6z M348.8,348.7c-78.8,78.8-206.9,78.8-285.7,0s-78.8-206.9,0-285.7C102.5,23.6,154.3,3.9,206,3.9c32.5,0,65.1,7.8,94.5,23.4c-1.6,4.6,0.1,9.9,4.5,12.5c13.6,8.1,26.3,18,37.6,29.4c11.1,11.1,20.8,23.5,28.9,36.8c2,3.3,5.4,5.1,9,5.1c1.2,0,2.4-0.2,3.5-0.6C425,186.8,413.2,284.3,348.8,348.7z"/>
+  </g>
+</svg>`
 };
 
 function triggerYearTransition(targetMode, onMidpoint) {
