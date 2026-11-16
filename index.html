@@ -1089,6 +1089,96 @@
   user-select: none;
 }
 
+/* Transició retro neu TV antiga */
+#tv-transition-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background: #000;
+  overflow: hidden;
+  pointer-events: all;
+}
+#tv-static-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+  z-index: 1;
+}
+.tv-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04) 0px,
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 1px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.4) 3px,
+    rgba(0, 0, 0, 0.4) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+.tv-crt-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 35%, rgba(0, 0, 0, 0.65) 80%, rgba(0, 0, 0, 0.95) 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  z-index: 3;
+}
+.tv-glitch-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.16);
+  filter: blur(2px);
+  pointer-events: none;
+  animation: tvGlitchRoll 0.45s linear infinite;
+  z-index: 4;
+}
+@keyframes tvGlitchRoll {
+  0% { top: -15%; }
+  100% { top: 115%; }
+}
+.tv-logo-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(80vw, 540px);
+  height: min(35vh, 260px);
+  pointer-events: none;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 10px rgba(0, 0, 0, 0.9));
+  animation: tvLogoPop 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+@keyframes tvLogoPop {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0; }
+  30% { transform: translate(-50%, -50%) scale(1.04); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.0); opacity: 1; }
+}
+.tv-trans-logo {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  overflow: visible;
+}
+
 /* Amaga les configuracions en producció / Vercel */
 html.hide-config #btn-toggle-master-editor,
 html.hide-config #master-editor-panel {
@@ -1157,6 +1247,15 @@ html.hide-config #master-editor-panel {
 
   <!-- Background Audio (Autoplays, loop) -->
   <audio id="bg-audio" src="audio/music.m4a" loop preload="auto"></audio>
+
+  <!-- Vintage TV Static Year Transition Overlay -->
+  <div id="tv-transition-overlay" style="display: none;">
+    <canvas id="tv-static-canvas"></canvas>
+    <div class="tv-scanlines"></div>
+    <div class="tv-crt-vignette"></div>
+    <div class="tv-glitch-bar"></div>
+    <div id="tv-logo-container" class="tv-logo-container"></div>
+  </div>
 
   <!-- WebGL Canvas Container -->
   <div id="webgl-container"></div>
@@ -5432,7 +5531,132 @@ function switchAudioForMode(mode) {
   }
 }
 
+// ==========================================
+// VINTAGE TV STATIC YEAR TRANSITION (NEU DE TV)
+// ==========================================
+let isYearTransitioning = false;
+let tvNoiseRaf = null;
+
+const TV_YEAR_LOGOS = {
+  '2005': `<svg class="tv-trans-logo" viewBox="0 0 658 170" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#FFFFFF" d="M 0 0 L 306 0 L 306 58 L 197 58 L 197 170 L 109 170 L 109 58 L 0 58 Z" />
+    <path fill="#FFFFFF" d="M 338 0 L 570 0 L 658 88 L 658 170 L 570 170 L 570 58 L 427 58 L 427 170 L 338 170 Z" />
+  </svg>`,
+
+  '2014': `<svg class="tv-trans-logo" viewBox="0 0 740 330" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="tvCubeGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FF3820"/>
+        <stop offset="65%" stop-color="#FF6B10"/>
+        <stop offset="100%" stop-color="#FC943B"/>
+      </linearGradient>
+      <radialGradient id="tvCubeGloss" cx="50%" cy="100%" r="65%">
+        <stop offset="0%" stop-color="#FFA845" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#FFA845" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- Cube 1 (T) -->
+    <g transform="translate(0, 0)">
+      <rect width="330" height="330" rx="46" fill="url(#tvCubeGrad)"/>
+      <rect width="330" height="330" rx="46" fill="url(#tvCubeGloss)"/>
+      <path fill="#FFFFFF" d="M 54 65 H 276 V 107 H 198 V 266 H 132 V 107 H 54 Z"/>
+    </g>
+    <!-- Cube 2 (n) -->
+    <g transform="translate(366, 0)">
+      <rect width="330" height="330" rx="46" fill="url(#tvCubeGrad)"/>
+      <rect width="330" height="330" rx="46" fill="url(#tvCubeGloss)"/>
+      <path fill="#FFFFFF" d="M 40 65 H 106 V 112 C 122 80 162 65 214 65 C 265 65 290 95 290 142 V 266 H 224 V 142 C 224 115 208 107 185 107 C 145 107 106 128 106 160 V 266 H 40 Z"/>
+    </g>
+  </svg>`,
+
+  '2025': `<svg class="tv-trans-logo" viewBox="0 0 412 412" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="206" cy="206" r="201" fill="rgba(255, 255, 255, 0.96)" />
+    <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="4.5" />
+    <circle cx="206" cy="206" r="202.5" fill="none" stroke="#F56115" stroke-width="19" stroke-linecap="round" stroke-dasharray="142 1272" stroke-dashoffset="-1050" />
+    <image href="data:image/png;base64,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" x="0" y="0" width="412" height="412" />
+  </svg>`
+};
+
+function triggerYearTransition(targetMode, onMidpoint) {
+  const overlay = document.getElementById('tv-transition-overlay');
+  const canvas = document.getElementById('tv-static-canvas');
+  const logoCont = document.getElementById('tv-logo-container');
+  if (!overlay || !canvas || !logoCont) {
+    if (onMidpoint) onMidpoint();
+    return;
+  }
+
+  isYearTransitioning = true;
+  if (tvNoiseRaf) {
+    cancelAnimationFrame(tvNoiseRaf);
+    tvNoiseRaf = null;
+  }
+
+  if (canvas.width !== 320) canvas.width = 320;
+  if (canvas.height !== 180) canvas.height = 180;
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.createImageData(320, 180);
+  const buf = new Uint32Array(imgData.data.buffer);
+  const bufLen = buf.length;
+
+  function renderStaticNoise() {
+    for (let i = 0; i < bufLen; i++) {
+      const v = (Math.random() * 255) | 0;
+      buf[i] = 0xFF000000 | (v << 16) | (v << 8) | v;
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  logoCont.innerHTML = TV_YEAR_LOGOS[targetMode] || '';
+  overlay.style.display = 'block';
+  overlay.style.opacity = '1';
+
+  const startTime = performance.now();
+  const DURATION_MS = 720; // Menys d'un segon (~720ms total)
+  const MIDPOINT_MS = 280; // Pic de neu i canvi de mode a sota
+  const FADEOUT_START_MS = 450; // Inici de dissolució
+  let midpointExecuted = false;
+
+  function loop(now) {
+    const elapsed = now - startTime;
+    renderStaticNoise();
+
+    if (!midpointExecuted && elapsed >= MIDPOINT_MS) {
+      midpointExecuted = true;
+      if (onMidpoint) onMidpoint();
+    }
+
+    if (elapsed >= FADEOUT_START_MS) {
+      const progress = (elapsed - FADEOUT_START_MS) / (DURATION_MS - FADEOUT_START_MS);
+      overlay.style.opacity = Math.max(0, 1 - progress).toFixed(3);
+    }
+
+    if (elapsed < DURATION_MS) {
+      tvNoiseRaf = requestAnimationFrame(loop);
+    } else {
+      if (!midpointExecuted) {
+        midpointExecuted = true;
+        if (onMidpoint) onMidpoint();
+      }
+      overlay.style.display = 'none';
+      overlay.style.opacity = '1';
+      logoCont.innerHTML = '';
+      tvNoiseRaf = null;
+      isYearTransitioning = false;
+    }
+  }
+
+  tvNoiseRaf = requestAnimationFrame(loop);
+}
+
 function switchMode(mode) {
+  if (mode === currentAppMode || isYearTransitioning) return;
+  triggerYearTransition(mode, () => {
+    applyModeSwitch(mode);
+  });
+}
+
+function applyModeSwitch(mode) {
   currentAppMode = mode;
   const btn2005 = document.getElementById('btn-ver-2005');
   const btn2014 = document.getElementById('btn-ver-2014');
