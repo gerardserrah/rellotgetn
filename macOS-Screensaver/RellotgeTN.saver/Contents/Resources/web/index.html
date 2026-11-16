@@ -797,13 +797,13 @@
   align-items: baseline;
   font-family: 'HYHeadLine', -apple-system, sans-serif;
   font-weight: 500;
-  font-size: clamp(48px, 14.2vh, 165px);
+  font-size: var(--tn05-clock-font-size, calc(139.4px * var(--tn05-stage-scale, 1)));
   line-height: 0.88;
   color: #FFF2D6;
   text-shadow: 0 2px 10px rgba(180, 80, 0, 0.35);
   white-space: nowrap;
   letter-spacing: 0;
-  -webkit-text-stroke: var(--tn05-font-stroke, 1.2px) currentColor;
+  -webkit-text-stroke: var(--tn05-font-stroke, 2.3px) currentColor;
   stroke-linejoin: round;
   stroke-linecap: round;
   paint-order: stroke fill;
@@ -832,7 +832,7 @@
   left: 0;
   width: 100vw;
   top: 66.0vh;
-  height: clamp(26px, 6.8vh, 72px);
+  height: calc(56px * var(--tn05-stage-scale, 1));
   background: transparent !important;
   border: none !important;
   backdrop-filter: none !important;
@@ -860,12 +860,12 @@
 .tn05-ticker-item {
   display: inline-flex;
   align-items: baseline;
-  margin-right: 48px;
+  margin-right: var(--tn05-ticker-gap, calc(62px * var(--tn05-stage-scale, 1)));
   font-family: 'OpinionPro', 'AddressSansPro', -apple-system, sans-serif;
-  font-size: clamp(14px, 3.2vh, 32px);
+  font-size: var(--tn05-ticker-font-size, calc(30px * var(--tn05-stage-scale, 1)));
   font-weight: normal;
   color: #FFF2D6;
-  -webkit-text-stroke: var(--tn05-ticker-stroke, 0.4px) currentColor;
+  -webkit-text-stroke: var(--tn05-ticker-stroke, 1.5px) currentColor;
   stroke-linejoin: round;
   stroke-linecap: round;
   paint-order: stroke fill;
@@ -873,7 +873,7 @@
 }
 
 .tn05-ticker-item .tn05-city {
-  margin-right: 8px;
+  margin-right: calc(8px * var(--tn05-stage-scale, 1));
 }
 
 .tn05-ticker-item .tn05-temp {
@@ -5283,10 +5283,13 @@ function resizeTN05Canvas() {
   }
 }
 window.addEventListener('resize', () => {
+  updateTN05Styles();
   if (currentAppMode === '2005') {
     resizeTN05Canvas();
-    cachedTN05TickerSingleWidth = 0;
-    updateTN05Styles();
+    const track = document.getElementById('tn05-ticker-track');
+    if (track) {
+      tn05TickerTrackWidth = track.scrollWidth;
+    }
   }
 });
 
@@ -5297,13 +5300,35 @@ function updateTN05Styles() {
   const bg = document.querySelector('.tn05-bg');
   const mask = document.getElementById('tn05-top-left-mask');
 
+  // Mida de referència 1415x820 (establerta en calibrar proporcions del conjunt)
+  const baseW = 1415;
+  const baseH = 820;
   const w = window.innerWidth;
   const h = window.innerHeight;
+  const scale = Math.min(w / baseW, h / baseH);
   const aspect = w / h;
   const isNarrow = (aspect < 1.15) || (w < 680);
 
-  document.documentElement.style.setProperty('--tn05-font-stroke', `${tn05Params.fontRoundness}px`);
-  document.documentElement.style.setProperty('--tn05-ticker-stroke', `${(tn05Params.fontRoundness * 0.65).toFixed(1)}px`);
+  // Escalat proporcional exacte dels textos a partir de la resolució de referència
+  const baseClockFont = 820 * (tn05Params.clockFontSize / 100); // 139.4px a 1415x820
+  const targetClockFont = baseClockFont * scale;
+  const maxFontForWidth = (w * 0.88) / 4.16; // 6 dígits @ 0.60em + 2 colons @ 0.28em = 4.16em
+  const clockFontPx = isNarrow ? Math.min(targetClockFont, maxFontForWidth) : targetClockFont;
+
+  const fontPx = Math.max(12, Math.round(tn05Params.tickerFontSize * scale));
+  const gapPx = Math.max(18, Math.round(tn05Params.tickerGap * scale));
+  const fontStrokePx = (tn05Params.fontRoundness * scale).toFixed(2);
+  const tickerStrokePx = (tn05Params.fontRoundness * 0.65 * scale).toFixed(2);
+  const tickerHeightPx = Math.max(26, Math.round(56 * scale));
+  const cityMargin = Math.max(4, Math.round(8 * scale));
+
+  const root = document.documentElement;
+  root.style.setProperty('--tn05-stage-scale', scale.toString());
+  root.style.setProperty('--tn05-font-stroke', `${fontStrokePx}px`);
+  root.style.setProperty('--tn05-ticker-stroke', `${tickerStrokePx}px`);
+  root.style.setProperty('--tn05-clock-font-size', `${clockFontPx.toFixed(1)}px`);
+  root.style.setProperty('--tn05-ticker-font-size', `${fontPx}px`);
+  root.style.setProperty('--tn05-ticker-gap', `${gapPx}px`);
 
   if (mask) {
     mask.style.opacity = (tn05Params.maskOpacity / 100).toString();
@@ -5323,10 +5348,7 @@ function updateTN05Styles() {
     clockContainer.style.top = `${tn05Params.clockTop}vh`;
   }
   if (clockDigits) {
-    // 6 dígits @ 0.60em + 2 punts @ 0.28em = 4.16em total width
-    const maxFontForWidth = (w * 0.88) / 4.16;
-    const fontPx = Math.min(h * (tn05Params.clockFontSize / 100), maxFontForWidth);
-    clockDigits.style.fontSize = `${fontPx}px`;
+    clockDigits.style.fontSize = `${clockFontPx.toFixed(1)}px`;
     clockDigits.style.color = tn05Params.clockColor;
     document.querySelectorAll('#tn05-clock-digits .tn05-digit').forEach(d => {
       d.style.width = `${tn05Params.clockSlotWidth}em`;
@@ -5334,19 +5356,25 @@ function updateTN05Styles() {
   }
   if (tickerBar) {
     tickerBar.style.top = `${tn05Params.tickerPosY}vh`;
-    const tickerScale = Math.min(1, Math.max(0.65, w / 720));
-    const fontPx = Math.max(14, Math.round(tn05Params.tickerFontSize * tickerScale));
-    const gapPx = Math.max(26, Math.round(tn05Params.tickerGap * tickerScale));
+    tickerBar.style.height = `${tickerHeightPx}px`;
     document.querySelectorAll('.tn05-ticker-item').forEach(item => {
       item.style.marginRight = `${gapPx}px`;
       item.style.fontSize = `${fontPx}px`;
       item.style.color = tn05Params.tickerColor;
     });
+    document.querySelectorAll('.tn05-ticker-item .tn05-city').forEach(c => {
+      c.style.marginRight = `${cityMargin}px`;
+    });
+    const track = document.getElementById('tn05-ticker-track');
+    if (track) {
+      tn05TickerTrackWidth = track.scrollWidth;
+    }
   }
   if (bg) {
     bg.style.background = `radial-gradient(ellipse 110% 90% at ${tn05Params.bgCenterX}% ${tn05Params.bgCenterY}%, ${tn05Params.bgCenterColor} 0%, #E35300 45%, #B33600 80%, ${tn05Params.bgEdgeColor} 100%)`;
   }
 }
+updateTN05Styles();
 
 function drawGearPath(ctx, rTip, rRoot, teeth, angle, hubRadius, holeRadius, rimInner, spokeWidth, spokes) {
   ctx.beginPath();
@@ -5876,7 +5904,10 @@ function updateTN05Ticker(dt) {
   }
 
   if (tn05TickerState === 'scrolling') {
-    const pxPerSec = tn05Params.tickerSpeed;
+    const baseW = 1415;
+    const baseH = 820;
+    const curScale = Math.min(window.innerWidth / baseW, window.innerHeight / baseH);
+    const pxPerSec = tn05Params.tickerSpeed * curScale;
     tn05TickerPos -= pxPerSec * clampedDt;
 
     // Quan l'última ciutat surt completament per l'esquerra de la pantalla
