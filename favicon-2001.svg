@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <filter id="tn01-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="-6" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+  <g transform="translate(1, 57)" filter="url(#tn01-shadow)" fill="#CC181E">
+    <!-- Letter "t" -->
+    <path d="M 64,166 L 140,70 L 152,70 L 152,128 L 222,128 L 222,170 L 152,170 L 152,260 C 152,282 165,294 188,294 C 202,294 214,288 222,280 L 222,316 C 210,324 192,328 174,328 C 126,328 100,300 100,254 L 100,170 L 64,170 Z" />
+    
+    <!-- Letter "n" -->
+    <path d="M 239,128 L 293,128 L 293,158 C 308,137 334,122 368,122 C 418,122 446,150 446,204 L 446,316 L 392,316 L 392,214 C 392,184 378,168 350,168 C 320,168 293,188 293,224 L 293,316 L 239,316 Z" />
+  </g>
+</svg>

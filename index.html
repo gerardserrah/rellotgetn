@@ -713,6 +713,41 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
+[data-mode="1999"] .tn-ver-select,
+[data-mode="2001"] .tn-ver-select {
+  color: #CC181E;
+  border-color: rgba(204, 24, 30, 0.4);
+}
+
+[data-mode="1999"] .tn-select-chevron,
+[data-mode="2001"] .tn-select-chevron {
+  color: #CC181E;
+}
+
+[data-mode="1999"] .tn-ver-select:hover,
+[data-mode="1999"] .tn-ver-select:focus,
+[data-mode="2001"] .tn-ver-select:hover,
+[data-mode="2001"] .tn-ver-select:focus {
+  color: #CC181E;
+  border-color: #CC181E;
+  box-shadow: 0 4px 14px rgba(204, 24, 30, 0.25);
+}
+
+[data-mode="1999"] .editor-tab-btn[data-tab="tab-tn1999"].active,
+[data-mode="2001"] .editor-tab-btn[data-tab="tab-tn1999"].active {
+  color: #CC181E !important;
+}
+
+#tab-tn1999 .btn-editor-action.primary {
+  background: #CC181E !important;
+  border-color: #CC181E !important;
+  color: #ffffff !important;
+}
+
+#tab-tn1999 input[type="range"] {
+  accent-color: #CC181E !important;
+}
+
 [data-mode="2002"] .tn-ver-select {
   color: #04336F;
   border-color: rgba(4, 51, 111, 0.4);
@@ -804,6 +839,40 @@
 }
 
 /* ==========================================================================
+   TN 1999 - Rellotge TN TV3 (1999) - Broques Rectangulars, Bola 3D i Fons Mapamundi
+   ========================================================================== */
+#view-tn-1999 {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 5;
+  background: #E5ECE4;
+  display: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#tn99-bg-canvas,
+#tn99-clock-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#tn99-bg-canvas {
+  z-index: 1;
+}
+
+#tn99-clock-canvas {
+  z-index: 2;
+}
+
+/* ==========================================================================
    TN 2002 - Rellotge TN TV3 (2002) - Fons Vídeo i Doble Rellotge amb Fusió
    ========================================================================== */
 #view-tn-2002 {
@@ -830,14 +899,17 @@
   transform-origin: center center;
   overflow: hidden;
   pointer-events: none;
+  background: #000;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.85);
+  transition: width 0.2s ease, height 0.2s ease;
 }
 
 .tn02-video {
   position: absolute;
   top: 0;
   left: 0;
-  width: 1191px;
-  height: 639px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   pointer-events: none;
 }
@@ -1059,6 +1131,15 @@
   flex-direction: row;
   transform: translate(var(--tn25-pack-x, 0px), var(--tn25-pack-y, 0px));
   transition: transform 0.1s ease-out;
+}
+
+@media (max-width: 650px) and (orientation: portrait) {
+  .tn25-col-left {
+    display: none !important;
+  }
+  .tn25-container {
+    justify-content: center !important;
+  }
 }
 
 /* Column 1: Hours + Date Dome */
@@ -1422,10 +1503,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(45vw, 220px);
-  height: min(16vh, 105px);
+  width: min(65vw, 380px);
+  height: min(25vh, 180px);
   pointer-events: none;
-  filter: grayscale(100%);
   animation: tvLogoFade 0.18s ease-out forwards;
 }
 @keyframes tvLogoFade {
@@ -1581,6 +1661,12 @@ html.hide-config #master-editor-panel {
   <!-- WebGL Canvas Container -->
   <div id="webgl-container"></div>
 
+<!-- TN 1999 BROADCAST VIEW (Rellotge de Broques, Bola 3D, Triangle TV3 i Mapamundi) -->
+<div id="view-tn-1999" style="display: none;">
+  <canvas id="tn99-bg-canvas"></canvas>
+  <canvas id="tn99-clock-canvas"></canvas>
+</div>
+
 <!-- TN 2002 BROADCAST VIEW (Fons Vídeo i Rellotge Superposat) -->
 <div id="view-tn-2002" style="display: none;">
   <div id="tn02-stage" class="tn02-stage">
@@ -1694,6 +1780,7 @@ html.hide-config #master-editor-panel {
   <div class="minimal-controls" id="controls-container">
   <div class="tn-version-dropdown-wrap" id="tn-version-dropdown-wrap">
     <select id="select-tn-version" class="tn-ver-select" aria-label="Selecciona la versió del rellotge TN">
+      <option value="1999">1999</option>
       <option value="2002">2002</option>
       <option value="2005">2005</option>
       <option value="2014" selected>2014</option>
@@ -1702,6 +1789,8 @@ html.hide-config #master-editor-panel {
     <svg class="tn-select-chevron" width="9" height="5" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 1l4 4 4-4"/>
     </svg>
+    <button type="button" class="tn-ver-btn" id="btn-ver-1999" style="display:none;"></button>
+    <button type="button" class="tn-ver-btn" id="btn-ver-2001" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2002" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2005" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2014" style="display:none;"></button>
@@ -1713,6 +1802,10 @@ html.hide-config #master-editor-panel {
     </button>
     <button class="btn-minimal" id="btn-toggle-audio" title="Muteja o activa la música">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    </button>
+    <button class="btn-minimal" id="btn-toggle-tn02-aspect" title="Canvia relació d'aspecte (16:9 / 4:3)" style="display:none;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="8" y1="5" x2="8" y2="19"/><line x1="16" y1="5" x2="16" y2="19"/></svg>
+      <span id="tn02-aspect-label">Format: 16:9</span>
     </button>
     <button class="btn-minimal" id="btn-reset-view" title="Torna al punt inicial" style="display: none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -1777,6 +1870,7 @@ html.hide-config #master-editor-panel {
       <button class="editor-tab-btn" data-tab="tab-clock">Rellotge</button>
       <button class="editor-tab-btn" data-tab="tab-cubs">Cubs</button>
       <button class="editor-tab-btn" data-tab="tab-temps">Temps</button>
+      <button class="editor-tab-btn" data-tab="tab-tn1999">1999</button>
       <button class="editor-tab-btn" data-tab="tab-tn2002">2002</button>
       <button class="editor-tab-btn" data-tab="tab-tn2005">2005</button>
       <button class="editor-tab-btn" data-tab="tab-tn2025">2025</button>
@@ -2402,8 +2496,265 @@ html.hide-config #master-editor-panel {
   </div>
 </div>
 
+<!-- TAB 6b: TN 1999 (RELLOTGE DE BROQUES RECTANGULARS, BOLA 3D I MAPAMUNDI) -->
+<div id="tab-tn1999" class="tab-content">
+  <div class="panel-section-title">Esfera & Proporció 1999</div>
+  <div class="coord-row">
+    <label>Mida esfera (%)</label>
+    <input type="number" id="num-tn99-size" min="40" max="98" step="1" value="82">
+    <input type="range" id="slider-tn99-size" min="40" max="98" step="1" value="82">
+  </div>
+  <div class="coord-row">
+    <label>Posició X (px)</label>
+    <input type="number" id="num-tn99-pos-x" min="-400" max="400" step="2" value="0">
+    <input type="range" id="slider-tn99-pos-x" min="-400" max="400" step="2" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Posició Y (px)</label>
+    <input type="number" id="num-tn99-pos-y" min="-300" max="300" step="2" value="0">
+    <input type="range" id="slider-tn99-pos-y" min="-300" max="300" step="2" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Format pantalla</label>
+    <select id="select-tn99-aspect" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="16:9" selected>16:9 Panoràmic (ampli amb mapa)</option>
+      <option value="4:3">4:3 Clàssic TV (Pillarbox)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Desenfoc analògic (px)</label>
+    <input type="number" id="num-tn99-blur" min="0" max="5" step="0.1" value="0.7">
+    <input type="range" id="slider-tn99-blur" min="0" max="5" step="0.1" value="0.7">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Segunder Bola Vermella 3D</div>
+  <div class="coord-row">
+    <label>Mida bola 3D (%)</label>
+    <input type="number" id="num-tn99-ball-size" min="2" max="15" step="0.2" value="5.2">
+    <input type="range" id="slider-tn99-ball-size" min="2" max="15" step="0.2" value="5.2">
+  </div>
+  <div class="coord-row">
+    <label>Distància òrbita (%)</label>
+    <input type="number" id="num-tn99-ball-dist" min="50" max="110" step="1" value="91">
+    <input type="range" id="slider-tn99-ball-dist" min="50" max="110" step="1" value="91">
+  </div>
+  <div class="coord-row">
+    <label>Moviment segons</label>
+    <select id="select-tn99-ball-motion" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="step" selected>A salts de segon (Step)</option>
+      <option value="smooth">Continu suau (Sweep 60fps)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Ombra segunder</label>
+    <select id="select-tn99-ball-shadow" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="false" selected>Sense ombra (Original 1999)</option>
+      <option value="true">Amb ombra projectada</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Ombra interna (%)</label>
+    <input type="number" id="num-tn99-ball-inner-shadow" min="0" max="100" step="1" value="40">
+    <input type="range" id="slider-tn99-ball-inner-shadow" min="0" max="100" step="1" value="40">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Triangle TV3 a les 3</div>
+  <div class="coord-row">
+    <label>Mida triangle (%)</label>
+    <input type="number" id="num-tn99-tri-size" min="5" max="30" step="0.5" value="14.5">
+    <input type="range" id="slider-tn99-tri-size" min="5" max="30" step="0.5" value="14.5">
+  </div>
+  <div class="coord-row">
+    <label>Color triangle</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn99-tri-color" value="#cc181e" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn99-tri-color" value="#CC181E" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Broques (Agulles Rectangulars)</div>
+  <div class="coord-row">
+    <label>Llargada hores (%)</label>
+    <input type="number" id="num-tn99-h-len" min="25" max="80" step="1" value="45">
+    <input type="range" id="slider-tn99-h-len" min="25" max="80" step="1" value="45">
+  </div>
+  <div class="coord-row">
+    <label>Llargada minuts (%)</label>
+    <input type="number" id="num-tn99-m-len" min="40" max="95" step="1" value="75">
+    <input type="range" id="slider-tn99-m-len" min="40" max="95" step="1" value="75">
+  </div>
+  <div class="coord-row">
+    <label>Gruix hores (%)</label>
+    <input type="number" id="num-tn99-h-width" min="0" max="10" step="0.1" value="5.4">
+    <input type="range" id="slider-tn99-h-width" min="0" max="10" step="0.1" value="5.4">
+  </div>
+  <div class="coord-row">
+    <label>Gruix minuts (%)</label>
+    <input type="number" id="num-tn99-m-width" min="0.5" max="10" step="0.1" value="3.4">
+    <input type="range" id="slider-tn99-m-width" min="0.5" max="10" step="0.1" value="3.4">
+  </div>
+  <div class="coord-row">
+    <label>Color agulles</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn99-hand-color" value="#101012" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn99-hand-color" value="#101012" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Fons Mapamundi & Textura Rugosa</div>
+  <div class="coord-row">
+    <label>Opacitat mapa (%)</label>
+    <input type="number" id="num-tn99-map-op" min="0" max="100" step="1" value="77">
+    <input type="range" id="slider-tn99-map-op" min="0" max="100" step="1" value="77">
+  </div>
+  <div class="coord-row">
+    <label>Escala mapa (%)</label>
+    <input type="number" id="num-tn99-map-scale" min="50" max="300" step="5" value="180">
+    <input type="range" id="slider-tn99-map-scale" min="50" max="300" step="5" value="180">
+  </div>
+  <div class="coord-row">
+    <label>Textura rugosa (%)</label>
+    <input type="number" id="num-tn99-grain-op" min="0" max="60" step="1" value="9">
+    <input type="range" id="slider-tn99-grain-op" min="0" max="60" step="1" value="9">
+  </div>
+  <div class="coord-row">
+    <label>Color fons (base)</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn99-bg-color" value="#e5ece4" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn99-bg-color" value="#E5ECE4" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color dalt-dreta</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn99-bg-grad1" value="#a1ae9c" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn99-bg-grad1" value="#A1AE9C" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color baix-esquerra</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn99-bg-grad2" value="#f8fff4" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn99-bg-grad2" value="#F8FFF4" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Subtilesa degradat (%)</label>
+    <input type="number" id="num-tn99-bg-subtlety" min="0" max="100" step="1" value="22">
+    <input type="range" id="slider-tn99-bg-subtlety" min="0" max="100" step="1" value="22">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Mapamundi: Fusió & Desenfoc Radial</div>
+  <div class="coord-row">
+    <label>Mode de fusió</label>
+    <select id="select-tn99-map-blend" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="source-over">Normal</option>
+      <option value="soft-light" selected>Llum suau (Soft light)</option>
+      <option value="overlay">Superposició (Overlay)</option>
+      <option value="screen">Trama (Screen)</option>
+      <option value="lighten">Aclarir (Lighten)</option>
+      <option value="color-dodge">Sobreexposició (Color dodge)</option>
+      <option value="hard-light">Llum forta (Hard light)</option>
+      <option value="luminosity">Lluminositat (Luminosity)</option>
+      <option value="difference">Diferència (Difference)</option>
+      <option value="exclusion">Exclusió (Exclusion)</option>
+      <option value="multiply">Multiplicar (Multiply)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Tipus desenfoc</label>
+    <select id="select-tn99-map-blur-type" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="lens">Lent (focus central, gaussià)</option>
+      <option value="zoom" selected>Zoom radial (estries des del focus)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Quantitat (px)</label>
+    <input type="number" id="num-tn99-map-blur-amount" min="0" max="40" step="0.5" value="12">
+    <input type="range" id="slider-tn99-map-blur-amount" min="0" max="40" step="0.5" value="12">
+  </div>
+  <div class="coord-row">
+    <label>Desenfoc mínim (px)</label>
+    <input type="number" id="num-tn99-map-blur-min" min="0" max="10" step="0.1" value="0.2">
+    <input type="range" id="slider-tn99-map-blur-min" min="0" max="10" step="0.1" value="0.2">
+  </div>
+  <div class="coord-row">
+    <label>Focus X (%)</label>
+    <input type="number" id="num-tn99-map-blur-cx" min="-20" max="120" step="1" value="79">
+    <input type="range" id="slider-tn99-map-blur-cx" min="-20" max="120" step="1" value="79">
+  </div>
+  <div class="coord-row">
+    <label>Focus Y (%)</label>
+    <input type="number" id="num-tn99-map-blur-cy" min="-20" max="120" step="1" value="57">
+    <input type="range" id="slider-tn99-map-blur-cy" min="-20" max="120" step="1" value="57">
+  </div>
+  <div class="coord-row">
+    <label>Radi nítid (%)</label>
+    <input type="number" id="num-tn99-map-blur-inner" min="0" max="100" step="1" value="28">
+    <input type="range" id="slider-tn99-map-blur-inner" min="0" max="100" step="1" value="28">
+  </div>
+  <div class="coord-row">
+    <label>Radi desenfoc màx (%)</label>
+    <input type="number" id="num-tn99-map-blur-outer" min="5" max="150" step="1" value="85">
+    <input type="range" id="slider-tn99-map-blur-outer" min="5" max="150" step="1" value="85">
+  </div>
+  <div class="coord-row">
+    <label>Forma (%)</label>
+    <input type="number" id="num-tn99-map-blur-aspect" min="30" max="300" step="5" value="105">
+    <input type="range" id="slider-tn99-map-blur-aspect" min="30" max="300" step="5" value="105">
+  </div>
+  <div class="coord-row">
+    <label>Irregularitat (%)</label>
+    <input type="number" id="num-tn99-map-blur-irreg" min="0" max="100" step="1" value="43">
+    <input type="range" id="slider-tn99-map-blur-irreg" min="0" max="100" step="1" value="43">
+  </div>
+  <div class="coord-row">
+    <label>Llavor patró</label>
+    <input type="number" id="num-tn99-map-blur-seed" min="1" max="999" step="1" value="7">
+    <button type="button" class="btn-editor-action" id="btn-tn99-map-blur-reseed" style="padding: 4px 8px; font-size: 11px;">🎲 Nou patró</button>
+  </div>
+  <div class="coord-row">
+    <label>Invertir zona</label>
+    <input type="checkbox" id="chk-tn99-map-blur-invert" style="justify-self: start;">
+  </div>
+  <div class="coord-row">
+    <label>Mostra màscara</label>
+    <input type="checkbox" id="chk-tn99-map-blur-showmask" style="justify-self: start;">
+  </div>
+
+  <div class="tab-actions" style="margin-top: 14px;">
+    <button type="button" class="btn-editor-action" id="btn-copy-tn99">Copia config 1999</button>
+    <button type="button" class="btn-editor-action" id="btn-reset-tn99">Restableix 1999</button>
+  </div>
+</div>
+
 <!-- TAB 7: TN 2002 (RELLOTGE NORMAL I RELLOTGE DE FONS AMB FUSIÓ) -->
 <div id="tab-tn2002" class="tab-content">
+  <div class="panel-section-title">Format de Pantalla & Vídeo</div>
+  <div class="coord-row">
+    <label>Aspect Ratio</label>
+    <select id="select-tn02-aspect" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="16:9" selected>16:9 (Panoràmic complet)</option>
+      <option value="4:3">4:3 (TV clàssica / Pillarbox)</option>
+      <option value="4:3-cover">4:3 Zoom (Omple pantalla)</option>
+      <option value="4:3-stretch">4:3 Estirat (Anamòrfic)</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Ajust Vídeo</label>
+    <select id="select-tn02-fit" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="cover" selected>Retallat (Cover / Center-cut 4:3)</option>
+      <option value="fill">Estirat (Fill / Deformat)</option>
+      <option value="contain">Enter (Contain / Bandes)</option>
+    </select>
+  </div>
+  <div class="coord-row" style="margin-top: 4px; margin-bottom: 8px;">
+    <div style="grid-column: 1 / -1; display: flex; gap: 6px;">
+      <button type="button" class="btn-editor-action" id="btn-tn02-preset-169" style="flex: 1; padding: 5px 8px; font-size: 11px;">Mode 16:9</button>
+      <button type="button" class="btn-editor-action" id="btn-tn02-preset-43" style="flex: 1; padding: 5px 8px; font-size: 11px;">Mode 4:3 TV</button>
+    </div>
+  </div>
+
   <div class="panel-section-title">Rellotge Principal (Davant)</div>
   <div class="coord-row">
     <label>Mida (vw)</label>
@@ -3422,11 +3773,31 @@ let flankCubesParams = {
 
     // 3. Central Cube Grey Face with Dynamic Overlapping Semicircles (Always a closed ring in slow constant motion)
     let tv3RingCanvas = null, tv3RingCtx = null, tv3RingTexture = null;
+    let cachedRingColors = null;
+    let lastRingFaceColor = null;
+
+    function getCachedRingColors() {
+      if (cachedRingColors && lastRingFaceColor === centralDialParams.faceColor) {
+        return cachedRingColors;
+      }
+      lastRingFaceColor = centralDialParams.faceColor;
+      const baseCol = new THREE.Color(centralDialParams.faceColor);
+      cachedRingColors = {
+        topHex: '#' + baseCol.clone().multiplyScalar(1.15).getHexString(),
+        botHex: '#' + baseCol.clone().multiplyScalar(0.88).getHexString(),
+        ringBaseHex: '#' + baseCol.clone().multiplyScalar(0.55).getHexString(),
+        arc1Hex: '#' + baseCol.clone().multiplyScalar(0.70).getHexString(),
+        arc2Hex: '#' + baseCol.clone().multiplyScalar(0.85).getHexString(),
+        arc3Hex: '#' + baseCol.clone().multiplyScalar(1.05).getHexString(),
+        arc4Hex: '#' + baseCol.clone().multiplyScalar(0.62).getHexString()
+      };
+      return cachedRingColors;
+    }
 
     function initGreyTV3RingTexture() {
       tv3RingCanvas = document.createElement('canvas');
-      tv3RingCanvas.width = 1024;
-      tv3RingCanvas.height = 1024;
+      tv3RingCanvas.width = 512;
+      tv3RingCanvas.height = 512;
       tv3RingCtx = tv3RingCanvas.getContext('2d');
       drawAnimatedTV3Ring(tv3RingCtx, 0);
 
@@ -3442,37 +3813,26 @@ let flankCubesParams = {
     };
 
     function drawAnimatedTV3Ring(ctx, time) {
-      ctx.clearRect(0, 0, 1024, 1024);
+      ctx.clearRect(0, 0, 512, 512);
 
-      // Dynamic studio gradient based on faceColor
-      const baseCol = new THREE.Color(centralDialParams.faceColor);
-      const topHex = '#' + baseCol.clone().multiplyScalar(1.15).getHexString();
-      const botHex = '#' + baseCol.clone().multiplyScalar(0.88).getHexString();
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, 1024);
-      bgGrad.addColorStop(0, topHex);
-      bgGrad.addColorStop(1, botHex);
+      const colors = getCachedRingColors();
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, 512);
+      bgGrad.addColorStop(0, colors.topHex);
+      bgGrad.addColorStop(1, colors.botHex);
       ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, 1024, 1024);
+      ctx.fillRect(0, 0, 512, 512);
 
-      const scale = (centralDialParams.size / 100.0);
-      const cx = 512, cy = 512;
+      const scale = (centralDialParams.size / 100.0) * 0.5;
+      const cx = 256, cy = 256;
       const outerR = 345 * scale;
       const innerR = 210 * scale;
-
-      // Harmonic monochromatic gamma for all ring layers derived directly from faceColor
-      const ringBaseHex = '#' + baseCol.clone().multiplyScalar(0.55).getHexString();
-      const arc1Hex     = '#' + baseCol.clone().multiplyScalar(0.70).getHexString();
-      const arc2Hex     = '#' + baseCol.clone().multiplyScalar(0.85).getHexString();
-      const arc3Hex     = '#' + baseCol.clone().multiplyScalar(1.05).getHexString();
-      const arc4Hex     = '#' + baseCol.clone().multiplyScalar(0.62).getHexString();
-      const borderDark  = '#' + baseCol.clone().multiplyScalar(0.40).getHexString();
 
       // 1. Base full closed ring
       ctx.beginPath();
       ctx.arc(cx, cy, outerR, 0, Math.PI * 2, false);
       ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
       ctx.closePath();
-      ctx.fillStyle = ringBaseHex;
+      ctx.fillStyle = colors.ringBaseHex;
       ctx.fill();
 
       function drawArcRing(startAngle, span, fillStyle) {
@@ -3485,25 +3845,66 @@ let flankCubesParams = {
       }
 
       // 2. Semicircle 1: clockwise rotation (~0.65 rad/s)
-      const a1 = time * 0.65;
-      drawArcRing(a1, Math.PI * 1.30, arc1Hex);
+      drawArcRing(time * 0.65, Math.PI * 1.30, colors.arc1Hex);
 
       // 3. Semicircle 2: counter-clockwise rotation (~0.48 rad/s)
-      const a2 = -time * 0.48 + 1.5;
-      drawArcRing(a2, Math.PI * 1.25, arc2Hex);
+      drawArcRing(-time * 0.48 + 1.5, Math.PI * 1.25, colors.arc2Hex);
 
       // 4. Semicircle 3: light accent arc (~0.85 rad/s)
-      const a3 = time * 0.85 + 3.2;
-      drawArcRing(a3, Math.PI * 1.10, arc3Hex);
+      drawArcRing(time * 0.85 + 3.2, Math.PI * 1.10, colors.arc3Hex);
 
       // 5. Semicircle 4: counter-clockwise subtle arc
-      const a4 = -time * 0.38 + 0.8;
-      drawArcRing(a4, Math.PI * 0.95, arc4Hex);
-
-      // Concentric outlines removed per user request (no stroke/shadow on dial circle)
+      drawArcRing(-time * 0.38 + 0.8, Math.PI * 0.95, colors.arc4Hex);
 
       // Subtle inner shadow along cube face perimeter
-      drawSubtleInnerShadow(ctx, 1024, 1024);
+      drawSubtleInnerShadow(ctx, 512, 512);
+    }
+
+    // Precompiled Static SVG Paths to avoid CPU string parsing inside the animation loop
+    let cachedWorldPath2D = null;
+    let cachedCatalunyaPath2D = null;
+    let worldStaticBgCanvas = null;
+    let catalunyaStaticBgCanvas = null;
+
+    function getStaticCubeBg(isWorld) {
+      if (isWorld && worldStaticBgCanvas) return worldStaticBgCanvas;
+      if (!isWorld && catalunyaStaticBgCanvas) return catalunyaStaticBgCanvas;
+
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 512;
+      const cx = c.getContext('2d');
+
+      const bg = cx.createLinearGradient(0, 0, 0, 512);
+      bg.addColorStop(0, '#bdc8d1');
+      bg.addColorStop(0.5, '#c9d4dc');
+      bg.addColorStop(1, '#b4bfc8');
+      cx.fillStyle = bg;
+      cx.fillRect(0, 0, 512, 512);
+
+      drawSubtleInnerShadow(cx, 512, 512);
+
+      if (isWorld) {
+        if (!cachedWorldPath2D && typeof WORLD_PATH_D !== 'undefined') {
+          cachedWorldPath2D = new Path2D(WORLD_PATH_D);
+        }
+        if (cachedWorldPath2D) {
+          cx.fillStyle = '#ffffff';
+          cx.fill(cachedWorldPath2D);
+        }
+        worldStaticBgCanvas = c;
+        return c;
+      } else {
+        if (!cachedCatalunyaPath2D && typeof CATALUNYA_PATH_D !== 'undefined') {
+          cachedCatalunyaPath2D = new Path2D(CATALUNYA_PATH_D);
+        }
+        if (cachedCatalunyaPath2D) {
+          cx.fillStyle = '#ffffff';
+          cx.fill(cachedCatalunyaPath2D);
+        }
+        catalunyaStaticBgCanvas = c;
+        return c;
+      }
     }
 
     // 4. Left Flanking Cube (World Map + Animated Aesthetic Mosaic Dots on Top)
@@ -3523,18 +3924,8 @@ let flankCubesParams = {
     }
 
     function drawWorldCubeCanvas(ctx, time) {
-      ctx.clearRect(0, 0, 512, 512);
-
-      // Studio slate-grey gradient background for high contrast with white silhouettes
-      const bg = ctx.createLinearGradient(0, 0, 0, 512);
-      bg.addColorStop(0, '#bdc8d1');
-      bg.addColorStop(0.5, '#c9d4dc');
-      bg.addColorStop(1, '#b4bfc8');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, 512, 512);
-
-      // Subtle inner shadow along cube face perimeter
-      drawSubtleInnerShadow(ctx, 512, 512);
+      const bg = getStaticCubeBg(true);
+      ctx.drawImage(bg, 0, 0);
 
       // --- Top Mosaic: 4 rows x 8 columns of breathing square dots matching TV3 screenshot ---
       const rows = 4, cols = 8;
@@ -3553,22 +3944,11 @@ let flankCubesParams = {
           const alpha = 0.28 + 0.62 * ((wave + 1) / 2);
 
           ctx.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(2)})`;
-          ctx.shadowColor = `rgba(255, 255, 255, ${(alpha * 0.5).toFixed(2)})`;
-          ctx.shadowBlur = 4;
-
           ctx.beginPath();
           if (ctx.roundRect) ctx.roundRect(x, y, dotSize, dotSize, 2);
           else ctx.rect(x, y, dotSize, dotSize);
           ctx.fill();
         }
-      }
-      ctx.shadowBlur = 0;
-
-      // --- Bottom World Map Silhouette (Pure White Fill, NO SHADOW, NO STROKE) ---
-      if (typeof WORLD_PATH_D !== 'undefined') {
-        const path = new Path2D(WORLD_PATH_D);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill(path);
       }
     }
 
@@ -3589,18 +3969,8 @@ let flankCubesParams = {
     }
 
     function drawCatalunyaCubeCanvas(ctx, time) {
-      ctx.clearRect(0, 0, 512, 512);
-
-      // Studio slate-grey gradient background for high contrast with white silhouettes
-      const bg = ctx.createLinearGradient(0, 0, 0, 512);
-      bg.addColorStop(0, '#bdc8d1');
-      bg.addColorStop(0.5, '#c9d4dc');
-      bg.addColorStop(1, '#b4bfc8');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, 512, 512);
-
-      // Subtle inner shadow along cube face perimeter
-      drawSubtleInnerShadow(ctx, 512, 512);
+      const bg = getStaticCubeBg(false);
+      ctx.drawImage(bg, 0, 0);
 
       // --- Left Mosaic: 9 rows x 3 columns of breathing square dots matching TV3 screenshot ---
       const rows = 9, cols = 3;
@@ -3619,22 +3989,11 @@ let flankCubesParams = {
           const alpha = 0.28 + 0.62 * ((wave + 1) / 2);
 
           ctx.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(2)})`;
-          ctx.shadowColor = `rgba(255, 255, 255, ${(alpha * 0.5).toFixed(2)})`;
-          ctx.shadowBlur = 4;
-
           ctx.beginPath();
           if (ctx.roundRect) ctx.roundRect(x, y, dotSize, dotSize, 2);
           else ctx.rect(x, y, dotSize, dotSize);
           ctx.fill();
         }
-      }
-      ctx.shadowBlur = 0;
-
-      // --- Right Catalunya Silhouette (Pure White Fill, NO SHADOW, NO STROKE) ---
-      if (typeof CATALUNYA_PATH_D !== 'undefined') {
-        const path = new Path2D(CATALUNYA_PATH_D);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill(path);
       }
     }
 
@@ -3778,7 +4137,7 @@ let flankCubesParams = {
       // 3. Renderer
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
       if (renderer) renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -3905,7 +4264,8 @@ let flankCubesParams = {
           const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
           initialMode = autoModes[day];
         }
-        if (initialMode && (initialMode === '2002' || initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
+        if (initialMode === '2001') initialMode = '1999';
+        if (initialMode && (initialMode === '1999' || initialMode === '2002' || initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
           if (initialMode !== '2014') {
             applyModeSwitch(initialMode);
           } else {
@@ -4154,8 +4514,8 @@ let flankCubesParams = {
       const floorGeo = new THREE.PlaneGeometry(floorSize, floorSize);
 
       // Faint subtle reflection (optimized resolution for maximum FPS)
-      const refW = Math.min(1024, Math.max(512, Math.round(window.innerWidth * 0.5)));
-      const refH = Math.min(1024, Math.max(512, Math.round(window.innerHeight * 0.5)));
+      const refW = Math.min(512, Math.max(256, Math.round(window.innerWidth * 0.35)));
+      const refH = Math.min(512, Math.max(256, Math.round(window.innerHeight * 0.35)));
       floorReflector = new THREE.Reflector(floorGeo, {
         clipBias: 0.003,
         textureWidth: refW,
@@ -4344,69 +4704,151 @@ rightMat = new THREE.MeshStandardMaterial({
       };
     }
 
-    function updateClockDigits(forceRebuild = false) {
+    // Pre-allocated geometries and materials for zero-garbage collection 3D clock updates
+    let cachedDigitGeoms = {};
+    let cachedColonGeom = null;
+    let cachedFrontMat = null;
+    let cachedSideMat = null;
+    let cachedClockMaterials = null;
+    let clockMeshes = [];
+    let clockMeshWrappers = [];
+    let colonWrappers = [];
+    let isClockMeshesBuilt = false;
+
+    function initCachedClockGeometries() {
       if (!font3D) return;
+      const textOptions = {
+        font: font3D,
+        size: 1.82,
+        height: 0.30,
+        curveSegments: 10,
+        bevelEnabled: true,
+        bevelThickness: 0.055,
+        bevelSize: 0.035,
+        bevelSegments: 3
+      };
 
-      const t = getEffectiveTime();
-      const timeStr = `${t.hours}:${t.minutes}:${t.seconds}`;
-
-      if (!forceRebuild && timeStr === lastRenderedTimeStr) return;
-      lastRenderedTimeStr = timeStr;
-
-      while (clockDigitsGroup.children.length > 0) {
-        const obj = clockDigitsGroup.children[0];
-        if (obj.geometry) obj.geometry.dispose();
-        clockDigitsGroup.remove(obj);
+      for (let i = 0; i <= 9; i++) {
+        const s = String(i);
+        const geom = new THREE.TextGeometry(s, textOptions);
+        geom.computeBoundingBox();
+        cachedDigitGeoms[s] = geom;
       }
 
-      // Materials: Desaturated TV3 terracotta-orange gradient face + outer bevel/sides (#fbf8cf)
-      const frontMat = new THREE.MeshStandardMaterial({
+      // Colon dots geometry
+      const dotShape = new THREE.Shape();
+      const s = 0.085;
+      dotShape.moveTo(-s, -s);
+      dotShape.lineTo(s, -s);
+      dotShape.lineTo(s, s);
+      dotShape.lineTo(-s, s);
+      dotShape.closePath();
+
+      const dotExtrudeSettings = {
+        depth: textOptions.height,
+        bevelEnabled: true,
+        bevelThickness: textOptions.bevelThickness,
+        bevelSize: textOptions.bevelSize,
+        bevelSegments: 3
+      };
+      cachedColonGeom = new THREE.ExtrudeGeometry(dotShape, dotExtrudeSettings);
+      cachedColonGeom.computeBoundingBox();
+
+      const uvAttr = cachedColonGeom.attributes.uv;
+      const posAttr = cachedColonGeom.attributes.position;
+      const bb = cachedColonGeom.boundingBox;
+      for (let k = 0; k < uvAttr.count; k++) {
+        const u = (posAttr.getX(k) - bb.min.x) / (bb.max.x - bb.min.x || 1);
+        const v = (posAttr.getY(k) - bb.min.y) / (bb.max.y - bb.min.y || 1);
+        uvAttr.setXY(k, u, v);
+      }
+      uvAttr.needsUpdate = true;
+
+      cachedFrontMat = new THREE.MeshStandardMaterial({
         map: textures.digitGradient,
         roughness: 0.38,
         metalness: 0.02
       });
 
-      const sideMat = new THREE.MeshStandardMaterial({
+      cachedSideMat = new THREE.MeshStandardMaterial({
         color: new THREE.Color(clockDigitsParams.bevelColor || '#f8e0c5'),
         roughness: 0.30,
         metalness: 0.05
       });
 
-      const materials = [frontMat, sideMat];
+      cachedClockMaterials = [cachedFrontMat, cachedSideMat];
+    }
 
-      const textOptions = {
-        font: font3D,
-        size: 1.82,
-        height: 0.30,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.055,
-        bevelSize: 0.035,
-        bevelSegments: 4
-      };
+    function updateClockDigits(forceRebuild = false) {
+      if (!font3D) return;
+      if (!cachedColonGeom) initCachedClockGeometries();
 
-      const h1Geom = new THREE.TextGeometry(t.hours[0], textOptions);
-      const h2Geom = new THREE.TextGeometry(t.hours[1], textOptions);
-      const m1Geom = new THREE.TextGeometry(t.minutes[0], textOptions);
-      const m2Geom = new THREE.TextGeometry(t.minutes[1], textOptions);
-      const s1Geom = new THREE.TextGeometry(t.seconds[0], textOptions);
-      const s2Geom = new THREE.TextGeometry(t.seconds[1], textOptions);
+      const t = getEffectiveTime();
+      const timeStr = `${t.hours}:${t.minutes}:${t.seconds}`;
 
-      [h1Geom, h2Geom, m1Geom, m2Geom, s1Geom, s2Geom].forEach(g => g.computeBoundingBox());
+      if (!forceRebuild && timeStr === lastRenderedTimeStr && isClockMeshesBuilt) return;
+      lastRenderedTimeStr = timeStr;
+
+      if (forceRebuild || !isClockMeshesBuilt) {
+        while (clockDigitsGroup.children.length > 0) {
+          clockDigitsGroup.remove(clockDigitsGroup.children[0]);
+        }
+        clockMeshes = [];
+        clockMeshWrappers = [];
+        colonWrappers = [];
+
+        for (let i = 0; i < 6; i++) {
+          const w = new THREE.Group();
+          const m = new THREE.Mesh(cachedDigitGeoms['0'], cachedClockMaterials);
+          m.castShadow = false;
+          m.receiveShadow = false;
+          w.add(m);
+          clockDigitsGroup.add(w);
+          clockMeshWrappers.push(w);
+          clockMeshes.push(m);
+        }
+
+        for (let c = 0; c < 2; c++) {
+          const w = new THREE.Group();
+          const dotTop = new THREE.Mesh(cachedColonGeom, cachedClockMaterials);
+          dotTop.position.set(0, 1.06, 0.1);
+          dotTop.castShadow = false;
+          w.add(dotTop);
+
+          const dotBot = new THREE.Mesh(cachedColonGeom, cachedClockMaterials);
+          dotBot.position.set(0, 0.53, 0.1);
+          dotBot.castShadow = false;
+          w.add(dotBot);
+
+          clockDigitsGroup.add(w);
+          colonWrappers.push(w);
+        }
+
+        isClockMeshesBuilt = true;
+      }
+
+      // Update side material color if modified in editor
+      if (cachedSideMat && clockDigitsParams.bevelColor) {
+        const curHex = '#' + cachedSideMat.color.getHexString().toLowerCase();
+        if (curHex !== clockDigitsParams.bevelColor.toLowerCase()) {
+          cachedSideMat.color.set(clockDigitsParams.bevelColor);
+        }
+      }
+
+      const chars = [t.hours[0], t.hours[1], t.minutes[0], t.minutes[1], t.seconds[0], t.seconds[1]];
+      const geoms = chars.map(ch => cachedDigitGeoms[ch] || cachedDigitGeoms['0']);
 
       const getW = (g) => g.boundingBox.max.x - g.boundingBox.min.x;
-
-      // Compact spacing
       const digitGap = 0.14;
       const colonGap = 0.22;
       const colonWidth = 0.18;
 
-      const wH1 = getW(h1Geom);
-      const wH2 = getW(h2Geom);
-      const wM1 = getW(m1Geom);
-      const wM2 = getW(m2Geom);
-      const wS1 = getW(s1Geom);
-      const wS2 = getW(s2Geom);
+      const wH1 = getW(geoms[0]);
+      const wH2 = getW(geoms[1]);
+      const wM1 = getW(geoms[2]);
+      const wM2 = getW(geoms[3]);
+      const wS1 = getW(geoms[4]);
+      const wS2 = getW(geoms[5]);
 
       const wMinutes = wM1 + digitGap + wM2;
       const m1X = -wMinutes / 2;
@@ -4420,91 +4862,41 @@ rightMat = new THREE.MeshStandardMaterial({
       const s1X = c2X + colonWidth / 2 + colonGap;
       const s2X = s1X + wS1 + digitGap;
 
-      const items = [
-        { type: 'digit', geom: h1Geom, leftX: h1X, width: wH1 },
-        { type: 'digit', geom: h2Geom, leftX: h2X, width: wH2 },
-        { type: 'colon', midX: c1X },
-        { type: 'digit', geom: m1Geom, leftX: m1X, width: wM1 },
-        { type: 'digit', geom: m2Geom, leftX: m2X, width: wM2 },
-        { type: 'colon', midX: c2X },
-        { type: 'digit', geom: s1Geom, leftX: s1X, width: wS1 },
-        { type: 'digit', geom: s2Geom, leftX: s2X, width: wS2 }
+      const digitItems = [
+        { leftX: h1X, width: wH1, geom: geoms[0] },
+        { leftX: h2X, width: wH2, geom: geoms[1] },
+        { leftX: m1X, width: wM1, geom: geoms[2] },
+        { leftX: m2X, width: wM2, geom: geoms[3] },
+        { leftX: s1X, width: wS1, geom: geoms[4] },
+        { leftX: s2X, width: wS2, geom: geoms[5] }
       ];
 
-      // CURVATURE: convex (> 0), flat (0), or concave (< 0)
-      items.forEach(it => {
-        if (it.type === 'digit') {
-          const midX = it.leftX + it.width / 2;
-          const cur = calcCurvature(midX, clockParams.curvature);
+      for (let i = 0; i < 6; i++) {
+        const item = digitItems[i];
+        const mesh = clockMeshes[i];
+        const wrap = clockMeshWrappers[i];
 
-          const mesh = new THREE.Mesh(it.geom, materials);
-          const minX = it.geom.boundingBox.min.x;
-          const minY = it.geom.boundingBox.min.y;
-          mesh.position.set(-it.width / 2 - minX, -minY + 0.02, 0);
-
-          const wrapper = new THREE.Group();
-          wrapper.position.set(cur.posX, 0, cur.posZ);
-          wrapper.rotation.y = cur.rotY;
-          wrapper.add(mesh);
-
-          mesh.castShadow = false;
-          mesh.receiveShadow = false;
-          clockDigitsGroup.add(wrapper);
-
-        } else if (it.type === 'colon') {
-          const cur = calcCurvature(it.midX, clockParams.curvature);
-
-          // Extruded 3D shape with the exact same bevel, depth, front gradient, and cream sides as the digits!
-          const dotShape = new THREE.Shape();
-          const s = 0.085;
-          dotShape.moveTo(-s, -s);
-          dotShape.lineTo(s, -s);
-          dotShape.lineTo(s, s);
-          dotShape.lineTo(-s, s);
-          dotShape.closePath();
-
-          const dotExtrudeSettings = {
-            depth: textOptions.height,
-            bevelEnabled: true,
-            bevelThickness: textOptions.bevelThickness,
-            bevelSize: textOptions.bevelSize,
-            bevelSegments: 4
-          };
-          const dotGeo = new THREE.ExtrudeGeometry(dotShape, dotExtrudeSettings);
-
-          // Normalize UVs so the front face gets the full top-to-bottom orange/amber gradient!
-          dotGeo.computeBoundingBox();
-          const uvAttr = dotGeo.attributes.uv;
-          const posAttr = dotGeo.attributes.position;
-          const bb = dotGeo.boundingBox;
-          for (let k = 0; k < uvAttr.count; k++) {
-            const u = (posAttr.getX(k) - bb.min.x) / (bb.max.x - bb.min.x || 1);
-            const v = (posAttr.getY(k) - bb.min.y) / (bb.max.y - bb.min.y || 1);
-            uvAttr.setXY(k, u, v);
-          }
-          uvAttr.needsUpdate = true;
-
-          const wrapper = new THREE.Group();
-          wrapper.position.set(cur.posX, 0, cur.posZ);
-          wrapper.rotation.y = cur.rotY;
-
-          // Top dot
-          const dotTop = new THREE.Mesh(dotGeo, materials);
-          dotTop.position.set(0, 1.06, 0.1);
-          dotTop.castShadow = false;
-          dotTop.receiveShadow = false;
-          wrapper.add(dotTop);
-
-          // Bottom dot
-          const dotBottom = new THREE.Mesh(dotGeo, materials);
-          dotBottom.position.set(0, 0.53, 0.1);
-          dotBottom.castShadow = false;
-          dotBottom.receiveShadow = false;
-          wrapper.add(dotBottom);
-
-          clockDigitsGroup.add(wrapper);
+        if (mesh.geometry !== item.geom) {
+          mesh.geometry = item.geom;
         }
-      });
+
+        const midX = item.leftX + item.width / 2;
+        const cur = calcCurvature(midX, clockParams.curvature);
+        wrap.position.set(cur.posX, 0, cur.posZ);
+        wrap.rotation.y = cur.rotY;
+
+        const minX = item.geom.boundingBox.min.x;
+        const minY = item.geom.boundingBox.min.y;
+        mesh.position.set(-item.width / 2 - minX, -minY + 0.02, 0);
+      }
+
+      const colonX = [c1X, c2X];
+      for (let c = 0; c < 2; c++) {
+        const wrap = colonWrappers[c];
+        const cur = calcCurvature(colonX[c], clockParams.curvature);
+        wrap.position.set(cur.posX, 0, cur.posZ);
+        wrap.rotation.y = cur.rotY;
+      }
 
       // Digital clock group position & scale
       clockDigitsGroup.position.set(clockParams.x, clockParams.y, clockParams.z);
@@ -4619,6 +5011,10 @@ rightMat = new THREE.MeshStandardMaterial({
     function animate() {
       requestAnimationFrame(animate);
 
+      if (currentAppMode === '1999' || currentAppMode === '2001') {
+        updateTN99Clock();
+        return;
+      }
       if (currentAppMode === '2002') {
         updateTN02Clock();
         return; // Stop Three.js render loop when in 2D video TN 2002 mode to save CPU/GPU!
@@ -4679,9 +5075,9 @@ rightMat = new THREE.MeshStandardMaterial({
         ringMesh.material.uniforms.uOffset.value += tempParams.speed;
       }
 
-      // Animate the mosaic dots on both flanking cubes throttled to ~25fps to eliminate GPU upload stalls
+      // Animate the mosaic dots on both flanking cubes throttled to ~20fps to eliminate GPU upload stalls
       const nowMs = performance.now();
-      if (!window._lastTexUpdateMs || (nowMs - window._lastTexUpdateMs) >= 40) {
+      if (!window._lastTexUpdateMs || (nowMs - window._lastTexUpdateMs) >= 50) {
         window._lastTexUpdateMs = nowMs;
         const elapsedSec = nowMs * 0.001;
         if (worldCubeCtx && worldCubeTexture) {
@@ -4741,9 +5137,13 @@ rightMat = new THREE.MeshStandardMaterial({
       renderer.setSize(window.innerWidth, window.innerHeight);
 
       if (floorReflector) {
-        const refW = Math.min(1024, Math.max(512, Math.round(window.innerWidth * 0.5)));
-        const refH = Math.min(1024, Math.max(512, Math.round(window.innerHeight * 0.5)));
+        const refW = Math.min(512, Math.max(256, Math.round(window.innerWidth * 0.35)));
+        const refH = Math.min(512, Math.max(256, Math.round(window.innerHeight * 0.35)));
         floorReflector.getRenderTarget().setSize(refW, refH);
+      }
+
+      if (typeof resizeTN99Canvases === 'function') {
+        resizeTN99Canvases();
       }
     }
 
@@ -4752,6 +5152,107 @@ rightMat = new THREE.MeshStandardMaterial({
     let isAudioMuted = false;
     let isSyncActive = false;
     let syncIntervalId = null;
+
+    // --- Web Audio API Seamless Gapless Looper for TN 1999 ---
+    let tn99AudioCtx = null;
+    let tn99AudioBuffer = null;
+    let tn99AudioSource = null;
+    let tn99GainNode = null;
+    let isTN99AudioActive = false;
+
+    async function loadTN99AudioBuffer() {
+      if (tn99AudioBuffer) return tn99AudioBuffer;
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtxClass) return null;
+      if (!tn99AudioCtx) {
+        tn99AudioCtx = new AudioCtxClass();
+      }
+      try {
+        let resp;
+        try {
+          resp = await fetch('audio/music_1999.wav');
+        } catch (e) {
+          resp = await fetch('audio/music_1999.m4a');
+        }
+        if (!resp || !resp.ok) {
+          resp = await fetch('audio/music_1999.m4a');
+        }
+        const ab = await resp.arrayBuffer();
+        const decoded = await tn99AudioCtx.decodeAudioData(ab);
+
+        // Micro-crossfade (256 samples) per garantir 0 clics al canvi de cicle
+        const fade = Math.min(256, Math.floor(decoded.length * 0.005));
+        for (let ch = 0; ch < decoded.numberOfChannels; ch++) {
+          const chData = decoded.getChannelData(ch);
+          const len = chData.length;
+          for (let i = 0; i < fade; i++) {
+            const factor = i / fade;
+            chData[i] = (1 - factor) * chData[len - fade + i] + factor * chData[i];
+          }
+        }
+        tn99AudioBuffer = decoded;
+        return decoded;
+      } catch (err) {
+        console.warn("Could not load seamless TN 1999 audio:", err);
+        return null;
+      }
+    }
+
+    async function playTN99SeamlessAudio() {
+      isTN99AudioActive = true;
+      if (bgAudio) {
+        bgAudio.pause();
+      }
+      const buf = await loadTN99AudioBuffer();
+      if (!buf || !isTN99AudioActive) return;
+
+      if (tn99AudioCtx && tn99AudioCtx.state === 'suspended') {
+        await tn99AudioCtx.resume().catch(() => {});
+      }
+
+      if (tn99AudioSource) {
+        try { tn99AudioSource.stop(); } catch (e) {}
+        tn99AudioSource.disconnect();
+        tn99AudioSource = null;
+      }
+
+      if (!tn99GainNode) {
+        tn99GainNode = tn99AudioCtx.createGain();
+        tn99GainNode.connect(tn99AudioCtx.destination);
+      }
+      const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+      tn99GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn99AudioCtx.currentTime);
+
+      tn99AudioSource = tn99AudioCtx.createBufferSource();
+      tn99AudioSource.buffer = buf;
+      tn99AudioSource.loop = true;
+      tn99AudioSource.loopStart = 0;
+      tn99AudioSource.loopEnd = buf.duration;
+      tn99AudioSource.connect(tn99GainNode);
+
+      // Sincronització de fase amb els segons del rellotge (120 BPM = 16.0s bucle exacte)
+      const now = new Date();
+      const curSec = now.getSeconds() + (now.getMilliseconds() / 1000);
+      const startOffset = curSec % buf.duration;
+
+      tn99AudioSource.start(0, startOffset);
+    }
+
+    function stopTN99SeamlessAudio() {
+      isTN99AudioActive = false;
+      if (tn99AudioSource) {
+        try { tn99AudioSource.stop(); } catch (e) {}
+        tn99AudioSource.disconnect();
+        tn99AudioSource = null;
+      }
+    }
+
+    function updateTN99AudioVolume() {
+      if (tn99GainNode && tn99AudioCtx) {
+        const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+        tn99GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn99AudioCtx.currentTime);
+      }
+    }
 
     // --- Web Audio API Seamless Gapless Looper for TN 2002 ---
     let tn02AudioCtx = null;
@@ -4938,6 +5439,22 @@ rightMat = new THREE.MeshStandardMaterial({
       bgAudio.loop = true;
       bgAudio.volume = 0.85;
 
+      if (currentAppMode === '1999' || currentAppMode === '2001') {
+        playTN99SeamlessAudio();
+        updateAudioUI();
+        return;
+      }
+      if (currentAppMode === '2002') {
+        playTN02SeamlessAudio();
+        updateAudioUI();
+        return;
+      }
+      if (currentAppMode === '2005') {
+        playTN05SeamlessAudio();
+        updateAudioUI();
+        return;
+      }
+
       // Preload entire audio into memory Blob for instantaneous seeking without HTTP Range delays
       fetch('audio/music.m4a')
         .then(res => res.blob())
@@ -4964,7 +5481,15 @@ rightMat = new THREE.MeshStandardMaterial({
         const unlockSound = () => {
           bgAudio.muted = false;
           isAudioMuted = false;
-          if (currentAppMode === '2002') {
+          if (currentAppMode === '1999' || currentAppMode === '2001') {
+            if (tn99AudioCtx && tn99AudioCtx.state === 'suspended') {
+              tn99AudioCtx.resume().catch(() => {});
+            }
+            updateTN99AudioVolume();
+            if (!tn99AudioSource || !isTN99AudioActive) {
+              playTN99SeamlessAudio();
+            }
+          } else if (currentAppMode === '2002') {
             if (tn02AudioCtx && tn02AudioCtx.state === 'suspended') {
               tn02AudioCtx.resume().catch(() => {});
             }
@@ -5001,6 +5526,14 @@ rightMat = new THREE.MeshStandardMaterial({
       if (!bgAudio) return;
       isAudioMuted = !isAudioMuted;
       bgAudio.muted = isAudioMuted;
+      if (currentAppMode === '1999' || currentAppMode === '2001') {
+        updateTN99AudioVolume();
+        updateAudioUI();
+        if (!isAudioMuted && (!tn99AudioSource || !isTN99AudioActive)) {
+          playTN99SeamlessAudio();
+        }
+        return;
+      }
       if (currentAppMode === '2002') {
         updateTN02AudioVolume();
         updateAudioUI();
@@ -5566,9 +6099,763 @@ function updateTN25Clock() {
 }
 
 // ==========================================================================
+// --- TN 1999 ENGINE (TN TV3 - 1999) - Broques Rectangulars, Bola 3D i Mapa
+// ==========================================================================
+let tn99Params = {
+  size: 82,            // % of min(width, height)
+  posX: 0,             // px offset
+  posY: 0,             // px offset
+  aspectRatio: '16:9', // '16:9' | '4:3'
+  blur: 0.7,           // px desenfoc analògic suau TV
+
+  // Segunder Bola 3D
+  ballSize: 5.2,       // % of radius
+  ballDist: 91,        // % of radius (òrbita a 91% del radi)
+  ballMotion: 'step',  // 'step' | 'smooth'
+  ballShadow: false,   // Sense ombra exterior projectada
+  ballInnerShadow: 40, // % ombra interna 3D de la bola (0=plana 2D, 100=màxim relleu)
+
+  // Triangle TV3 a les 3
+  triSize: 14.5,       // % of radius
+  triColor: '#CC181E', // Vermell TV3 clàssic
+
+  // Broques (Agulles Rectangulars de gruix ajustable independentment)
+  hLen: 45,            // % of radius
+  mLen: 75,            // % of radius
+  hWidth: 5.4,         // % of radius (gruix agulla hores)
+  mWidth: 3.4,         // % of radius (gruix agulla minuts)
+  handWidth: 3.4,      // compatibilitat
+  handColor: '#101012',// Negre pur mat
+
+  // Fons Mapamundi & Textura Rugosa (Estuc / Guix TV3)
+  mapOpacity: 77,      // %
+  mapScale: 180,       // % (gran, ocupa tota la pantalla)
+  grainOpacity: 9,    // % (relleu rugós orgànic)
+  bgColor: '#E5ECE4',  // Blanc trencat amb subtil matís gris-verd TV3
+  bgGradColor1: '#A1AE9C', // Dalt-dreta
+  bgGradColor2: '#F8FFF4', // Baix-esquerra
+  bgGradSubtlety: 22,  // % subtilesa del degradat (0 = contrast directe màxim, 100 = màxima subtilesa)
+
+  // Mapamundi: mode de fusió i desenfoc radial no uniforme
+  mapBlend: 'soft-light', // mode de fusió canvas (normal, soft-light, overlay, screen...)
+  mapBlurType: 'zoom', // 'lens' (gaussià, focus central) | 'zoom' (zoom radial des del focus)
+  mapBlurAmount: 12,    // px desenfoc màxim a les zones desenfocades
+  mapBlurMin: 0.2,     // px desenfoc mínim uniforme a tot el mapa
+  mapBlurCX: 79,       // % posició X del focus nítid
+  mapBlurCY: 57,       // % posició Y del focus nítid
+  mapBlurInner: 28,    // % radi de la zona nítida
+  mapBlurOuter: 85,    // % radi on el desenfoc és màxim
+  mapBlurAspect: 105,  // % forma (100 = cercle, <100 el·lipse horitzontal, >100 vertical)
+  mapBlurIrreg: 43,    // % irregularitat orgànica
+  mapBlurSeed: 7,      // llavor del patró irregular
+  mapBlurInvert: false,// inverteix (centre desenfocat, vores nítides)
+  mapBlurShowMask: false // eina: visualitza la zona de desenfoc
+};
+
+const TN99_DEFAULTS = JSON.parse(JSON.stringify(tn99Params));
+
+let tn99BgCanvas = null;
+let tn99ClockCanvas = null;
+let tn99BgCtx = null;
+let tn99ClockCtx = null;
+let tn99WorldPath = null;
+let tn99StuccoCanvas = null;
+
+function initTN99() {
+  if (!tn99BgCanvas) {
+    tn99BgCanvas = document.getElementById('tn99-bg-canvas');
+    if (tn99BgCanvas) tn99BgCtx = tn99BgCanvas.getContext('2d');
+  }
+  if (!tn99ClockCanvas) {
+    tn99ClockCanvas = document.getElementById('tn99-clock-canvas');
+    if (tn99ClockCanvas) tn99ClockCtx = tn99ClockCanvas.getContext('2d');
+  }
+  if (typeof WORLD_PATH_D !== 'undefined' && !tn99WorldPath) {
+    try {
+      tn99WorldPath = new Path2D(WORLD_PATH_D);
+    } catch (e) {
+      console.warn('Path2D WORLD_PATH_D error:', e);
+    }
+  }
+  resizeTN99Canvases();
+}
+
+function resizeTN99Canvases() {
+  if (!tn99BgCanvas || !tn99ClockCanvas) {
+    tn99BgCanvas = document.getElementById('tn99-bg-canvas');
+    tn99ClockCanvas = document.getElementById('tn99-clock-canvas');
+    if (tn99BgCanvas) tn99BgCtx = tn99BgCanvas.getContext('2d');
+    if (tn99ClockCanvas) tn99ClockCtx = tn99ClockCanvas.getContext('2d');
+  }
+  if (!tn99BgCanvas || !tn99ClockCanvas) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const targetW = Math.round(w * dpr);
+  const targetH = Math.round(h * dpr);
+
+  if (tn99BgCanvas.width !== targetW || tn99BgCanvas.height !== targetH) {
+    tn99BgCanvas.width = targetW;
+    tn99BgCanvas.height = targetH;
+    tn99ClockCanvas.width = targetW;
+    tn99ClockCanvas.height = targetH;
+    drawTN99Background();
+  }
+}
+
+function drawTN99Background() {
+  if (!tn99BgCanvas) initTN99();
+  if (!tn99BgCanvas || !tn99BgCtx) return;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const cw = tn99BgCanvas.width;
+  const ch = tn99BgCanvas.height;
+
+  tn99BgCtx.clearRect(0, 0, cw, ch);
+
+  let stageW = w;
+  let stageH = h;
+  let stageX = 0;
+  let stageY = 0;
+
+  if (tn99Params.aspectRatio === '4:3') {
+    const targetW = h * (4 / 3);
+    if (targetW < w) {
+      stageW = targetW;
+      stageX = (w - targetW) / 2;
+    }
+    tn99BgCtx.fillStyle = '#000000';
+    tn99BgCtx.fillRect(0, 0, cw, ch);
+  }
+
+  const sx = Math.round(stageX * dpr);
+  const sy = Math.round(stageY * dpr);
+  const sw = Math.round(stageW * dpr);
+  const sh = Math.round(stageH * dpr);
+
+  // 1. Fons base amb degradat diagonal (de dalt a la dreta a baix a l'esquerra)
+  const grad = tn99BgCtx.createLinearGradient(sx + sw, sy, sx, sy + sh);
+
+  function parseHexToRgb(h) {
+    let s = (h || '#E5ECE4').replace('#', '');
+    if (s.length === 3) s = s.split('').map(x => x + x).join('');
+    const val = parseInt(s, 16) || 0;
+    return [(val >> 16) & 255, (val >> 8) & 255, val & 255];
+  }
+
+  const c1 = tn99Params.bgGradColor1 || '#EFF4ED';
+  const c2 = tn99Params.bgGradColor2 || '#D6E1D4';
+  const sub = (typeof tn99Params.bgGradSubtlety === 'number') ? tn99Params.bgGradSubtlety : 50;
+
+  const rgb1 = parseHexToRgb(c1);
+  const rgb2 = parseHexToRgb(c2);
+  const midRgb = [
+    (rgb1[0] + rgb2[0]) / 2,
+    (rgb1[1] + rgb2[1]) / 2,
+    (rgb1[2] + rgb2[2]) / 2
+  ];
+
+  // Subtilesa: 0 = contrast directe màxim entre c1 i c2, 100 = màxima subtilesa (suau / convergit al centre)
+  const contrastFactor = 1 - (Math.max(0, Math.min(100, sub)) / 100);
+  const rStart = Math.round(midRgb[0] + (rgb1[0] - midRgb[0]) * contrastFactor);
+  const gStart = Math.round(midRgb[1] + (rgb1[1] - midRgb[1]) * contrastFactor);
+  const bStart = Math.round(midRgb[2] + (rgb1[2] - midRgb[2]) * contrastFactor);
+
+  const rEnd = Math.round(midRgb[0] + (rgb2[0] - midRgb[0]) * contrastFactor);
+  const gEnd = Math.round(midRgb[1] + (rgb2[1] - midRgb[1]) * contrastFactor);
+  const bEnd = Math.round(midRgb[2] + (rgb2[2] - midRgb[2]) * contrastFactor);
+
+  grad.addColorStop(0, `rgb(${rStart}, ${gStart}, ${bStart})`);
+  grad.addColorStop(1, `rgb(${rEnd}, ${gEnd}, ${bEnd})`);
+
+  tn99BgCtx.fillStyle = grad;
+  tn99BgCtx.fillRect(sx, sy, sw, sh);
+
+  // 2. Generador de patró de relleu / estuc rugós (Stucco Emboss)
+  if (!tn99StuccoCanvas) {
+    tn99StuccoCanvas = document.createElement('canvas');
+    const sz = 256;
+    tn99StuccoCanvas.width = sz;
+    tn99StuccoCanvas.height = sz;
+    const sCtx = tn99StuccoCanvas.getContext('2d');
+    const sImg = sCtx.createImageData(sz, sz);
+    const buf = sImg.data;
+
+    const hMap = new Float32Array(sz * sz);
+    for (let i = 0; i < sz * sz; i++) {
+      hMap[i] = Math.random();
+    }
+
+    const sm1 = new Float32Array(sz * sz);
+    for (let y = 0; y < sz; y++) {
+      const yRow = y * sz;
+      for (let x = 0; x < sz; x++) {
+        let sum = 0;
+        for (let dy = -1; dy <= 1; dy++) {
+          const ny = (y + dy + sz) % sz;
+          for (let dx = -1; dx <= 1; dx++) {
+            sum += hMap[ny * sz + ((x + dx + sz) % sz)];
+          }
+        }
+        sm1[yRow + x] = sum / 9;
+      }
+    }
+
+    const sm2 = new Float32Array(sz * sz);
+    for (let y = 0; y < sz; y++) {
+      const yRow = y * sz;
+      for (let x = 0; x < sz; x++) {
+        let sum = 0;
+        for (let dy = -2; dy <= 2; dy += 2) {
+          const ny = (y + dy + sz) % sz;
+          for (let dx = -2; dx <= 2; dx += 2) {
+            sum += sm1[ny * sz + ((x + dx + sz) % sz)];
+          }
+        }
+        sm2[yRow + x] = sum / 9;
+      }
+    }
+
+    for (let y = 0; y < sz; y++) {
+      const yRow = y * sz;
+      for (let x = 0; x < sz; x++) {
+        const idx = (yRow + x) * 4;
+        const hL = sm2[yRow + ((x - 1 + sz) % sz)];
+        const hR = sm2[yRow + ((x + 1) % sz)];
+        const hU = sm2[((y - 1 + sz) % sz) * sz + x];
+        const hD = sm2[((y + 1) % sz) * sz + x];
+
+        const slopeX = (hR - hL) * 3.2;
+        const slopeY = (hD - hU) * 3.2;
+        const diff = (-slopeX - slopeY) * 128 + 128;
+        const v = Math.min(255, Math.max(0, diff | 0));
+
+        buf[idx] = v;
+        buf[idx + 1] = v;
+        buf[idx + 2] = v;
+        buf[idx + 3] = Math.min(255, Math.abs(v - 128) * 2.2 | 0);
+      }
+    }
+    sCtx.putImageData(sImg, 0, 0);
+  }
+
+  // 3. Primera capa de relleu estuc sobre el fons
+  if (tn99Params.grainOpacity > 0 && tn99StuccoCanvas) {
+    tn99BgCtx.save();
+    tn99BgCtx.globalAlpha = (tn99Params.grainOpacity / 100) * 0.85;
+    const pat = tn99BgCtx.createPattern(tn99StuccoCanvas, 'repeat');
+    if (pat) {
+      tn99BgCtx.fillStyle = pat;
+      tn99BgCtx.fillRect(sx, sy, sw, sh);
+    }
+    tn99BgCtx.restore();
+  }
+
+  // 4. Mapamundi en BLANC pur (#FFFFFF) a gran escala
+  //    amb desenfoc radial no uniforme i mode de fusió configurable
+  if (tn99WorldPath && tn99Params.mapOpacity > 0) {
+    const mapLayer = renderTN99MapLayer(cw, ch, sx, sy, sw, sh, dpr);
+
+    tn99BgCtx.save();
+    tn99BgCtx.beginPath();
+    tn99BgCtx.rect(sx, sy, sw, sh);
+    tn99BgCtx.clip();
+    tn99BgCtx.globalAlpha = (tn99Params.mapOpacity / 100) * 0.90;
+    tn99BgCtx.globalCompositeOperation = tn99Params.mapBlend || 'source-over';
+    tn99BgCtx.drawImage(mapLayer, 0, 0);
+    tn99BgCtx.restore();
+
+    // Eina de calibratge: mostra la zona de desenfoc (magenta = més desenfoc)
+    if (tn99Params.mapBlurShowMask && tn99MapMaskCanvas) {
+      tn99BgCtx.save();
+      tn99BgCtx.globalAlpha = 0.55;
+      const tint = getTN99Canvas('tint', cw, ch);
+      const tctx = tint.getContext('2d');
+      tctx.clearRect(0, 0, cw, ch);
+      tctx.drawImage(tn99MapMaskCanvas, 0, 0, cw, ch);
+      tctx.globalCompositeOperation = 'source-in';
+      tctx.fillStyle = '#FF00AA';
+      tctx.fillRect(0, 0, cw, ch);
+      tctx.globalCompositeOperation = 'source-over';
+      tn99BgCtx.drawImage(tint, 0, 0);
+      // Creu al centre del focus
+      const fx = sx + sw * (tn99Params.mapBlurCX / 100);
+      const fy = sy + sh * (tn99Params.mapBlurCY / 100);
+      tn99BgCtx.globalAlpha = 1;
+      tn99BgCtx.strokeStyle = '#FF00AA';
+      tn99BgCtx.lineWidth = 2 * dpr;
+      tn99BgCtx.beginPath();
+      tn99BgCtx.moveTo(fx - 14 * dpr, fy); tn99BgCtx.lineTo(fx + 14 * dpr, fy);
+      tn99BgCtx.moveTo(fx, fy - 14 * dpr); tn99BgCtx.lineTo(fx, fy + 14 * dpr);
+      tn99BgCtx.stroke();
+      tn99BgCtx.restore();
+    }
+  }
+
+  // 5. Segona capa lleugera de relleu perquè el mapa s'integri a la textura rugosa
+  if (tn99Params.grainOpacity > 0 && tn99StuccoCanvas) {
+    tn99BgCtx.save();
+    tn99BgCtx.globalAlpha = (tn99Params.grainOpacity / 100) * 0.55;
+    const pat2 = tn99BgCtx.createPattern(tn99StuccoCanvas, 'repeat');
+    if (pat2) {
+      tn99BgCtx.fillStyle = pat2;
+      tn99BgCtx.fillRect(sx, sy, sw, sh);
+    }
+    tn99BgCtx.restore();
+  }
+}
+
+// --- Helpers del mapamundi TN 1999 (desenfoc radial no uniforme) ---
+const tn99OffCanvases = {};
+let tn99MapMaskCanvas = null;
+let tn99CtxFilterSupported = null;
+
+function getTN99Canvas(key, w, h) {
+  let c = tn99OffCanvases[key];
+  if (!c) {
+    c = document.createElement('canvas');
+    tn99OffCanvases[key] = c;
+  }
+  if (c.width !== w || c.height !== h) {
+    c.width = w;
+    c.height = h;
+  }
+  return c;
+}
+
+function tn99SeededRandom(seed) {
+  let s = (Math.floor(seed) * 2654435761) >>> 0 || 1;
+  return function () {
+    s ^= s << 13; s >>>= 0;
+    s ^= s >>> 17;
+    s ^= s << 5; s >>>= 0;
+    return (s >>> 0) / 4294967296;
+  };
+}
+
+// Desenfoc gaussià d'un canvas sencer (usa ctx.filter si existeix; si no, reescalat)
+function tn99BlurInto(srcCanvas, dstKey, radiusPx) {
+  const w = srcCanvas.width, h = srcCanvas.height;
+  const dst = getTN99Canvas(dstKey, w, h);
+  const dctx = dst.getContext('2d');
+  dctx.clearRect(0, 0, w, h);
+  if (radiusPx <= 0.05) {
+    dctx.drawImage(srcCanvas, 0, 0);
+    return dst;
+  }
+  if (tn99CtxFilterSupported === null) {
+    const t = document.createElement('canvas').getContext('2d');
+    t.filter = 'blur(2px)';
+    tn99CtxFilterSupported = (t.filter === 'blur(2px)');
+  }
+  if (tn99CtxFilterSupported) {
+    dctx.filter = `blur(${radiusPx}px)`;
+    dctx.drawImage(srcCanvas, 0, 0);
+    dctx.filter = 'none';
+  } else {
+    // Alternativa compatible (Safari antic): reduir i ampliar amb suavitzat
+    const f = Math.max(1, radiusPx / 1.2);
+    const sw2 = Math.max(1, Math.round(w / f));
+    const sh2 = Math.max(1, Math.round(h / f));
+    const small = getTN99Canvas(dstKey + '_small', sw2, sh2);
+    const sctx = small.getContext('2d');
+    sctx.clearRect(0, 0, sw2, sh2);
+    sctx.imageSmoothingEnabled = true;
+    sctx.imageSmoothingQuality = 'high';
+    sctx.drawImage(srcCanvas, 0, 0, sw2, sh2);
+    dctx.imageSmoothingEnabled = true;
+    dctx.imageSmoothingQuality = 'high';
+    dctx.drawImage(small, 0, 0, w, h);
+  }
+  return dst;
+}
+
+// Dibuixa el camí del mapamundi amb la transformació d'escenari (+ zoom opcional al voltant d'un punt)
+function tn99FillWorld(ctx, sx, sy, sw, sh, zoom, zx, zy) {
+  const cx = sx + sw / 2;
+  const cy = sy + sh / 2;
+  const scale = (sw / 442) * (tn99Params.mapScale / 100);
+  ctx.save();
+  if (zoom && zoom !== 1) {
+    ctx.translate(zx, zy);
+    ctx.scale(zoom, zoom);
+    ctx.translate(-zx, -zy);
+  }
+  ctx.translate(cx, cy);
+  ctx.scale(scale, scale);
+  ctx.translate(-256, -365.6);
+  ctx.fill(tn99WorldPath);
+  ctx.restore();
+}
+
+// Màscara de desenfoc: alfa 0 = nítid, alfa 1 = desenfoc màxim
+function buildTN99BlurMask(cw, ch, sx, sy, sw, sh) {
+  const q = 4; // resolució reduïda (la màscara és suau igualment)
+  const mw = Math.max(1, Math.round(cw / q));
+  const mh = Math.max(1, Math.round(ch / q));
+  const mask = getTN99Canvas('mask', mw, mh);
+  const m = mask.getContext('2d');
+  m.clearRect(0, 0, mw, mh);
+
+  const fx = (sx + sw * (tn99Params.mapBlurCX / 100)) / q;
+  const fy = (sy + sh * (tn99Params.mapBlurCY / 100)) / q;
+  const halfDiag = Math.hypot(sw, sh) / 2 / q;
+  const r0 = halfDiag * (tn99Params.mapBlurInner / 100);
+  const r1 = Math.max(r0 + 1, halfDiag * (tn99Params.mapBlurOuter / 100));
+
+  // Gradient radial base (centre nítid -> vores desenfocades), amb el·lipse segons l'aspecte
+  const aspect = Math.max(0.2, (tn99Params.mapBlurAspect || 100) / 100);
+  m.save();
+  m.translate(fx, fy);
+  m.scale(aspect, 1);
+  const g = m.createRadialGradient(0, 0, r0, 0, 0, r1);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(0.5, 'rgba(0,0,0,0.5)');
+  g.addColorStop(1, 'rgba(0,0,0,1)');
+  m.fillStyle = g;
+  m.fillRect(-mw * 4, -mh * 4, mw * 8, mh * 8);
+  m.restore();
+
+  // Irregularitat: taques orgàniques que afegeixen o treuen desenfoc (llavor reproduïble)
+  const irr = Math.max(0, Math.min(100, tn99Params.mapBlurIrreg)) / 100;
+  if (irr > 0) {
+    const rnd = tn99SeededRandom(tn99Params.mapBlurSeed || 1);
+    const blobs = 14;
+    for (let i = 0; i < blobs; i++) {
+      const bx = (sx / q) + rnd() * (sw / q);
+      const by = (sy / q) + rnd() * (sh / q);
+      const br = halfDiag * (0.12 + rnd() * 0.35);
+      const strength = irr * (0.35 + rnd() * 0.65);
+      const add = rnd() > 0.45;
+      const bg = m.createRadialGradient(bx, by, 0, bx, by, br);
+      bg.addColorStop(0, `rgba(0,0,0,${strength})`);
+      bg.addColorStop(1, 'rgba(0,0,0,0)');
+      m.globalCompositeOperation = add ? 'source-over' : 'destination-out';
+      m.fillStyle = bg;
+      m.fillRect(bx - br, by - br, br * 2, br * 2);
+    }
+    m.globalCompositeOperation = 'source-over';
+  }
+
+  if (tn99Params.mapBlurInvert) {
+    const inv = getTN99Canvas('mask_inv', mw, mh);
+    const ic = inv.getContext('2d');
+    ic.clearRect(0, 0, mw, mh);
+    ic.fillStyle = '#000';
+    ic.fillRect(0, 0, mw, mh);
+    ic.globalCompositeOperation = 'destination-out';
+    ic.drawImage(mask, 0, 0);
+    ic.globalCompositeOperation = 'source-over';
+    m.clearRect(0, 0, mw, mh);
+    m.drawImage(inv, 0, 0);
+  }
+
+  tn99MapMaskCanvas = mask;
+  return mask;
+}
+
+// Renderitza la capa del mapamundi (blanc opac) ja amb el desenfoc radial aplicat
+function renderTN99MapLayer(cw, ch, sx, sy, sw, sh, dpr) {
+  // A) Versió base (amb desenfoc mínim uniforme)
+  const sharp = getTN99Canvas('map_sharp', cw, ch);
+  const sctx = sharp.getContext('2d');
+  sctx.clearRect(0, 0, cw, ch);
+  sctx.fillStyle = '#FFFFFF';
+  tn99FillWorld(sctx, sx, sy, sw, sh, 1, 0, 0);
+
+  const minBlur = Math.max(0, tn99Params.mapBlurMin || 0) * dpr;
+  const base = minBlur > 0 ? tn99BlurInto(sharp, 'map_base', minBlur) : sharp;
+
+  const amount = Math.max(0, tn99Params.mapBlurAmount || 0) * dpr;
+  if (amount <= 0.05) {
+    tn99MapMaskCanvas = null;
+    if (tn99Params.mapBlurShowMask) buildTN99BlurMask(cw, ch, sx, sy, sw, sh);
+    return base;
+  }
+
+  // B) Versió molt desenfocada (gaussiana o zoom radial des del centre del focus)
+  let blurred;
+  const fx = sx + sw * (tn99Params.mapBlurCX / 100);
+  const fy = sy + sh * (tn99Params.mapBlurCY / 100);
+  if (tn99Params.mapBlurType === 'zoom') {
+    const zc = getTN99Canvas('map_zoom', cw, ch);
+    const zctx = zc.getContext('2d');
+    zctx.clearRect(0, 0, cw, ch);
+    zctx.fillStyle = '#FFFFFF';
+    const halfDiag = Math.hypot(sw, sh) / 2;
+    const maxDelta = (amount * 3) / halfDiag;
+    const steps = Math.max(6, Math.min(32, Math.round(amount / 1.5)));
+    for (let i = 0; i < steps; i++) {
+      zctx.globalAlpha = 1 / (i + 1); // mitjana progressiva exacta
+      const z = 1 + maxDelta * (i / (steps - 1));
+      tn99FillWorld(zctx, sx, sy, sw, sh, z, fx, fy);
+    }
+    zctx.globalAlpha = 1;
+    blurred = tn99BlurInto(zc, 'map_blur', Math.max(minBlur, amount * 0.25));
+  } else {
+    blurred = tn99BlurInto(sharp, 'map_blur', Math.max(minBlur, amount));
+  }
+
+  // C) Combinació: base * (1 - màscara) + desenfocat * màscara
+  const mask = buildTN99BlurMask(cw, ch, sx, sy, sw, sh);
+  const out = getTN99Canvas('map_out', cw, ch);
+  const octx = out.getContext('2d');
+  octx.clearRect(0, 0, cw, ch);
+  octx.imageSmoothingEnabled = true;
+
+  octx.drawImage(base, 0, 0);
+  octx.globalCompositeOperation = 'destination-out';
+  octx.drawImage(mask, 0, 0, cw, ch);
+
+  const bm = getTN99Canvas('map_blur_masked', cw, ch);
+  const bctx = bm.getContext('2d');
+  bctx.clearRect(0, 0, cw, ch);
+  bctx.drawImage(blurred, 0, 0);
+  bctx.globalCompositeOperation = 'destination-in';
+  bctx.imageSmoothingEnabled = true;
+  bctx.drawImage(mask, 0, 0, cw, ch);
+  bctx.globalCompositeOperation = 'source-over';
+
+  octx.globalCompositeOperation = 'lighter';
+  octx.drawImage(bm, 0, 0);
+  octx.globalCompositeOperation = 'source-over';
+  return out;
+}
+
+function drawTV3Triangle(ctx, cx, cy, size, color) {
+  const scale = size / 104.63;
+  const fillColor = color || '#CC181E';
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(scale, scale);
+  // Centrem exactament la caixa geomètrica del triangle oficial (46.055, 79.505) a (cx, cy)
+  ctx.translate(-46.055, -79.505);
+
+  ctx.fillStyle = fillColor;
+
+  // Sense ombra al triangle de TV3 (fidel a l'emissió original de 1999)
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+
+  // Les 4 franges vermelles exactes del logotip vectorial oficial de TV3 (sense caixa de tall artificial)
+  // Franja 1 (superior amb vèrtex a les 3 en punt)
+  ctx.beginPath();
+  ctx.moveTo(0, 27.19);
+  ctx.lineTo(92.11, 79.40);
+  ctx.lineTo(77.47, 87.89);
+  ctx.lineTo(0, 43.96);
+  ctx.closePath();
+  ctx.fill();
+
+  // Franja 2
+  ctx.beginPath();
+  ctx.moveTo(0, 54.14);
+  ctx.lineTo(68.34, 92.88);
+  ctx.lineTo(53.69, 101.37);
+  ctx.lineTo(0, 70.91);
+  ctx.closePath();
+  ctx.fill();
+
+  // Franja 3
+  ctx.beginPath();
+  ctx.moveTo(0, 81.10);
+  ctx.lineTo(44.57, 106.46);
+  ctx.lineTo(29.93, 114.95);
+  ctx.lineTo(0, 97.86);
+  ctx.closePath();
+  ctx.fill();
+
+  // Franja 4 (inferior)
+  ctx.beginPath();
+  ctx.moveTo(0, 108.04);
+  ctx.lineTo(20.80, 119.94);
+  ctx.lineTo(0, 131.82);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function updateTN99Clock(force) {
+  if (currentAppMode !== '1999' && currentAppMode !== '2001' && !force) return;
+  if (!tn99ClockCanvas) initTN99();
+  if (!tn99ClockCanvas || !tn99ClockCtx) return;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const cw = tn99ClockCanvas.width;
+  const ch = tn99ClockCanvas.height;
+
+  tn99ClockCtx.clearRect(0, 0, cw, ch);
+
+  let stageW = w;
+  let stageH = h;
+  let stageX = 0;
+  let stageY = 0;
+  if (tn99Params.aspectRatio === '4:3') {
+    const targetW = h * (4 / 3);
+    if (targetW < w) {
+      stageW = targetW;
+      stageX = (w - targetW) / 2;
+    }
+  }
+
+  const cx = Math.round((stageX + stageW / 2 + tn99Params.posX) * dpr);
+  const cy = Math.round((stageY + stageH / 2 + tn99Params.posY) * dpr);
+  const baseR = (Math.min(stageW, stageH) / 2) * (tn99Params.size / 100) * dpr;
+
+  const now = new Date();
+  const ms = now.getMilliseconds();
+  const s = now.getSeconds() + (tn99Params.ballMotion === 'smooth' ? ms / 1000 : 0);
+  const m = now.getMinutes() + now.getSeconds() / 60 + ms / 60000;
+  const hr = (now.getHours() % 12) + m / 60;
+
+  const ctx = tn99ClockCtx;
+
+  // Aplica desenfocament analògic PAL suau als elements si està activat
+  if (tn99ClockCanvas) {
+    tn99ClockCanvas.style.filter = (tn99Params.blur && tn99Params.blur > 0) ? `blur(${tn99Params.blur}px)` : 'none';
+  }
+
+  // 1. LES 12 RATLLETES D'HORES (Sense ombres al rellotge, net com a l'emissió original!)
+  const rMarks = baseR * 0.76;
+  const triSz = baseR * (tn99Params.triSize / 100);
+
+  ctx.save();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+
+  for (let i = 0; i < 12; i++) {
+    const theta = (i * 30 - 90) * Math.PI / 180;
+    const mx = cx + Math.cos(theta) * rMarks;
+    const my = cy + Math.sin(theta) * rMarks;
+
+    if (i === 3) {
+      drawTV3Triangle(ctx, mx, my, triSz, tn99Params.triColor);
+    } else if (i === 0 || i === 6) {
+      const blockW = baseR * 0.045;
+      const blockH = baseR * 0.125;
+      ctx.fillStyle = '#101012';
+      ctx.fillRect(mx - blockW / 2, my - blockH / 2, blockW, blockH);
+    } else if (i === 9) {
+      const blockW = baseR * 0.125;
+      const blockH = baseR * 0.045;
+      ctx.fillStyle = '#101012';
+      ctx.fillRect(mx - blockW / 2, my - blockH / 2, blockW, blockH);
+    } else {
+      const len = baseR * 0.11;
+      const thick = baseR * 0.038;
+      ctx.save();
+      ctx.translate(mx, my);
+      ctx.rotate(theta);
+      ctx.fillStyle = '#101012';
+      ctx.fillRect(-len / 2, -thick / 2, len, thick);
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+
+  // 2. LES BROQUES (Agulles Rectangulars sense ombres de fons, gruix independent)
+  const hAngle = (hr * 30 - 90) * Math.PI / 180;
+  const mAngle = (m * 6 - 90) * Math.PI / 180;
+  const hThick = baseR * ((tn99Params.hWidth !== undefined ? tn99Params.hWidth : tn99Params.handWidth) / 100);
+  const mThick = baseR * ((tn99Params.mWidth !== undefined ? tn99Params.mWidth : tn99Params.handWidth) / 100);
+
+  function drawCleanHand(angle, len, thick) {
+    if (thick <= 0 || len <= 0) return;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.fillStyle = tn99Params.handColor;
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    ctx.fillRect(-thick / 2, -thick / 2, len + thick / 2, thick);
+    ctx.restore();
+  }
+
+  const hLen = baseR * (tn99Params.hLen / 100);
+  drawCleanHand(hAngle, hLen, hThick);
+
+  const mLen = baseR * (tn99Params.mLen / 100);
+  drawCleanHand(mAngle, mLen, mThick);
+
+  // 3. SEGUNDER BOLA VERMELLA 3D (orbita per fora de les ratlletes)
+  const sAngle = (s * 6 - 90) * Math.PI / 180;
+  const ballDist = baseR * (tn99Params.ballDist / 100);
+  const ballR = baseR * (tn99Params.ballSize / 100);
+  const bx = cx + Math.cos(sAngle) * ballDist;
+  const by = cy + Math.sin(sAngle) * ballDist;
+
+  // 3a. Ombra projectada sobre el fons (controlable)
+  if (tn99Params.ballShadow) {
+    const shadowDist = ballR * 0.45;
+    const sx = bx - shadowDist * 0.6;
+    const sy = by + shadowDist * 0.85;
+    const sGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, ballR * 1.35);
+    sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.44)');
+    sGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.22)');
+    sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = sGrad;
+    ctx.beginPath();
+    ctx.arc(sx, sy, ballR * 1.35, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 3b. Bola esfèrica amb reflex especular i ombra interna controlable
+  const lightX = bx - ballR * 0.35;
+  const lightY = by - ballR * 0.35;
+  const bGrad = ctx.createRadialGradient(
+    lightX, lightY, ballR * 0.04,
+    bx, by, ballR
+  );
+
+  const kShadow = Math.max(0, Math.min(100, tn99Params.ballInnerShadow !== undefined ? tn99Params.ballInnerShadow : 70)) / 100;
+  if (kShadow === 0) {
+    bGrad.addColorStop(0, '#CC181E');
+    bGrad.addColorStop(1, '#CC181E');
+  } else {
+    const hlAlpha = Math.min(1, kShadow * 1.3);
+    bGrad.addColorStop(0, `rgba(255, 255, 255, ${hlAlpha.toFixed(2)})`);
+    bGrad.addColorStop(0.18, `rgba(255, 122, 122, ${(hlAlpha * 0.9).toFixed(2)})`);
+    bGrad.addColorStop(0.45, '#CC181E');
+
+    // Ombra interna gradual cap a la vora fosca
+    const r1 = Math.round(204 - kShadow * (204 - 139));
+    const g1 = Math.round(24 - kShadow * (24 - 13));
+    const b1 = Math.round(30 - kShadow * (30 - 5));
+    bGrad.addColorStop(0.45 + 0.33 * kShadow, `rgb(${r1}, ${g1}, ${b1})`);
+
+    const r2 = Math.round(204 - kShadow * (204 - 69));
+    const g2 = Math.round(24 - kShadow * (24 - 4));
+    const b2 = Math.round(30 - kShadow * (30 - 0));
+    bGrad.addColorStop(1.0, `rgb(${r2}, ${g2}, ${b2})`);
+  }
+
+  ctx.fillStyle = bGrad;
+  ctx.beginPath();
+  ctx.arc(bx, by, ballR, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ==========================================================================
 // --- TN 2002 ENGINE (TN TV3 - 2002) - Fons Vídeo i Rellotges Superposats ---
 // ==========================================================================
 let tn02Params = {
+  // Format i Encaix de pantalla
+  aspectRatio: '16:9', // '16:9' | '4:3' | '4:3-cover' | '4:3-stretch'
+  videoFit: 'cover',   // 'cover' | 'fill' | 'contain'
+
   // Rellotge Principal (Davant)
   frontSize: 8.0,
   frontScaleX: 102,
@@ -5600,17 +6887,59 @@ let tn02Params = {
 let lastTN02Second = -1;
 function updateTN02Scale() {
   const stage = document.getElementById('tn02-stage');
+  const video = document.getElementById('tn02-bg-video');
   if (!stage) return;
-  const scale = Math.max(window.innerWidth / 1191, window.innerHeight / 639);
-  stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+  const is43 = tn02Params.aspectRatio && tn02Params.aspectRatio.startsWith('4:3');
+  const baseW = is43 ? 852 : 1191;
+  const baseH = 639;
+
+  stage.style.width = `${baseW}px`;
+  stage.style.height = `${baseH}px`;
+
+  if (video) {
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.objectFit = tn02Params.videoFit || 'cover';
+  }
+
+  let scaleX, scaleY;
+  if (tn02Params.aspectRatio === '4:3-stretch') {
+    scaleX = window.innerWidth / baseW;
+    scaleY = window.innerHeight / baseH;
+  } else if (tn02Params.aspectRatio === '4:3-cover') {
+    const s = Math.max(window.innerWidth / baseW, window.innerHeight / baseH);
+    scaleX = s;
+    scaleY = s;
+  } else if (tn02Params.aspectRatio === '4:3') {
+    // Classic 4:3 pillarbox TV presentation (fits height, black bars on sides)
+    const s = Math.min(window.innerWidth / baseW, window.innerHeight / baseH);
+    scaleX = s;
+    scaleY = s;
+  } else {
+    // 16:9 widescreen full cover
+    const s = Math.max(window.innerWidth / baseW, window.innerHeight / baseH);
+    scaleX = s;
+    scaleY = s;
+  }
+
+  stage.style.transform = `translate(-50%, -50%) scale(${scaleX}, ${scaleY})`;
+
+  const quickAspectLabel = document.getElementById('tn02-aspect-label');
+  if (quickAspectLabel) {
+    quickAspectLabel.textContent = is43 ? 'Format: 4:3' : 'Format: 16:9';
+  }
 }
 window.addEventListener('resize', updateTN02Scale);
 
 function applyTN02Styles() {
+  const is43 = tn02Params.aspectRatio && tn02Params.aspectRatio.startsWith('4:3');
+  const stageW = is43 ? 852 : 1191;
+
   const front = document.getElementById('tn02-clock-front');
   if (front) {
     front.style.fontFamily = "'AkzidenzGroteskBQ-Ext', -apple-system, sans-serif";
-    front.style.fontSize = `${(tn02Params.frontSize / 100) * 1191}px`;
+    front.style.fontSize = `${(tn02Params.frontSize / 100) * stageW}px`;
     front.style.left = `${tn02Params.frontX}%`;
     front.style.top = `${tn02Params.frontY}%`;
     const sx = ((tn02Params.frontScaleX !== undefined ? tn02Params.frontScaleX : 100) / 100);
@@ -5629,7 +6958,7 @@ function applyTN02Styles() {
   const back = document.getElementById('tn02-clock-back');
   if (back) {
     back.style.fontFamily = "'AkzidenzGroteskBQ-MedExt', 'AkzidenzGroteskBQ', -apple-system, sans-serif";
-    back.style.fontSize = `${(tn02Params.backSize / 100) * 1191}px`;
+    back.style.fontSize = `${(tn02Params.backSize / 100) * stageW}px`;
     back.style.left = '50%';
     back.style.transform = 'translateX(-50%)';
     back.style.top = `${tn02Params.backY}%`;
@@ -6475,10 +7804,21 @@ function updateTN05Ticker(dt) {
 }
 
 function switchAudioForMode(mode) {
+  if (mode === '1999' || mode === '2001') {
+    if (bgAudio) {
+      bgAudio.pause();
+    }
+    stopTN02SeamlessAudio();
+    stopTN05SeamlessAudio();
+    playTN99SeamlessAudio();
+    return;
+  }
+
   if (mode === '2002') {
     if (bgAudio) {
       bgAudio.pause();
     }
+    stopTN99SeamlessAudio();
     stopTN05SeamlessAudio();
     playTN02SeamlessAudio();
     return;
@@ -6488,12 +7828,14 @@ function switchAudioForMode(mode) {
     if (bgAudio) {
       bgAudio.pause();
     }
+    stopTN99SeamlessAudio();
     stopTN02SeamlessAudio();
     playTN05SeamlessAudio();
     return;
   }
 
-  // Si sortim dels modes 2002 o 2005, atura els bucles Web Audio seamless
+  // Si sortim dels modes 1999, 2002 o 2005, atura els bucles Web Audio seamless
+  stopTN99SeamlessAudio();
   stopTN02SeamlessAudio();
   stopTN05SeamlessAudio();
 
@@ -6540,6 +7882,30 @@ let isYearTransitioning = false;
 let tvNoiseRaf = null;
 
 const TV_YEAR_LOGOS = {
+  '1999': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="56 60 400 278" width="100%" height="100%">
+  <defs>
+    <filter id="tvTrans99Shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.85" />
+    </filter>
+  </defs>
+  <g filter="url(#tvTrans99Shadow)" fill="#FFFFFF">
+    <path d="M 64,166 L 140,70 L 152,70 L 152,128 L 222,128 L 222,170 L 152,170 L 152,260 C 152,282 165,294 188,294 C 202,294 214,288 222,280 L 222,316 C 210,324 192,328 174,328 C 126,328 100,300 100,254 L 100,170 L 64,170 Z" />
+    <path d="M 239,128 L 293,128 L 293,158 C 308,137 334,122 368,122 C 418,122 446,150 446,204 L 446,316 L 392,316 L 392,214 C 392,184 378,168 350,168 C 320,168 293,188 293,224 L 293,316 L 239,316 Z" />
+  </g>
+</svg>`,
+
+  '2001': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="56 60 400 278" width="100%" height="100%">
+  <defs>
+    <filter id="tvTrans01Shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.85" />
+    </filter>
+  </defs>
+  <g filter="url(#tvTrans01Shadow)" fill="#FFFFFF">
+    <path d="M 64,166 L 140,70 L 152,70 L 152,128 L 222,128 L 222,170 L 152,170 L 152,260 C 152,282 165,294 188,294 C 202,294 214,288 222,280 L 222,316 C 210,324 192,328 174,328 C 126,328 100,300 100,254 L 100,170 L 64,170 Z" />
+    <path d="M 239,128 L 293,128 L 293,158 C 308,137 334,122 368,122 C 418,122 446,150 446,204 L 446,316 L 392,316 L 392,214 C 392,184 378,168 350,168 C 320,168 293,188 293,224 L 293,316 L 239,316 Z" />
+  </g>
+</svg>`,
+
   '2002': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" width="100%" height="100%" fill="none">
   <path fill="#FFFFFF" d="M 7 4 L 271 4 L 271 52 L 179 52 L 179 236 L 99 236 L 99 52 L 7 52 Z" />
   <path fill="#FFFFFF" d="M 301 4 L 393 4 L 516 158 L 516 4 L 593 4 L 593 236 L 502 236 L 379 83 L 379 236 L 301 236 Z" />
@@ -6583,8 +7949,9 @@ const TV_YEAR_LOGOS = {
 };
 
 function updateDynamicFavicon(mode) {
-  const targetMode = (mode === '2002' || mode === '2005' || mode === '2025') ? mode : '2014';
-  const targetFile = `favicon-${targetMode}.png`;
+  let targetMode = (mode === '1999' || mode === '2001' || mode === '2002' || mode === '2005' || mode === '2025') ? mode : '2014';
+  if (targetMode === '2001') targetMode = '1999';
+  const v = 't_trans_99'; // Cache buster per forçar la càrrega del nou favicon transparent
 
   // 1. Elimina tots els links de favicon existents perquè el navegador detecti la nova icona
   const oldLinks = document.querySelectorAll("link[rel*='icon']");
@@ -6592,19 +7959,27 @@ function updateDynamicFavicon(mode) {
     if (el.parentNode) el.parentNode.removeChild(el);
   });
 
-  // 2. Crea i afegeix el nou link de favicon PNG amb transparència
+  // 2. Favicon SVG natiu 100% transparent vectorial (ideal per a pestanyes en mode fosc i clar)
+  const svgLink = document.createElement('link');
+  svgLink.id = 'dynamic-favicon-svg';
+  svgLink.rel = 'icon';
+  svgLink.type = 'image/svg+xml';
+  svgLink.href = `favicon-${targetMode}.svg?v=${v}`;
+  document.head.appendChild(svgLink);
+
+  // 3. Favicon PNG amb canal alfa transparent natiu (512x512)
   const link = document.createElement('link');
   link.id = 'dynamic-favicon';
   link.rel = 'icon';
   link.type = 'image/png';
-  link.href = targetFile;
+  link.href = `favicon-${targetMode}.png?v=${v}`;
   document.head.appendChild(link);
 
-  // 3. Apple Touch Icon
+  // 4. Apple Touch Icon
   const appleLink = document.createElement('link');
   appleLink.id = 'dynamic-apple-touch';
   appleLink.rel = 'apple-touch-icon';
-  appleLink.href = targetFile;
+  appleLink.href = `favicon-${targetMode}.png?v=${v}`;
   document.head.appendChild(appleLink);
 }
 
@@ -6692,6 +8067,7 @@ function switchMode(mode) {
 }
 
 function applyModeSwitch(mode) {
+  if (mode === '2001') mode = '1999';
   currentAppMode = mode;
   document.documentElement.setAttribute('data-mode', mode);
   document.body.setAttribute('data-mode', mode);
@@ -6699,7 +8075,10 @@ function applyModeSwitch(mode) {
   const selectVer = document.getElementById('select-tn-version');
   if (selectVer) {
     if (selectVer.value !== mode) selectVer.value = mode;
-    if (mode === '2002') {
+    if (mode === '1999' || mode === '2001') {
+      selectVer.style.color = '#CC181E';
+      selectVer.style.borderColor = 'rgba(204, 24, 30, 0.4)';
+    } else if (mode === '2002') {
       selectVer.style.color = '#04336F';
       selectVer.style.borderColor = 'rgba(4, 51, 111, 0.4)';
     } else if (mode === '2005') {
@@ -6712,12 +8091,15 @@ function applyModeSwitch(mode) {
   }
   const selectChevron = document.querySelector('.tn-select-chevron');
   if (selectChevron) {
-    selectChevron.style.color = (mode === '2002') ? '#04336F' : (mode === '2005' ? '#F5820D' : '');
+    selectChevron.style.color = (mode === '1999' || mode === '2001') ? '#CC181E' : ((mode === '2002') ? '#04336F' : (mode === '2005' ? '#F5820D' : ''));
   }
+  const btn1999 = document.getElementById('btn-ver-1999');
+  const btn2001 = document.getElementById('btn-ver-2001');
   const btn2002 = document.getElementById('btn-ver-2002');
   const btn2005 = document.getElementById('btn-ver-2005');
   const btn2014 = document.getElementById('btn-ver-2014');
   const btn2025 = document.getElementById('btn-ver-2025');
+  const view1999 = document.getElementById('view-tn-1999');
   const view2002 = document.getElementById('view-tn-2002');
   const view2005 = document.getElementById('view-tn-2005');
   const view2025 = document.getElementById('view-tn-2025');
@@ -6727,8 +8109,10 @@ function applyModeSwitch(mode) {
   const btnResetView = document.getElementById('btn-reset-view');
   const btnSyncAudio = document.getElementById('btn-sync-audio');
 
-  // Accent color per mode (#04336F per a 2002!)
-  if (mode === '2002') {
+  // Accent color per mode (#CC181E per a 1999, #04336F per a 2002!)
+  if (mode === '1999' || mode === '2001') {
+    document.documentElement.style.setProperty('--theme-accent', '#CC181E');
+  } else if (mode === '2002') {
     document.documentElement.style.setProperty('--theme-accent', '#04336F');
   } else if (mode === '2005') {
     document.documentElement.style.setProperty('--theme-accent', '#F5820D');
@@ -6739,9 +8123,16 @@ function applyModeSwitch(mode) {
   switchAudioForMode(mode);
 
   if (btnSyncAudio) {
-    btnSyncAudio.style.display = (mode === '2002' || mode === '2005') ? 'none' : '';
+    btnSyncAudio.style.display = (mode === '1999' || mode === '2001' || mode === '2002' || mode === '2005') ? 'none' : '';
   }
 
+  const btnToggleAspect = document.getElementById('btn-toggle-tn02-aspect');
+  if (btnToggleAspect) {
+    btnToggleAspect.style.display = (mode === '2002') ? '' : 'none';
+  }
+
+  if (btn1999) btn1999.classList.toggle('active', mode === '1999');
+  if (btn2001) btn2001.classList.toggle('active', mode === '1999' || mode === '2001');
   if (btn2002) btn2002.classList.toggle('active', mode === '2002');
   if (btn2005) btn2005.classList.toggle('active', mode === '2005');
   if (btn2014) btn2014.classList.toggle('active', mode === '2014');
@@ -6749,7 +8140,7 @@ function applyModeSwitch(mode) {
 
   const tabBtns = document.querySelectorAll('.editor-tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
-  const targetTabId = (mode === '2002') ? 'tab-tn2002' : ((mode === '2005') ? 'tab-tn2005' : (mode === '2025' ? 'tab-tn2025' : 'tab-color'));
+  const targetTabId = (mode === '1999' || mode === '2001') ? 'tab-tn1999' : ((mode === '2002') ? 'tab-tn2002' : ((mode === '2005') ? 'tab-tn2005' : (mode === '2025' ? 'tab-tn2025' : 'tab-color')));
   const activeTabBtn = document.querySelector(`.editor-tab-btn[data-tab="${targetTabId}"]`);
   const activeTabContent = document.getElementById(targetTabId);
   if (activeTabBtn && activeTabContent) {
@@ -6759,7 +8150,20 @@ function applyModeSwitch(mode) {
     activeTabContent.classList.add('active');
   }
 
-  if (mode === '2002') {
+  if (mode === '1999' || mode === '2001') {
+    if (view1999) view1999.style.display = 'block';
+    if (view2002) view2002.style.display = 'none';
+    if (video02) video02.pause();
+    if (view2005) view2005.style.display = 'none';
+    if (view2025) view2025.style.display = 'none';
+    if (webglCont) webglCont.style.display = 'none';
+    if (tempBanner) tempBanner.style.display = 'none';
+    if (btnResetView) btnResetView.style.display = 'none';
+    initTN99();
+    drawTN99Background();
+    updateTN99Clock(true);
+  } else if (mode === '2002') {
+    if (view1999) view1999.style.display = 'none';
     if (view2002) view2002.style.display = 'block';
     if (video02) {
       video02.muted = true;
@@ -6800,6 +8204,7 @@ function applyModeSwitch(mode) {
     applyTN02Styles();
     updateTN02Clock();
   } else if (mode === '2005') {
+    if (view1999) view1999.style.display = 'none';
     if (view2002) view2002.style.display = 'none';
     if (video02) video02.pause();
     if (view2005) view2005.style.display = 'block';
@@ -6810,6 +8215,7 @@ function applyModeSwitch(mode) {
     initTN05();
     updateTN05Clock();
   } else if (mode === '2025') {
+    if (view1999) view1999.style.display = 'none';
     if (view2002) view2002.style.display = 'none';
     if (video02) video02.pause();
     if (view2005) view2005.style.display = 'none';
@@ -6823,6 +8229,7 @@ function applyModeSwitch(mode) {
     updateTN25Clock();
   } else {
     // 2014
+    if (view1999) view1999.style.display = 'none';
     if (view2002) view2002.style.display = 'none';
     if (video02) video02.pause();
     if (view2005) view2005.style.display = 'none';
@@ -7622,9 +9029,15 @@ const selectTnVersion = document.getElementById('select-tn-version');
 if (selectTnVersion) {
   selectTnVersion.addEventListener('change', (e) => switchMode(e.target.value));
 }
+const btnVer1999 = document.getElementById('btn-ver-1999');
+const btnVer2001 = document.getElementById('btn-ver-2001');
+const btnVer2002 = document.getElementById('btn-ver-2002');
 const btnVer2005 = document.getElementById('btn-ver-2005');
 const btnVer2014 = document.getElementById('btn-ver-2014');
 const btnVer2025 = document.getElementById('btn-ver-2025');
+if (btnVer1999) btnVer1999.addEventListener('click', () => switchMode('1999'));
+if (btnVer2001) btnVer2001.addEventListener('click', () => switchMode('1999'));
+if (btnVer2002) btnVer2002.addEventListener('click', () => switchMode('2002'));
 if (btnVer2005) btnVer2005.addEventListener('click', () => switchMode('2005'));
 if (btnVer2014) btnVer2014.addEventListener('click', () => switchMode('2014'));
 if (btnVer2025) btnVer2025.addEventListener('click', () => switchMode('2025'));
@@ -7873,7 +9286,337 @@ if (selectTn25Easing) {
     });
   }
 
+  // --- TN 1999 Controls ---
+  const sel99Aspect = document.getElementById('select-tn99-aspect');
+  if (sel99Aspect) {
+    sel99Aspect.addEventListener('change', (e) => {
+      tn99Params.aspectRatio = e.target.value;
+      drawTN99Background();
+      updateTN99Clock(true);
+    });
+  }
+
+  syncNumberSlider(document.getElementById('num-tn99-size'), document.getElementById('slider-tn99-size'), (val) => {
+    tn99Params.size = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-pos-x'), document.getElementById('slider-tn99-pos-x'), (val) => {
+    tn99Params.posX = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-pos-y'), document.getElementById('slider-tn99-pos-y'), (val) => {
+    tn99Params.posY = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-blur'), document.getElementById('slider-tn99-blur'), (val) => {
+    tn99Params.blur = val;
+    updateTN99Clock(true);
+  });
+
+  syncNumberSlider(document.getElementById('num-tn99-ball-size'), document.getElementById('slider-tn99-ball-size'), (val) => {
+    tn99Params.ballSize = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-ball-dist'), document.getElementById('slider-tn99-ball-dist'), (val) => {
+    tn99Params.ballDist = val;
+    updateTN99Clock(true);
+  });
+
+  const sel99Motion = document.getElementById('select-tn99-ball-motion');
+  if (sel99Motion) {
+    sel99Motion.addEventListener('change', (e) => {
+      tn99Params.ballMotion = e.target.value;
+      updateTN99Clock(true);
+    });
+  }
+
+  const sel99Shadow = document.getElementById('select-tn99-ball-shadow');
+  if (sel99Shadow) {
+    sel99Shadow.addEventListener('change', (e) => {
+      tn99Params.ballShadow = (e.target.value === 'true');
+      updateTN99Clock(true);
+    });
+  }
+
+  syncNumberSlider(document.getElementById('num-tn99-ball-inner-shadow'), document.getElementById('slider-tn99-ball-inner-shadow'), (val) => {
+    tn99Params.ballInnerShadow = val;
+    updateTN99Clock(true);
+  });
+
+  syncNumberSlider(document.getElementById('num-tn99-tri-size'), document.getElementById('slider-tn99-tri-size'), (val) => {
+    tn99Params.triSize = val;
+    updateTN99Clock(true);
+  });
+  syncColorInput(document.getElementById('picker-tn99-tri-color'), document.getElementById('hex-tn99-tri-color'), (val) => {
+    tn99Params.triColor = val;
+    updateTN99Clock(true);
+  });
+
+  syncNumberSlider(document.getElementById('num-tn99-h-len'), document.getElementById('slider-tn99-h-len'), (val) => {
+    tn99Params.hLen = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-m-len'), document.getElementById('slider-tn99-m-len'), (val) => {
+    tn99Params.mLen = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-h-width'), document.getElementById('slider-tn99-h-width'), (val) => {
+    tn99Params.hWidth = val;
+    updateTN99Clock(true);
+  });
+  syncNumberSlider(document.getElementById('num-tn99-m-width'), document.getElementById('slider-tn99-m-width'), (val) => {
+    tn99Params.mWidth = val;
+    updateTN99Clock(true);
+  });
+  syncColorInput(document.getElementById('picker-tn99-hand-color'), document.getElementById('hex-tn99-hand-color'), (val) => {
+    tn99Params.handColor = val;
+    updateTN99Clock(true);
+  });
+
+  syncNumberSlider(document.getElementById('num-tn99-map-op'), document.getElementById('slider-tn99-map-op'), (val) => {
+    tn99Params.mapOpacity = val;
+    drawTN99Background();
+  });
+  syncNumberSlider(document.getElementById('num-tn99-map-scale'), document.getElementById('slider-tn99-map-scale'), (val) => {
+    tn99Params.mapScale = val;
+    drawTN99Background();
+  });
+  syncNumberSlider(document.getElementById('num-tn99-grain-op'), document.getElementById('slider-tn99-grain-op'), (val) => {
+    tn99Params.grainOpacity = val;
+    drawTN99Background();
+  });
+  function tn99ParseHex(h) {
+    let s = (h || '#E5ECE4').replace('#', '');
+    if (s.length === 3) s = s.split('').map(x => x + x).join('');
+    const n = parseInt(s, 16) || 0;
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function tn99ToHex(rgb) {
+    const toH = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    return ('#' + toH(rgb[0]) + toH(rgb[1]) + toH(rgb[2])).toUpperCase();
+  }
+
+  // Color base: desplaça els dos colors del degradat mantenint-ne la relació (direcció i contrast)
+  syncColorInput(document.getElementById('picker-tn99-bg-color'), document.getElementById('hex-tn99-bg-color'), (val) => {
+    const oldBase = tn99ParseHex(tn99Params.bgColor);
+    const newBase = tn99ParseHex(val);
+    const g1 = tn99ParseHex(tn99Params.bgGradColor1);
+    const g2 = tn99ParseHex(tn99Params.bgGradColor2);
+    tn99Params.bgColor = val.toUpperCase();
+    tn99Params.bgGradColor1 = tn99ToHex(g1.map((c, i) => newBase[i] + (c - oldBase[i])));
+    tn99Params.bgGradColor2 = tn99ToHex(g2.map((c, i) => newBase[i] + (c - oldBase[i])));
+    syncTN99UI();
+    drawTN99Background();
+  });
+
+  syncColorInput(document.getElementById('picker-tn99-bg-grad1'), document.getElementById('hex-tn99-bg-grad1'), (val) => {
+    tn99Params.bgGradColor1 = val.toUpperCase();
+    drawTN99Background();
+  });
+
+  syncColorInput(document.getElementById('picker-tn99-bg-grad2'), document.getElementById('hex-tn99-bg-grad2'), (val) => {
+    tn99Params.bgGradColor2 = val.toUpperCase();
+    drawTN99Background();
+  });
+
+  syncNumberSlider(document.getElementById('num-tn99-bg-subtlety'), document.getElementById('slider-tn99-bg-subtlety'), (val) => {
+    tn99Params.bgGradSubtlety = val;
+    drawTN99Background();
+  });
+
+  // --- Mapamundi: mode de fusió i desenfoc radial ---
+  const sel99MapBlend = document.getElementById('select-tn99-map-blend');
+  if (sel99MapBlend) {
+    sel99MapBlend.addEventListener('change', (e) => {
+      tn99Params.mapBlend = e.target.value;
+      drawTN99Background();
+    });
+  }
+  const sel99MapBlurType = document.getElementById('select-tn99-map-blur-type');
+  if (sel99MapBlurType) {
+    sel99MapBlurType.addEventListener('change', (e) => {
+      tn99Params.mapBlurType = e.target.value;
+      drawTN99Background();
+    });
+  }
+
+  // Redibuix del fons limitat a 1 per fotograma mentre s'arrossega un control
+  let tn99BgRaf = null;
+  function scheduleTN99Background() {
+    if (tn99BgRaf) return;
+    tn99BgRaf = requestAnimationFrame(() => {
+      tn99BgRaf = null;
+      drawTN99Background();
+    });
+  }
+
+  const TN99_MAP_BLUR_SLIDERS = [
+    ['map-blur-amount', 'mapBlurAmount'],
+    ['map-blur-min', 'mapBlurMin'],
+    ['map-blur-cx', 'mapBlurCX'],
+    ['map-blur-cy', 'mapBlurCY'],
+    ['map-blur-inner', 'mapBlurInner'],
+    ['map-blur-outer', 'mapBlurOuter'],
+    ['map-blur-aspect', 'mapBlurAspect'],
+    ['map-blur-irreg', 'mapBlurIrreg']
+  ];
+  TN99_MAP_BLUR_SLIDERS.forEach(([id, key]) => {
+    syncNumberSlider(document.getElementById('num-tn99-' + id), document.getElementById('slider-tn99-' + id), (val) => {
+      tn99Params[key] = val;
+      scheduleTN99Background();
+    });
+  });
+
+  const num99Seed = document.getElementById('num-tn99-map-blur-seed');
+  if (num99Seed) {
+    num99Seed.addEventListener('input', () => {
+      const v = parseInt(num99Seed.value, 10);
+      if (!isNaN(v)) {
+        tn99Params.mapBlurSeed = v;
+        scheduleTN99Background();
+      }
+    });
+  }
+  const btn99Reseed = document.getElementById('btn-tn99-map-blur-reseed');
+  if (btn99Reseed) {
+    btn99Reseed.addEventListener('click', () => {
+      tn99Params.mapBlurSeed = 1 + Math.floor(Math.random() * 999);
+      if (num99Seed) num99Seed.value = tn99Params.mapBlurSeed;
+      drawTN99Background();
+    });
+  }
+  const chk99Invert = document.getElementById('chk-tn99-map-blur-invert');
+  if (chk99Invert) {
+    chk99Invert.addEventListener('change', () => {
+      tn99Params.mapBlurInvert = chk99Invert.checked;
+      drawTN99Background();
+    });
+  }
+  const chk99ShowMask = document.getElementById('chk-tn99-map-blur-showmask');
+  if (chk99ShowMask) {
+    chk99ShowMask.addEventListener('change', () => {
+      tn99Params.mapBlurShowMask = chk99ShowMask.checked;
+      drawTN99Background();
+    });
+  }
+
+  // Sincronitza tots els controls del panell 1999 amb tn99Params
+  function syncTN99UI() {
+    const p = tn99Params;
+    const pairs = [
+      ['size', p.size], ['pos-x', p.posX], ['pos-y', p.posY], ['blur', p.blur],
+      ['ball-size', p.ballSize], ['ball-dist', p.ballDist], ['ball-inner-shadow', p.ballInnerShadow],
+      ['tri-size', p.triSize], ['h-len', p.hLen], ['m-len', p.mLen],
+      ['h-width', p.hWidth], ['m-width', p.mWidth],
+      ['map-op', p.mapOpacity], ['map-scale', p.mapScale], ['grain-op', p.grainOpacity],
+      ['bg-subtlety', p.bgGradSubtlety]
+    ].concat(TN99_MAP_BLUR_SLIDERS.map(([id, key]) => [id, p[key]]));
+    pairs.forEach(([id, val]) => {
+      const n = document.getElementById('num-tn99-' + id);
+      const s = document.getElementById('slider-tn99-' + id);
+      if (n) n.value = val;
+      if (s) s.value = val;
+    });
+    const colors = [
+      ['tri-color', p.triColor], ['hand-color', p.handColor], ['bg-color', p.bgColor],
+      ['bg-grad1', p.bgGradColor1], ['bg-grad2', p.bgGradColor2]
+    ];
+    colors.forEach(([id, val]) => {
+      const pk = document.getElementById('picker-tn99-' + id);
+      const hx = document.getElementById('hex-tn99-' + id);
+      if (pk) pk.value = String(val).toLowerCase();
+      if (hx) hx.value = String(val).toUpperCase();
+    });
+    if (sel99Aspect) sel99Aspect.value = p.aspectRatio;
+    if (sel99Motion) sel99Motion.value = p.ballMotion;
+    if (sel99Shadow) sel99Shadow.value = String(p.ballShadow);
+    if (sel99MapBlend) sel99MapBlend.value = p.mapBlend;
+    if (sel99MapBlurType) sel99MapBlurType.value = p.mapBlurType;
+    if (num99Seed) num99Seed.value = p.mapBlurSeed;
+    if (chk99Invert) chk99Invert.checked = !!p.mapBlurInvert;
+    if (chk99ShowMask) chk99ShowMask.checked = !!p.mapBlurShowMask;
+  }
+
+  const btnResetTn99 = document.getElementById('btn-reset-tn99');
+  if (btnResetTn99) {
+    btnResetTn99.addEventListener('click', () => {
+      Object.assign(tn99Params, JSON.parse(JSON.stringify(TN99_DEFAULTS)));
+      syncTN99UI();
+      drawTN99Background();
+      updateTN99Clock(true);
+    });
+  }
+
+  function getTN99ConfigText() {
+    const p = tn99Params;
+    return [
+      `=== CONFIGURACIÓ RELLOTGE TN 1999 ===`,
+      `Esfera: Mida=${p.size}% | PosX=${p.posX}px | PosY=${p.posY}px | AspectRatio=${p.aspectRatio} | Desenfoc=${p.blur}px`,
+      `Segunder Bola 3D: Mida=${p.ballSize}% | Distància=${p.ballDist}% | Moviment=${p.ballMotion} | Ombra=${p.ballShadow} | OmbraInterna=${p.ballInnerShadow}%`,
+      `Triangle TV3 (a les 3): Mida=${p.triSize}% | Color=${p.triColor}`,
+      `Broques: Hores(Llarg=${p.hLen}%|Gruix=${p.hWidth}%) | Minuts(Llarg=${p.mLen}%|Gruix=${p.mWidth}%) | Color=${p.handColor}`,
+      `Fons: OpacitatMapa=${p.mapOpacity}% | EscalaMapa=${p.mapScale}% | RelleuRugós=${p.grainOpacity}% | Color=${p.bgColor} | DegradatDaltDreta=${p.bgGradColor1} | DegradatBaixEsquerra=${p.bgGradColor2} | SubtilesaDegradat=${p.bgGradSubtlety}%`,
+      `Mapamundi: Fusió=${p.mapBlend} | Desenfoc(Tipus=${p.mapBlurType}|Quantitat=${p.mapBlurAmount}px|Mínim=${p.mapBlurMin}px|FocusX=${p.mapBlurCX}%|FocusY=${p.mapBlurCY}%|RadiNítid=${p.mapBlurInner}%|RadiMàx=${p.mapBlurOuter}%|Forma=${p.mapBlurAspect}%|Irregularitat=${p.mapBlurIrreg}%|Llavor=${p.mapBlurSeed}|Invertit=${p.mapBlurInvert})`
+    ].join("\n");
+  }
+
+  const btnCopyTn99 = document.getElementById('btn-copy-tn99');
+  if (btnCopyTn99) {
+    btnCopyTn99.addEventListener('click', () => {
+      copyConfigToClipboard(getTN99ConfigText(), "Configuració de TN 1999 copiada al porta-retalls!");
+    });
+  }
+
   // --- TN 2002 Controls ---
+  // Aspect Ratio & Video Fit
+  const sel02Aspect = document.getElementById('select-tn02-aspect');
+  const sel02Fit = document.getElementById('select-tn02-fit');
+  const btnToggle02Aspect = document.getElementById('btn-toggle-tn02-aspect');
+  const btn02Preset169 = document.getElementById('btn-tn02-preset-169');
+  const btn02Preset43 = document.getElementById('btn-tn02-preset-43');
+
+  function setTN02Aspect(ratio, fit) {
+    tn02Params.aspectRatio = ratio;
+    if (fit) tn02Params.videoFit = fit;
+    if (sel02Aspect) sel02Aspect.value = ratio;
+    if (sel02Fit && fit) sel02Fit.value = fit;
+    applyTN02Styles();
+  }
+
+  if (sel02Aspect) {
+    sel02Aspect.addEventListener('change', (e) => {
+      tn02Params.aspectRatio = e.target.value;
+      applyTN02Styles();
+    });
+  }
+
+  if (sel02Fit) {
+    sel02Fit.addEventListener('change', (e) => {
+      tn02Params.videoFit = e.target.value;
+      applyTN02Styles();
+    });
+  }
+
+  if (btnToggle02Aspect) {
+    btnToggle02Aspect.addEventListener('click', () => {
+      const is43 = tn02Params.aspectRatio && tn02Params.aspectRatio.startsWith('4:3');
+      const nextRatio = is43 ? '16:9' : '4:3';
+      setTN02Aspect(nextRatio, 'cover');
+    });
+  }
+
+  if (btn02Preset169) {
+    btn02Preset169.addEventListener('click', () => {
+      setTN02Aspect('16:9', 'cover');
+    });
+  }
+
+  if (btn02Preset43) {
+    btn02Preset43.addEventListener('click', () => {
+      setTN02Aspect('4:3', 'cover');
+    });
+  }
+
   // Front Clock
   syncNumberSlider(document.getElementById('num-tn02-front-size'), document.getElementById('slider-tn02-front-size'), (val) => {
     tn02Params.frontSize = val;
@@ -7988,6 +9731,8 @@ if (selectTn25Easing) {
   const btnResetTn02 = document.getElementById('btn-reset-tn02');
   if (btnResetTn02) {
     btnResetTn02.addEventListener('click', () => {
+      tn02Params.aspectRatio = '16:9';
+      tn02Params.videoFit = 'cover';
       tn02Params.frontSize = 8.0;
       tn02Params.frontScaleX = 102;
       tn02Params.frontScaleY = 91;
@@ -8012,6 +9757,9 @@ if (selectTn25Easing) {
       tn02Params.backWeight = '700';
       tn02Params.backSpacing = 2;
       tn02Params.backBlur = 1.5;
+
+      if (sel02Aspect) sel02Aspect.value = '16:9';
+      if (sel02Fit) sel02Fit.value = 'cover';
 
       const pairs02 = [
         ['num-tn02-front-size', 'slider-tn02-front-size', 8.0],
@@ -8375,6 +10123,7 @@ if (selectTn25Easing) {
     function getTN02ConfigText() {
     return [
       `=== CONFIGURACIÓ RELLOTGE TN 2002 ===`,
+      `Format Pantalla: AspectRatio=${tn02Params.aspectRatio} | AjustVídeo=${tn02Params.videoFit}`,
       `Rellotge Davant: Mida=${tn02Params.frontSize}vw | EscalaX=${tn02Params.frontScaleX}% | EscalaY=${tn02Params.frontScaleY}% | Pos X=${tn02Params.frontX}% | Pos Y=${tn02Params.frontY}% | Opacitat=${tn02Params.frontOpacity}% | Espaiat=${tn02Params.frontSpacing}px | Desenfoc=${tn02Params.frontBlur}px | Fusió=${tn02Params.frontBlend} | Format=${tn02Params.frontFormat} | Gruix=${tn02Params.frontWeight} | Color=${tn02Params.frontColor.toUpperCase()}`,
       `Rellotge Fons: Mida=${tn02Params.backSize}vw | Pos X=Centrat | Pos Y=${tn02Params.backY}% | Opacitat=${tn02Params.backOpacity}% | Espaiat=${tn02Params.backSpacing}px | Desenfoc=${tn02Params.backBlur}px | Fusió=${tn02Params.backBlend} | Format=${tn02Params.backFormat} | Gruix=${tn02Params.backWeight} | Color=${tn02Params.backColor.toUpperCase()}`
     ].join("\n");
@@ -8483,7 +10232,9 @@ if (selectTn25Easing) {
       const activeTab = document.querySelector('.tab-content.active');
       const activeTabId = activeTab ? activeTab.id : '';
 
-      if (activeTabId === 'tab-tn2002' || currentAppMode === '2002') {
+      if (activeTabId === 'tab-tn1999' || currentAppMode === '1999' || currentAppMode === '2001') {
+        copyConfigToClipboard(getTN99ConfigText(), "Configuració de TN 1999 copiada al porta-retalls!");
+      } else if (activeTabId === 'tab-tn2002' || currentAppMode === '2002') {
         copyConfigToClipboard(getTN02ConfigText(), "Configuració de TN 2002 copiada al porta-retalls!");
       } else if (activeTabId === 'tab-tn2005' || currentAppMode === '2005') {
         copyConfigToClipboard(getTN05ConfigText(), "Configuració de TN 2005 copiada al porta-retalls!");
