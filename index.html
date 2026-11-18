@@ -7,8 +7,12 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rellotge TN">
-  <meta name="color-scheme" content="only light">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <meta name="darkreader-lock">
   <meta name="theme-color" id="meta-theme-color" content="#b0c3c3">
+  <meta name="theme-color" id="meta-theme-color-light" media="(prefers-color-scheme: light)" content="#b0c3c3">
+  <meta name="theme-color" id="meta-theme-color-dark" media="(prefers-color-scheme: dark)" content="#b0c3c3">
   <link rel="manifest" href="manifest.json">
   <title>Rellotge TN | 2014</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
@@ -17,6 +21,7 @@
   <link rel="icon" type="image/png" href="favicon-2014.png">
   <link rel="shortcut icon" type="image/png" href="favicon-2014.png">
   <link rel="apple-touch-icon" id="dynamic-apple-touch" href="apple-touch-icon-2014.png">
+  <link rel="apple-touch-icon-precomposed" id="dynamic-apple-touch-precomposed" href="apple-touch-icon-2014.png">
 
   <!-- Open Graph / Compartir link a xarxes (16:9) -->
   <meta property="og:type" content="website">
@@ -286,7 +291,90 @@
 
     :root {
       --theme-accent: #F56115;
-      color-scheme: only light;
+      color-scheme: light dark;
+      forced-color-adjust: none;
+    }
+
+    html, body {
+      color-scheme: light dark !important;
+      forced-color-adjust: none !important;
+      -webkit-text-size-adjust: 100% !important;
+    }
+
+    /* La web és 100% dark-aware: evita que el sistema o extensions de mode fosc (Noir, Dark Reader...)
+       inverteixin colors o fons. En mode fosc es manté fidelment l'aspecte original de cada època. */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: light dark !important;
+        forced-color-adjust: none !important;
+        --tn-dark-aware: 1;
+      }
+      html, body {
+        filter: none !important;
+        -webkit-filter: none !important;
+      }
+      #view-tn-2025 {
+        background: var(--tn25-orange, #F56115) !important;
+        filter: none !important;
+      }
+      .tn25-col-sec1, .tn25-col-sec2 {
+        background: var(--tn25-lightgrey, #DCDBDB) !important;
+        color: var(--tn25-darkgrey, #3A3A3A) !important;
+      }
+      .tn25-slit-window, .tn25-roller-track {
+        color: inherit !important;
+      }
+      .tn25-col-sec1 .tn25-digit-slot,
+      .tn25-col-sec2 .tn25-digit-slot {
+        color: var(--tn25-darkgrey, #3A3A3A) !important;
+      }
+      .tn25-col-hours, .tn25-col-min1, .tn25-col-min2, .tn25-col-left, .tn25-col-right {
+        background: var(--tn25-orange, #F56115) !important;
+      }
+      .tn25-col-hours .tn25-hours-display,
+      .tn25-col-min1 .tn25-digit-slot,
+      .tn25-col-min2 .tn25-digit-slot,
+      .tn25-col-dot .tn25-dot-display {
+        color: var(--tn25-white, #FFFFFF) !important;
+      }
+      .tn25-date-dome-text,
+      .tn25-dayname,
+      .tn25-daymonth,
+      .tn25-year {
+        color: var(--tn25-darkgrey, #3A3A3A) !important;
+      }
+      .tn25-ticker-bar {
+        background: var(--tn25-darkgrey, #3A3A3A) !important;
+      }
+      .tn25-ticker-text, .tn25-ticker-temp {
+        color: var(--tn25-white, #FFFFFF) !important;
+      }
+      .btn-minimal {
+        background: rgba(255, 255, 255, 0.48) !important;
+        color: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        filter: none !important;
+      }
+      .btn-minimal svg {
+        stroke: currentColor !important;
+      }
+      .tn-ver-select {
+        background: rgba(255, 255, 255, 0.48) !important;
+        color: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        filter: none !important;
+      }
+      .tn-select-chevron {
+        color: #64748b !important;
+      }
+      .btn-minimal.active {
+        background: var(--theme-accent, #F56115) !important;
+        color: #ffffff !important;
+        border-color: var(--theme-accent, #F56115) !important;
+      }
+      .minimal-controls {
+        filter: none !important;
+      }
     }
 
     .btn-minimal:hover {
@@ -1551,19 +1639,6 @@ html.is-mobile-device .tn-timeline-scrim {
   }
 }
 
-/* Pantalles més altes que l'escenari 1415x820 (vertical): cúpula i temperatures
-   enganxades al rellotge centrat, com a l'escenari original */
-@media (max-aspect-ratio: 1415/820) {
-  .tn25-date-dome {
-    bottom: auto;
-    top: calc(50% + 212px * var(--tn25-stage-scale, 1) - var(--tn25-date-y, 0px) * var(--tn25-stage-scale, 1));
-  }
-  .tn25-ticker-bar {
-    bottom: auto;
-    top: calc(50% + (356px - var(--tn25-ticker-pos-y, 54px)) * var(--tn25-stage-scale, 1));
-  }
-}
-
 /* Column 1: Hours + Date Dome */
 .tn25-col-left {
   flex: 1;
@@ -2031,9 +2106,27 @@ html.hide-config #master-editor-panel {
         }
         if (rawM === '2001') rawM = '1999';
         var initMode = /^(1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
+        var modeBgColors = {
+          '1999': '#E5ECE4',
+          '2001': '#E5ECE4',
+          '2002': '#000000',
+          '2005': '#F16806',
+          '2014': '#b0c3c3',
+          '2025': '#F56115'
+        };
+        var initHex = modeBgColors[initMode] || '#b0c3c3';
+        document.documentElement.style.backgroundColor = initHex;
+        ['meta-theme-color', 'meta-theme-color-light', 'meta-theme-color-dark'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.setAttribute('content', initHex);
+        });
         var atiLink = document.getElementById('dynamic-apple-touch');
         if (atiLink) {
-          atiLink.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v1';
+          atiLink.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v2';
+        }
+        var atiPrecomp = document.getElementById('dynamic-apple-touch-precomposed');
+        if (atiPrecomp) {
+          atiPrecomp.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v2';
         }
       } catch (e) {}
     })();
@@ -5696,8 +5789,10 @@ rightMat = new THREE.MeshStandardMaterial({
       _lastRootThemeHex = hex;
       document.documentElement.style.backgroundColor = hex;
       if (document.body) document.body.style.backgroundColor = hex;
-      const metaThemeColor = document.getElementById('meta-theme-color');
-      if (metaThemeColor) metaThemeColor.setAttribute('content', hex);
+      ['meta-theme-color', 'meta-theme-color-light', 'meta-theme-color-dark'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('content', hex);
+      });
     }
 
     function syncTN14TopBarColor(force) {
@@ -8787,8 +8882,14 @@ function updateDynamicFavicon(mode) {
   const appleLink = document.createElement('link');
   appleLink.id = 'dynamic-apple-touch';
   appleLink.rel = 'apple-touch-icon';
-  appleLink.href = `apple-touch-icon-${targetMode}.png?v=ati_v1`;
+  appleLink.href = `apple-touch-icon-${targetMode}.png?v=ati_v2`;
   document.head.appendChild(appleLink);
+
+  const applePrecomp = document.createElement('link');
+  applePrecomp.id = 'dynamic-apple-touch-precomposed';
+  applePrecomp.rel = 'apple-touch-icon-precomposed';
+  applePrecomp.href = `apple-touch-icon-${targetMode}.png?v=ati_v2`;
+  document.head.appendChild(applePrecomp);
 }
 
 function triggerYearTransition(targetMode, onMidpoint) {
@@ -8989,8 +9090,10 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   } else {
     document.documentElement.style.backgroundColor = activeBg;
     if (document.body) document.body.style.backgroundColor = activeBg;
-    const metaThemeColor = document.getElementById('meta-theme-color');
-    if (metaThemeColor) metaThemeColor.setAttribute('content', activeBg);
+    ['meta-theme-color', 'meta-theme-color-light', 'meta-theme-color-dark'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute('content', activeBg);
+    });
   }
   if (mode === '2014' && typeof syncTN14TopBarColor === 'function') {
     _tn14TopSyncFrame = 0;
