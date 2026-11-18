@@ -6,14 +6,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" id="meta-app-title" content="Rellotge TN">
+  <meta name="apple-mobile-web-app-title" content="Rellotge TN">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
   <meta name="darkreader-lock">
   <meta name="theme-color" id="meta-theme-color" content="#b0c3c3">
   <meta name="theme-color" id="meta-theme-color-light" media="(prefers-color-scheme: light)" content="#b0c3c3">
   <meta name="theme-color" id="meta-theme-color-dark" media="(prefers-color-scheme: dark)" content="#b0c3c3">
-  <link rel="manifest" id="app-manifest" href="manifest-2014.json">
+  <link rel="manifest" href="manifest.json">
   <title>Rellotge TN | 2014</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
 
@@ -2134,14 +2134,6 @@ html.hide-config #master-editor-panel {
         var atiPrecomp = document.getElementById('dynamic-apple-touch-precomposed');
         if (atiPrecomp) {
           atiPrecomp.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v2';
-        }
-        var manifestLink = document.getElementById('app-manifest');
-        if (manifestLink) {
-          manifestLink.href = 'manifest-' + initMode + '.json?v=m_v1';
-        }
-        var appTitleMeta = document.getElementById('meta-app-title');
-        if (appTitleMeta) {
-          appTitleMeta.setAttribute('content', 'TN ' + initMode);
         }
       } catch (e) {}
     })();
@@ -8985,6 +8977,13 @@ function switchMode(mode) {
     if (sel) sel.value = currentAppMode;
     return;
   }
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) {
+    triggerYearTransition(mode, () => {
+      window.location.href = `/?any=${mode}`;
+    });
+    return;
+  }
   triggerYearTransition(mode, () => {
     applyModeSwitch(mode);
   });
@@ -9054,14 +9053,6 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   try {
     localStorage.setItem('tn_last_mode', mode);
   } catch (_) {}
-  const appManifest = document.getElementById('app-manifest');
-  if (appManifest) {
-    appManifest.href = `manifest-${mode}.json?v=m_v1`;
-  }
-  const appTitleMeta = document.getElementById('meta-app-title');
-  if (appTitleMeta) {
-    appTitleMeta.setAttribute('content', `TN ${mode}`);
-  }
   document.documentElement.setAttribute('data-mode', mode);
   document.body.setAttribute('data-mode', mode);
   document.title = `Rellotge TN | ${mode}`;
