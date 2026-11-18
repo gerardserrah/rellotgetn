@@ -206,10 +206,9 @@
       margin: 0;
       padding: 0;
       width: 100%;
-      height: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
-      min-height: -webkit-fill-available;
+      height: calc(100vh + env(safe-area-inset-top, 0px));
+      height: calc(100dvh + env(safe-area-inset-top, 0px));
+      min-height: calc(100% + env(safe-area-inset-top, 0px));
       overflow: hidden;
       overscroll-behavior: none;
       background: #b0c3c3;
@@ -230,9 +229,9 @@
       right: 0;
       bottom: 0;
       width: 100vw;
-      height: 100vh;
+      height: calc(100vh + env(safe-area-inset-top, 0px));
       width: 100dvw;
-      height: 100dvh;
+      height: calc(100dvh + env(safe-area-inset-top, 0px));
       z-index: 1;
     }
 
@@ -871,9 +870,9 @@
   right: 0;
   bottom: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh + env(safe-area-inset-top, 0px));
   width: 100dvw;
-  height: 100dvh;
+  height: calc(100dvh + env(safe-area-inset-top, 0px));
   overflow: hidden;
   z-index: 5;
   background: #E5ECE4;
@@ -910,9 +909,9 @@
   right: 0;
   bottom: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh + env(safe-area-inset-top, 0px));
   width: 100dvw;
-  height: 100dvh;
+  height: calc(100dvh + env(safe-area-inset-top, 0px));
   overflow: hidden;
   z-index: 5;
   background: #000;
@@ -1000,9 +999,9 @@
   right: 0;
   bottom: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh + env(safe-area-inset-top, 0px));
   width: 100dvw;
-  height: 100dvh;
+  height: calc(100dvh + env(safe-area-inset-top, 0px));
   overflow: hidden;
   z-index: 5;
   user-select: none;
@@ -1042,7 +1041,7 @@
 .tn05-clock-container {
   position: absolute;
   right: 12.5vw;
-  top: 64.7vh;
+  top: 64.7%;
   transform: translateY(-100%);
   z-index: 4;
   pointer-events: none;
@@ -1091,7 +1090,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  top: 66.0vh;
+  top: 66.0%;
   height: calc(56px * var(--tn05-stage-scale, 1));
   background: transparent !important;
   border: none !important;
@@ -1148,9 +1147,9 @@
   right: 0;
   bottom: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh + env(safe-area-inset-top, 0px));
   width: 100dvw;
-  height: 100dvh;
+  height: calc(100dvh + env(safe-area-inset-top, 0px));
   z-index: 5;
   display: none;
   font-family: '3Cat', -apple-system, sans-serif;
@@ -1489,9 +1488,9 @@
   right: 0;
   bottom: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh + env(safe-area-inset-top, 0px));
   width: 100dvw;
-  height: 100dvh;
+  height: calc(100dvh + env(safe-area-inset-top, 0px));
   z-index: 99999;
   background: #000;
   overflow: hidden;
@@ -4230,23 +4229,44 @@ let flankCubesParams = {
       mat.needsUpdate = true;
     }
 
+    function getFullViewportDims() {
+      const docEl = document.documentElement;
+      const bodyEl = document.body;
+      const docRect = docEl ? docEl.getBoundingClientRect() : null;
+      const bodyRect = bodyEl ? bodyEl.getBoundingClientRect() : null;
+      const w = Math.max(
+        window.innerWidth || 0,
+        docEl ? docEl.clientWidth : 0,
+        docRect ? Math.round(docRect.width) : 0,
+        bodyRect ? Math.round(bodyRect.width) : 0
+      );
+      const h = Math.max(
+        window.innerHeight || 0,
+        docEl ? docEl.clientHeight : 0,
+        docRect ? Math.round(docRect.height) : 0,
+        bodyRect ? Math.round(bodyRect.height) : 0
+      );
+      return { w, h };
+    }
+
     // --- 3D Scene Initialization ---
     async function init() {
       const container = document.getElementById('webgl-container');
+      const { w: initW, h: initH } = getFullViewportDims();
 
       // 1. Scene with diffused fog matching horizon color #dbe1df (eliminates horizon seam)
       scene = new THREE.Scene();
       scene.fog = new THREE.Fog(0xdbe1df, 18, 48);
 
       // 2. Camera
-      camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera = new THREE.PerspectiveCamera(40, initW / initH, 0.1, 100);
       camera.position.copy(DEFAULT_CAMERA_POS);
       camera.zoom = 1.16;
       camera.updateProjectionMatrix();
 
       // 3. Renderer
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-      if (renderer) renderer.setSize(window.innerWidth, window.innerHeight);
+      if (renderer) renderer.setSize(initW, initH);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -5306,10 +5326,7 @@ rightMat = new THREE.MeshStandardMaterial({
     }
 
     function onWindowResize() {
-      const container = document.getElementById('webgl-container');
-      const rect = container ? container.getBoundingClientRect() : null;
-      const w = Math.max(window.innerWidth, rect ? Math.round(rect.width) : 0);
-      const h = Math.max(window.innerHeight, rect ? Math.round(rect.height) : 0);
+      const { w, h } = getFullViewportDims();
       const aspect = w / h;
       camera.aspect = aspect;
 
@@ -6103,8 +6120,7 @@ const tn25State = {
 function updateTN25Scale() {
   const baseW = 1415;
   const baseH = 820;
-  const curW = window.innerWidth;
-  const curH = window.innerHeight;
+  const { w: curW, h: curH } = getFullViewportDims();
   const scale = Math.min(curW / baseW, curH / baseH);
   document.documentElement.style.setProperty('--tn25-stage-scale', scale.toString());
 
@@ -6456,10 +6472,11 @@ function initTN99() {
 }
 
 function getTN99StageDims() {
+  const { w: vpW, h: vpH } = getFullViewportDims();
   const el = tn99ClockCanvas || tn99BgCanvas;
   const rect = el ? el.getBoundingClientRect() : null;
-  const w = (rect && rect.width > 0) ? Math.round(rect.width) : window.innerWidth;
-  const h = (rect && rect.height > 0) ? Math.round(rect.height) : window.innerHeight;
+  const w = Math.max(vpW, (rect && rect.width > 0) ? Math.round(rect.width) : 0);
+  const h = Math.max(vpH, (rect && rect.height > 0) ? Math.round(rect.height) : 0);
   return { w, h };
 }
 
@@ -7216,10 +7233,11 @@ function updateTN02Scale() {
   stage.style.height = `${baseH}px`;
 
   // Mana el vídeo de fons: sempre ocupa tota l'amplada de la finestra i centrat verticalment
-  const s = window.innerWidth / baseW;
+  const { w: vpW, h: vpH } = getFullViewportDims();
+  const s = vpW / baseW;
   const scaledH = baseH * s;
   const alignY = (tn02Params.videoAlignY !== undefined) ? tn02Params.videoAlignY : 50;
-  const stageTop = (window.innerHeight - scaledH) * (alignY / 100);
+  const stageTop = (vpH - scaledH) * (alignY / 100);
 
   stage.style.left = '0px';
   stage.style.top = `${stageTop}px`;
@@ -7484,8 +7502,7 @@ function initTN05() {
 function resizeTN05Canvas() {
   if (!tn05Canvas) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const { w, h } = getFullViewportDims();
   tn05Canvas.width = Math.round(w * dpr);
   tn05Canvas.height = Math.round(h * dpr);
   if (tn05Ctx) {
@@ -7513,8 +7530,7 @@ function updateTN05Styles() {
   // Mida de referència 1415x820 (establerta en calibrar proporcions del conjunt)
   const baseW = 1415;
   const baseH = 820;
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const { w, h } = getFullViewportDims();
   const scale = Math.min(w / baseW, h / baseH);
   const aspect = w / h;
   const isNarrow = (aspect < 1.15) || (w < 680);
@@ -7555,7 +7571,7 @@ function updateTN05Styles() {
       clockContainer.style.margin = '0';
       clockContainer.style.alignItems = 'flex-end';
     }
-    clockContainer.style.top = `${tn05Params.clockTop}vh`;
+    clockContainer.style.top = `${tn05Params.clockTop}%`;
   }
   if (clockDigits) {
     clockDigits.style.fontSize = `${clockFontPx.toFixed(1)}px`;
@@ -7565,7 +7581,7 @@ function updateTN05Styles() {
     });
   }
   if (tickerBar) {
-    tickerBar.style.top = `${tn05Params.tickerPosY}vh`;
+    tickerBar.style.top = `${tn05Params.tickerPosY}%`;
     tickerBar.style.height = `${tickerHeightPx}px`;
     document.querySelectorAll('.tn05-ticker-item').forEach(item => {
       item.style.marginRight = `${gapPx}px`;
@@ -7780,8 +7796,7 @@ function updateTN05Animation() {
   // Rotació suau i contínua dels engranatges
   tn05GearAngle += tn05Params.rotSpeed * tn05Params.rotDir * dt;
 
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const { w, h } = getFullViewportDims();
   const refH = (w / h < 1.777) ? (w / 1.777) : h;
   const aspectScale = refH / h;
 
@@ -8116,7 +8131,8 @@ function updateTN05Ticker(dt) {
   if (tn05TickerState === 'scrolling') {
     const baseW = 1415;
     const baseH = 820;
-    const curScale = Math.min(window.innerWidth / baseW, window.innerHeight / baseH);
+    const { w: vpW, h: vpH } = getFullViewportDims();
+    const curScale = Math.min(vpW / baseW, vpH / baseH);
     const pxPerSec = tn05Params.tickerSpeed * curScale;
     tn05TickerPos -= pxPerSec * clampedDt;
 
