@@ -2780,18 +2780,18 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Distància ":" (px)</label>
-    <input type="number" id="num-tn02-front-colon-gap" min="-20" max="30" step="0.5" value="0">
-    <input type="range" id="slider-tn02-front-colon-gap" min="-20" max="30" step="0.5" value="0">
+    <input type="number" id="num-tn02-front-colon-gap" min="-20" max="30" step="0.5" value="5">
+    <input type="range" id="slider-tn02-front-colon-gap" min="-20" max="30" step="0.5" value="5">
   </div>
   <div class="coord-row">
     <label>Posició X ":" (px)</label>
-    <input type="number" id="num-tn02-front-colon-x" min="-25" max="25" step="0.5" value="0">
-    <input type="range" id="slider-tn02-front-colon-x" min="-25" max="25" step="0.5" value="0">
+    <input type="number" id="num-tn02-front-colon-x" min="-25" max="25" step="0.5" value="1">
+    <input type="range" id="slider-tn02-front-colon-x" min="-25" max="25" step="0.5" value="1">
   </div>
   <div class="coord-row">
     <label>Posició Y ":" (px)</label>
-    <input type="number" id="num-tn02-front-colon-y" min="-25" max="25" step="0.5" value="0">
-    <input type="range" id="slider-tn02-front-colon-y" min="-25" max="25" step="0.5" value="0">
+    <input type="number" id="num-tn02-front-colon-y" min="-25" max="25" step="0.5" value="-3">
+    <input type="range" id="slider-tn02-front-colon-y" min="-25" max="25" step="0.5" value="-3">
   </div>
   <div class="coord-row">
     <label>Desenfocament (px)</label>
@@ -2867,8 +2867,8 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Posició X ":" (px)</label>
-    <input type="number" id="num-tn02-back-colon-x" min="-50" max="50" step="1" value="0">
-    <input type="range" id="slider-tn02-back-colon-x" min="-50" max="50" step="1" value="0">
+    <input type="number" id="num-tn02-back-colon-x" min="-50" max="50" step="1" value="2">
+    <input type="range" id="slider-tn02-back-colon-x" min="-50" max="50" step="1" value="2">
   </div>
   <div class="coord-row">
     <label>Posició Y ":" (px)</label>
@@ -7065,9 +7065,9 @@ let tn02Params = {
   frontSpacing: -2,
   frontBlur: 1.5,
   frontShadow: true,
-  frontColonGap: 0,
-  frontColonX: 0,
-  frontColonY: 0,
+  frontColonGap: 5,
+  frontColonX: 1,
+  frontColonY: -3,
 
   // Rellotge Secundari (Fons / Fusió)
   backSize: 25.5,
@@ -7081,7 +7081,7 @@ let tn02Params = {
   backSpacing: 2,
   backBlur: 1.5,
   backColonGap: 0,
-  backColonX: 0,
+  backColonX: 2,
   backColonY: 0
 };
 
@@ -10008,9 +10008,9 @@ if (selectTn25Easing) {
       tn02Params.frontSpacing = -2;
       tn02Params.frontBlur = 1.5;
       tn02Params.frontShadow = true;
-      tn02Params.frontColonGap = 0;
-      tn02Params.frontColonX = 0;
-      tn02Params.frontColonY = 0;
+      tn02Params.frontColonGap = 5;
+      tn02Params.frontColonX = 1;
+      tn02Params.frontColonY = -3;
 
       tn02Params.backSize = 25.5;
       tn02Params.backX = 50;
@@ -10023,7 +10023,7 @@ if (selectTn25Easing) {
       tn02Params.backSpacing = 2;
       tn02Params.backBlur = 1.5;
       tn02Params.backColonGap = 0;
-      tn02Params.backColonX = 0;
+      tn02Params.backColonX = 2;
       tn02Params.backColonY = 0;
 
       const pairs02 = [
@@ -10035,9 +10035,9 @@ if (selectTn25Easing) {
         ['num-tn02-front-y', 'slider-tn02-front-y', 58.0],
         ['num-tn02-front-opacity', 'slider-tn02-front-opacity', 76],
         ['num-tn02-front-spacing', 'slider-tn02-front-spacing', -2],
-        ['num-tn02-front-colon-gap', 'slider-tn02-front-colon-gap', 0],
-        ['num-tn02-front-colon-x', 'slider-tn02-front-colon-x', 0],
-        ['num-tn02-front-colon-y', 'slider-tn02-front-colon-y', 0],
+        ['num-tn02-front-colon-gap', 'slider-tn02-front-colon-gap', 5],
+        ['num-tn02-front-colon-x', 'slider-tn02-front-colon-x', 1],
+        ['num-tn02-front-colon-y', 'slider-tn02-front-colon-y', -3],
         ['num-tn02-front-blur', 'slider-tn02-front-blur', 1.5],
         ['num-tn02-back-size', 'slider-tn02-back-size', 25.5],
         ['num-tn02-back-x', 'slider-tn02-back-x', 50],
@@ -10045,7 +10045,7 @@ if (selectTn25Easing) {
         ['num-tn02-back-opacity', 'slider-tn02-back-opacity', 74],
         ['num-tn02-back-spacing', 'slider-tn02-back-spacing', 2],
         ['num-tn02-back-colon-gap', 'slider-tn02-back-colon-gap', 0],
-        ['num-tn02-back-colon-x', 'slider-tn02-back-colon-x', 0],
+        ['num-tn02-back-colon-x', 'slider-tn02-back-colon-x', 2],
         ['num-tn02-back-colon-y', 'slider-tn02-back-colon-y', 0],
         ['num-tn02-back-blur', 'slider-tn02-back-blur', 1.5]
       ];
