@@ -2009,7 +2009,7 @@ html.hide-config #master-editor-panel {
           document.documentElement.classList.add('screensaver-mode');
         }
         var pathMatch = window.location.pathname.match(/^\/(1999|2001|2002|2005|2014|2025)\/?$/);
-        var rawM = pathMatch ? pathMatch[1] : (window.__SCREENSAVER_YEAR__ || params.get('mode') || params.get('year') || '');
+        var rawM = pathMatch ? pathMatch[1] : (window.__SCREENSAVER_YEAR__ || params.get('any') || params.get('mode') || params.get('year') || '');
         if (!rawM) {
           var rawS = window.location.search.replace(/^\?/, '');
           if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawS)) rawM = rawS;
@@ -8843,7 +8843,7 @@ function getModeFromUrl() {
     const pathMatch = window.location.pathname.match(/^\/(1999|2001|2002|2005|2014|2025)\/?$/);
     if (pathMatch) return pathMatch[1] === '2001' ? '1999' : pathMatch[1];
     const urlParams = new URLSearchParams(window.location.search);
-    let m = window.__SCREENSAVER_YEAR__ || urlParams.get('mode') || urlParams.get('year');
+    let m = window.__SCREENSAVER_YEAR__ || urlParams.get('any') || urlParams.get('mode') || urlParams.get('year');
     if (!m) {
       const rawSearch = window.location.search.replace(/^\?/, '');
       if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawSearch)) m = rawSearch;
@@ -8873,7 +8873,8 @@ function updateUrlForMode(mode, replace = false) {
     if (/^\/(1999|2001|2002|2005|2014|2025)\/?$/.test(url.pathname)) {
       url.pathname = '/';
     }
-    url.searchParams.set('mode', normMode);
+    url.searchParams.set('any', normMode);
+    if (url.searchParams.has('mode')) url.searchParams.delete('mode');
     if (url.searchParams.has('year')) url.searchParams.delete('year');
     const newRel = url.pathname + url.search + url.hash;
     const curRel = window.location.pathname + window.location.search + window.location.hash;
