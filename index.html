@@ -844,8 +844,9 @@
 #view-tn-1999 {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   overflow: hidden;
   z-index: 5;
   background: #E5ECE4;
@@ -891,17 +892,15 @@
 
 .tn02-stage {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 1191px;
+  top: 0;
+  left: 0;
+  width: 852px;
   height: 639px;
-  transform: translate(-50%, -50%);
-  transform-origin: center center;
+  transform-origin: 0 0;
   overflow: hidden;
   pointer-events: none;
   background: #000;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.85);
-  transition: width 0.2s ease, height 0.2s ease;
 }
 
 .tn02-video {
@@ -916,7 +915,7 @@
 
 .tn02-clock-back {
   position: absolute;
-  top: 25.5%;
+  top: 34%;
   left: 50%;
   transform: translateX(-50%);
   font-family: 'AkzidenzGroteskBQ-MedExt', 'AkzidenzGroteskBQ', -apple-system, sans-serif;
@@ -927,7 +926,7 @@
   opacity: 0.74;
   mix-blend-mode: overlay;
   white-space: nowrap;
-  letter-spacing: 2px;
+  letter-spacing: 0px;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
   filter: blur(1.5px);
@@ -945,13 +944,18 @@
   opacity: 0.76;
   mix-blend-mode: normal;
   white-space: nowrap;
-  letter-spacing: -2px;
+  letter-spacing: 0px;
   filter: blur(1.5px);
   transform: scale(1.02, 0.91);
   transform-origin: left top;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.tn02-char, .tn02-colon {
+  display: inline-block;
+  position: relative;
 }
 
 /* ==========================================================================
@@ -1648,7 +1652,7 @@ html.hide-config #master-editor-panel {
   </div>
 
   <!-- Background Audio (Autoplays, loop) -->
-  <audio id="bg-audio" src="audio/music.m4a" loop preload="auto"></audio>
+  <audio id="bg-audio" src="audio/music.m4a" autoplay loop preload="auto"></audio>
 
   <!-- Vintage TV Static Year Transition Overlay -->
   <div id="tv-transition-overlay" style="display: none;">
@@ -2731,29 +2735,11 @@ html.hide-config #master-editor-panel {
 
 <!-- TAB 7: TN 2002 (RELLOTGE NORMAL I RELLOTGE DE FONS AMB FUSIÓ) -->
 <div id="tab-tn2002" class="tab-content">
-  <div class="panel-section-title">Format de Pantalla & Vídeo</div>
+  <div class="panel-section-title">Vídeo de Fons (Mana Amplada)</div>
   <div class="coord-row">
-    <label>Aspect Ratio</label>
-    <select id="select-tn02-aspect" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
-      <option value="16:9" selected>16:9 (Panoràmic complet)</option>
-      <option value="4:3">4:3 (TV clàssica / Pillarbox)</option>
-      <option value="4:3-cover">4:3 Zoom (Omple pantalla)</option>
-      <option value="4:3-stretch">4:3 Estirat (Anamòrfic)</option>
-    </select>
-  </div>
-  <div class="coord-row">
-    <label>Ajust Vídeo</label>
-    <select id="select-tn02-fit" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
-      <option value="cover" selected>Retallat (Cover / Center-cut 4:3)</option>
-      <option value="fill">Estirat (Fill / Deformat)</option>
-      <option value="contain">Enter (Contain / Bandes)</option>
-    </select>
-  </div>
-  <div class="coord-row" style="margin-top: 4px; margin-bottom: 8px;">
-    <div style="grid-column: 1 / -1; display: flex; gap: 6px;">
-      <button type="button" class="btn-editor-action" id="btn-tn02-preset-169" style="flex: 1; padding: 5px 8px; font-size: 11px;">Mode 16:9</button>
-      <button type="button" class="btn-editor-action" id="btn-tn02-preset-43" style="flex: 1; padding: 5px 8px; font-size: 11px;">Mode 4:3 TV</button>
-    </div>
+    <label>Retall vertical (%)</label>
+    <input type="number" id="num-tn02-video-align-y" min="0" max="100" step="1" value="50">
+    <input type="range" id="slider-tn02-video-align-y" min="0" max="100" step="1" value="50">
   </div>
 
   <div class="panel-section-title">Rellotge Principal (Davant)</div>
@@ -2791,6 +2777,21 @@ html.hide-config #master-editor-panel {
     <label>Espaiat lletres (px)</label>
     <input type="number" id="num-tn02-front-spacing" min="-10" max="30" step="1" value="-2">
     <input type="range" id="slider-tn02-front-spacing" min="-10" max="30" step="1" value="-2">
+  </div>
+  <div class="coord-row">
+    <label>Distància ":" (px)</label>
+    <input type="number" id="num-tn02-front-colon-gap" min="-20" max="30" step="0.5" value="0">
+    <input type="range" id="slider-tn02-front-colon-gap" min="-20" max="30" step="0.5" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Posició X ":" (px)</label>
+    <input type="number" id="num-tn02-front-colon-x" min="-25" max="25" step="0.5" value="0">
+    <input type="range" id="slider-tn02-front-colon-x" min="-25" max="25" step="0.5" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Posició Y ":" (px)</label>
+    <input type="number" id="num-tn02-front-colon-y" min="-25" max="25" step="0.5" value="0">
+    <input type="range" id="slider-tn02-front-colon-y" min="-25" max="25" step="0.5" value="0">
   </div>
   <div class="coord-row">
     <label>Desenfocament (px)</label>
@@ -2846,8 +2847,8 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Posició Y (%)</label>
-    <input type="number" id="num-tn02-back-y" min="0" max="100" step="0.5" value="25.5">
-    <input type="range" id="slider-tn02-back-y" min="0" max="100" step="0.5" value="25.5">
+    <input type="number" id="num-tn02-back-y" min="0" max="100" step="0.5" value="34">
+    <input type="range" id="slider-tn02-back-y" min="0" max="100" step="0.5" value="34">
   </div>
   <div class="coord-row">
     <label>Opacitat (%)</label>
@@ -2858,6 +2859,21 @@ html.hide-config #master-editor-panel {
     <label>Espaiat lletres (px)</label>
     <input type="number" id="num-tn02-back-spacing" min="-10" max="30" step="1" value="2">
     <input type="range" id="slider-tn02-back-spacing" min="-10" max="30" step="1" value="2">
+  </div>
+  <div class="coord-row">
+    <label>Distància ":" (px)</label>
+    <input type="number" id="num-tn02-back-colon-gap" min="-40" max="60" step="1" value="0">
+    <input type="range" id="slider-tn02-back-colon-gap" min="-40" max="60" step="1" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Posició X ":" (px)</label>
+    <input type="number" id="num-tn02-back-colon-x" min="-50" max="50" step="1" value="0">
+    <input type="range" id="slider-tn02-back-colon-x" min="-50" max="50" step="1" value="0">
+  </div>
+  <div class="coord-row">
+    <label>Posició Y ":" (px)</label>
+    <input type="number" id="num-tn02-back-colon-y" min="-50" max="50" step="1" value="0">
+    <input type="range" id="slider-tn02-back-colon-y" min="-50" max="50" step="1" value="0">
   </div>
   <div class="coord-row">
     <label>Desenfocament (px)</label>
@@ -5241,6 +5257,97 @@ rightMat = new THREE.MeshStandardMaterial({
     let isSyncActive = false;
     let syncIntervalId = null;
 
+    const TN_MODE_AUDIO_SRC = {
+      '1999': 'audio/music_1999.m4a',
+      '2001': 'audio/music_1999.m4a',
+      '2002': 'audio/music_2002.m4a',
+      '2005': 'audio/music_2005.m4a',
+      '2014': 'audio/music.m4a',
+      '2025': 'audio/music_2025.m4a'
+    };
+
+    function getBgAudioEl() {
+      if (!bgAudio) bgAudio = document.getElementById('bg-audio');
+      return bgAudio;
+    }
+
+    function playFallbackBgAudio(src) {
+      const el = getBgAudioEl();
+      if (!el || isAudioMuted) return;
+      el.muted = false;
+      el.loop = true;
+      el.volume = 0.85;
+      if (!el.src || !el.src.endsWith(src)) {
+        el.src = src;
+        el.load();
+      }
+      if (el.paused) {
+        el.play().catch(() => {});
+      }
+    }
+
+    let _audioUnlockInstalled = false;
+    function installGlobalAudioUnlock() {
+      if (_audioUnlockInstalled) return;
+      _audioUnlockInstalled = true;
+      const unlockEvents = ['click', 'pointerdown', 'pointerup', 'touchstart', 'touchend', 'keydown'];
+      const tryUnlock = async () => {
+        if (isAudioMuted) return;
+        const m = currentAppMode || '2014';
+        const el = getBgAudioEl();
+        if (m === '1999' || m === '2001') {
+          if (tn99AudioCtx && tn99AudioCtx.state === 'suspended') {
+            await tn99AudioCtx.resume().catch(() => {});
+          }
+          updateTN99AudioVolume();
+          if (tn99AudioCtx && tn99AudioCtx.state === 'running') {
+            if (!tn99AudioSource || !isTN99AudioActive) await playTN99SeamlessAudio();
+            if (el && !el.paused) el.pause();
+            unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
+          } else {
+            playFallbackBgAudio('audio/music_1999.m4a');
+          }
+        } else if (m === '2002') {
+          if (tn02AudioCtx && tn02AudioCtx.state === 'suspended') {
+            await tn02AudioCtx.resume().catch(() => {});
+          }
+          updateTN02AudioVolume();
+          if (tn02AudioCtx && tn02AudioCtx.state === 'running') {
+            if (!tn02AudioSource || !isTN02AudioActive) await playTN02SeamlessAudio();
+            if (el && !el.paused) el.pause();
+            unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
+          } else {
+            playFallbackBgAudio('audio/music_2002.m4a');
+          }
+        } else if (m === '2005') {
+          if (tn05AudioCtx && tn05AudioCtx.state === 'suspended') {
+            await tn05AudioCtx.resume().catch(() => {});
+          }
+          updateTN05AudioVolume();
+          if (tn05AudioCtx && tn05AudioCtx.state === 'running') {
+            if (!tn05AudioSource || !isTN05AudioActive) await playTN05SeamlessAudio();
+            if (el && !el.paused) el.pause();
+            unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
+          } else {
+            playFallbackBgAudio('audio/music_2005.m4a');
+          }
+        } else if (el) {
+          el.muted = false;
+          if (el.paused) {
+            if (m === '2025') alignTN25AudioToClock();
+            try {
+              await el.play();
+              unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
+            } catch (e) {}
+          } else {
+            unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
+          }
+        }
+        updateAudioUI();
+      };
+      unlockEvents.forEach(ev => window.addEventListener(ev, tryUnlock, { passive: true }));
+    }
+
     // --- Web Audio API Seamless Gapless Looper for TN 1999 ---
     let tn99AudioCtx = null;
     let tn99AudioBuffer = null;
@@ -5288,15 +5395,29 @@ rightMat = new THREE.MeshStandardMaterial({
 
     async function playTN99SeamlessAudio() {
       isTN99AudioActive = true;
-      if (bgAudio) {
-        bgAudio.pause();
-      }
+      const el = getBgAudioEl();
       const buf = await loadTN99AudioBuffer();
-      if (!buf || !isTN99AudioActive) return;
+      if (!isTN99AudioActive) return;
 
       if (tn99AudioCtx && tn99AudioCtx.state === 'suspended') {
         await tn99AudioCtx.resume().catch(() => {});
       }
+
+      if (!buf || !tn99AudioCtx || tn99AudioCtx.state !== 'running') {
+        // Fallback immediat amb <audio> HTML5 mentre l'AudioContext no estigui actiu
+        playFallbackBgAudio('audio/music_1999.m4a');
+        if (tn99AudioCtx && !tn99AudioCtx._stateBound) {
+          tn99AudioCtx._stateBound = true;
+          tn99AudioCtx.addEventListener('statechange', () => {
+            if (tn99AudioCtx.state === 'running' && isTN99AudioActive && (!tn99AudioSource)) {
+              playTN99SeamlessAudio();
+            }
+          });
+        }
+        return;
+      }
+
+      if (el && !el.paused) el.pause();
 
       if (tn99AudioSource) {
         try { tn99AudioSource.stop(); } catch (e) {}
@@ -5308,7 +5429,7 @@ rightMat = new THREE.MeshStandardMaterial({
         tn99GainNode = tn99AudioCtx.createGain();
         tn99GainNode.connect(tn99AudioCtx.destination);
       }
-      const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+      const shouldMute = isAudioMuted || (el && el.muted);
       tn99GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn99AudioCtx.currentTime);
 
       tn99AudioSource = tn99AudioCtx.createBufferSource();
@@ -5381,15 +5502,28 @@ rightMat = new THREE.MeshStandardMaterial({
 
     async function playTN02SeamlessAudio() {
       isTN02AudioActive = true;
-      if (bgAudio) {
-        bgAudio.pause();
-      }
+      const el = getBgAudioEl();
       const buf = await loadTN02AudioBuffer();
-      if (!buf || !isTN02AudioActive) return;
+      if (!isTN02AudioActive) return;
 
       if (tn02AudioCtx && tn02AudioCtx.state === 'suspended') {
         await tn02AudioCtx.resume().catch(() => {});
       }
+
+      if (!buf || !tn02AudioCtx || tn02AudioCtx.state !== 'running') {
+        playFallbackBgAudio('audio/music_2002.m4a');
+        if (tn02AudioCtx && !tn02AudioCtx._stateBound) {
+          tn02AudioCtx._stateBound = true;
+          tn02AudioCtx.addEventListener('statechange', () => {
+            if (tn02AudioCtx.state === 'running' && isTN02AudioActive && (!tn02AudioSource)) {
+              playTN02SeamlessAudio();
+            }
+          });
+        }
+        return;
+      }
+
+      if (el && !el.paused) el.pause();
 
       if (tn02AudioSource) {
         try { tn02AudioSource.stop(); } catch (e) {}
@@ -5401,7 +5535,7 @@ rightMat = new THREE.MeshStandardMaterial({
         tn02GainNode = tn02AudioCtx.createGain();
         tn02GainNode.connect(tn02AudioCtx.destination);
       }
-      const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+      const shouldMute = isAudioMuted || (el && el.muted);
       tn02GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn02AudioCtx.currentTime);
 
       tn02AudioSource = tn02AudioCtx.createBufferSource();
@@ -5466,15 +5600,28 @@ rightMat = new THREE.MeshStandardMaterial({
 
     async function playTN05SeamlessAudio() {
       isTN05AudioActive = true;
-      if (bgAudio) {
-        bgAudio.pause();
-      }
+      const el = getBgAudioEl();
       const buf = await loadTN05AudioBuffer();
-      if (!buf || !isTN05AudioActive) return;
+      if (!isTN05AudioActive) return;
 
       if (tn05AudioCtx && tn05AudioCtx.state === 'suspended') {
         await tn05AudioCtx.resume().catch(() => {});
       }
+
+      if (!buf || !tn05AudioCtx || tn05AudioCtx.state !== 'running') {
+        playFallbackBgAudio('audio/music_2005.m4a');
+        if (tn05AudioCtx && !tn05AudioCtx._stateBound) {
+          tn05AudioCtx._stateBound = true;
+          tn05AudioCtx.addEventListener('statechange', () => {
+            if (tn05AudioCtx.state === 'running' && isTN05AudioActive && (!tn05AudioSource)) {
+              playTN05SeamlessAudio();
+            }
+          });
+        }
+        return;
+      }
+
+      if (el && !el.paused) el.pause();
 
       if (tn05AudioSource) {
         try { tn05AudioSource.stop(); } catch (e) {}
@@ -5486,7 +5633,7 @@ rightMat = new THREE.MeshStandardMaterial({
         tn05GainNode = tn05AudioCtx.createGain();
         tn05GainNode.connect(tn05AudioCtx.destination);
       }
-      const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+      const shouldMute = isAudioMuted || (el && el.muted);
       tn05GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn05AudioCtx.currentTime);
 
       tn05AudioSource = tn05AudioCtx.createBufferSource();
@@ -5513,7 +5660,7 @@ rightMat = new THREE.MeshStandardMaterial({
     }
 
     async function initAudio() {
-      bgAudio = document.getElementById('bg-audio');
+      bgAudio = getBgAudioEl();
       if (!bgAudio) return;
 
       if (window.__SCREENSAVER_MODE__ || document.documentElement.classList.contains('screensaver-mode') || window.location.search.indexOf('screensaver') !== -1 || window.location.search.indexOf('muted') !== -1) {
@@ -5524,8 +5671,12 @@ rightMat = new THREE.MeshStandardMaterial({
         return;
       }
 
+      bgAudio.muted = false;
       bgAudio.loop = true;
       bgAudio.volume = 0.85;
+      isAudioMuted = false;
+
+      installGlobalAudioUnlock();
 
       if (currentAppMode === '1999' || currentAppMode === '2001') {
         playTN99SeamlessAudio();
@@ -5543,71 +5694,19 @@ rightMat = new THREE.MeshStandardMaterial({
         return;
       }
 
-      // Preload entire audio into memory Blob for instantaneous seeking without HTTP Range delays
-      fetch('audio/music.m4a')
-        .then(res => res.blob())
-        .then(blob => {
-          const blobUrl = URL.createObjectURL(blob);
-          const wasPlaying = !bgAudio.paused;
-          const curTime = bgAudio.currentTime;
-          bgAudio.src = blobUrl;
-          bgAudio.currentTime = curTime;
-          if (wasPlaying) bgAudio.play().catch(() => {});
-        })
-        .catch(err => console.warn("Blob audio preload warning:", err));
-
-      // Attempt unmuted autoplay; if browser policy blocks, start muted and unlock sound on first interaction
+      const targetSrc = TN_MODE_AUDIO_SRC[currentAppMode] || 'audio/music.m4a';
+      if (!bgAudio.src || !bgAudio.src.endsWith(targetSrc)) {
+        bgAudio.src = targetSrc;
+      }
+      if (currentAppMode === '2025') {
+        alignTN25AudioToClock();
+      }
       try {
         await bgAudio.play();
-        updateAudioUI();
       } catch (err) {
-        console.log("Autoplay unmuted blocked by policy, trying muted autoplay:", err);
-        bgAudio.muted = true;
-        isAudioMuted = true;
-        bgAudio.play().then(() => updateAudioUI()).catch(() => {});
-
-        const unlockSound = () => {
-          bgAudio.muted = false;
-          isAudioMuted = false;
-          if (currentAppMode === '1999' || currentAppMode === '2001') {
-            if (tn99AudioCtx && tn99AudioCtx.state === 'suspended') {
-              tn99AudioCtx.resume().catch(() => {});
-            }
-            updateTN99AudioVolume();
-            if (!tn99AudioSource || !isTN99AudioActive) {
-              playTN99SeamlessAudio();
-            }
-          } else if (currentAppMode === '2002') {
-            if (tn02AudioCtx && tn02AudioCtx.state === 'suspended') {
-              tn02AudioCtx.resume().catch(() => {});
-            }
-            updateTN02AudioVolume();
-            if (!tn02AudioSource || !isTN02AudioActive) {
-              playTN02SeamlessAudio();
-            }
-          } else if (currentAppMode === '2005') {
-            if (tn05AudioCtx && tn05AudioCtx.state === 'suspended') {
-              tn05AudioCtx.resume().catch(() => {});
-            }
-            updateTN05AudioVolume();
-            if (!tn05AudioSource || !isTN05AudioActive) {
-              playTN05SeamlessAudio();
-            }
-          } else if (bgAudio.paused) {
-            if (currentAppMode === '2025') {
-              alignTN25AudioToClock();
-            }
-            bgAudio.play().catch(() => {});
-          }
-          updateAudioUI();
-          ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(ev => {
-            window.removeEventListener(ev, unlockSound);
-          });
-        };
-        ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(ev => {
-          window.addEventListener(ev, unlockSound, { once: true });
-        });
+        // Mantenim isAudioMuted = false perquè quan l'usuari mogui/premi es desbloquegi directament sense mostrar-se com a silenciada
       }
+      updateAudioUI();
     }
 
     function toggleAudioMute() {
@@ -6268,6 +6367,14 @@ function initTN99() {
   resizeTN99Canvases();
 }
 
+function getTN99StageDims() {
+  const el = tn99ClockCanvas || tn99BgCanvas;
+  const rect = el ? el.getBoundingClientRect() : null;
+  const w = (rect && rect.width > 0) ? Math.round(rect.width) : window.innerWidth;
+  const h = (rect && rect.height > 0) ? Math.round(rect.height) : window.innerHeight;
+  return { w, h };
+}
+
 function resizeTN99Canvases() {
   if (!tn99BgCanvas || !tn99ClockCanvas) {
     tn99BgCanvas = document.getElementById('tn99-bg-canvas');
@@ -6277,10 +6384,9 @@ function resizeTN99Canvases() {
   }
   if (!tn99BgCanvas || !tn99ClockCanvas) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const targetW = Math.round(w * dpr);
-  const targetH = Math.round(h * dpr);
+  const { w, h } = getTN99StageDims();
+  const targetW = Math.max(1, Math.round(w * dpr));
+  const targetH = Math.max(1, Math.round(h * dpr));
 
   if (tn99BgCanvas.width !== targetW || tn99BgCanvas.height !== targetH) {
     tn99BgCanvas.width = targetW;
@@ -6296,8 +6402,7 @@ function drawTN99Background() {
   if (!tn99BgCanvas || !tn99BgCtx) return;
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const { w, h } = getTN99StageDims();
   const cw = tn99BgCanvas.width;
   const ch = tn99BgCanvas.height;
 
@@ -6564,7 +6669,8 @@ function tn99BlurInto(srcCanvas, dstKey, radiusPx) {
 function tn99FillWorld(ctx, sx, sy, sw, sh, zoom, zx, zy) {
   const cx = sx + sw / 2;
   const cy = sy + sh / 2;
-  const scale = (sw / 442) * (tn99Params.mapScale / 100);
+  const refW = Math.max(sw, Math.min(sw, sh) * (16 / 9));
+  const scale = (refW / 442) * (tn99Params.mapScale / 100);
   ctx.save();
   if (zoom && zoom !== 1) {
     ctx.translate(zx, zy);
@@ -6775,8 +6881,10 @@ function updateTN99Clock(force) {
   if (!tn99ClockCanvas || !tn99ClockCtx) return;
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  const { w, h } = getTN99StageDims();
+  if (tn99ClockCanvas.width !== Math.max(1, Math.round(w * dpr)) || tn99ClockCanvas.height !== Math.max(1, Math.round(h * dpr))) {
+    resizeTN99Canvases();
+  }
   const cw = tn99ClockCanvas.width;
   const ch = tn99ClockCanvas.height;
 
@@ -6940,9 +7048,8 @@ function updateTN99Clock(force) {
 // --- TN 2002 ENGINE (TN TV3 - 2002) - Fons Vídeo i Rellotges Superposats ---
 // ==========================================================================
 let tn02Params = {
-  // Format i Encaix de pantalla
-  aspectRatio: '16:9', // '16:9' | '4:3' | '4:3-cover' | '4:3-stretch'
-  videoFit: 'cover',   // 'cover' | 'fill' | 'contain'
+  // Encaix del vídeo de fons (mana l'amplada del vídeo, centrat verticalment)
+  videoAlignY: 50,     // 50% = centrat verticalment sempre (0% = ancorat a dalt, 100% = ancorat a baix)
 
   // Rellotge Principal (Davant)
   frontSize: 8.0,
@@ -6958,71 +7065,73 @@ let tn02Params = {
   frontSpacing: -2,
   frontBlur: 1.5,
   frontShadow: true,
+  frontColonGap: 0,
+  frontColonX: 0,
+  frontColonY: 0,
 
   // Rellotge Secundari (Fons / Fusió)
   backSize: 25.5,
   backX: 50,
-  backY: 25.5,
+  backY: 34.0,
   backColor: '#FFFFFF',
   backOpacity: 74,
   backBlend: 'overlay',
   backFormat: 'HH:MM',
   backWeight: '700',
   backSpacing: 2,
-  backBlur: 1.5
+  backBlur: 1.5,
+  backColonGap: 0,
+  backColonX: 0,
+  backColonY: 0
 };
 
 let lastTN02Second = -1;
+function getTN02VideoMetrics() {
+  const video = document.getElementById('tn02-bg-video');
+  const vidAspect = (video && video.videoWidth && video.videoHeight)
+    ? (video.videoWidth / video.videoHeight)
+    : (4 / 3);
+  const baseH = 639;
+  const baseW = Math.round(baseH * vidAspect);
+  return { video, baseW, baseH };
+}
+
 function updateTN02Scale() {
   const stage = document.getElementById('tn02-stage');
-  const video = document.getElementById('tn02-bg-video');
   if (!stage) return;
 
-  const is43 = tn02Params.aspectRatio && tn02Params.aspectRatio.startsWith('4:3');
-  const baseW = is43 ? 852 : 1191;
-  const baseH = 639;
+  const { video, baseW, baseH } = getTN02VideoMetrics();
+
+  if (video) {
+    if (!video._metaResizeBound) {
+      video._metaResizeBound = true;
+      video.addEventListener('loadedmetadata', () => {
+        applyTN02Styles();
+      });
+    }
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.objectFit = 'fill';
+  }
 
   stage.style.width = `${baseW}px`;
   stage.style.height = `${baseH}px`;
 
-  if (video) {
-    video.style.width = '100%';
-    video.style.height = '100%';
-    video.style.objectFit = tn02Params.videoFit || 'cover';
-  }
+  // Mana el vídeo de fons: sempre ocupa tota l'amplada de la finestra i centrat verticalment
+  const s = window.innerWidth / baseW;
+  const scaledH = baseH * s;
+  const alignY = (tn02Params.videoAlignY !== undefined) ? tn02Params.videoAlignY : 50;
+  const stageTop = (window.innerHeight - scaledH) * (alignY / 100);
 
-  let scaleX, scaleY;
-  if (tn02Params.aspectRatio === '4:3-stretch') {
-    scaleX = window.innerWidth / baseW;
-    scaleY = window.innerHeight / baseH;
-  } else if (tn02Params.aspectRatio === '4:3-cover') {
-    const s = Math.max(window.innerWidth / baseW, window.innerHeight / baseH);
-    scaleX = s;
-    scaleY = s;
-  } else if (tn02Params.aspectRatio === '4:3') {
-    // Classic 4:3 pillarbox TV presentation (fits height, black bars on sides)
-    const s = Math.min(window.innerWidth / baseW, window.innerHeight / baseH);
-    scaleX = s;
-    scaleY = s;
-  } else {
-    // 16:9 widescreen full cover
-    const s = Math.max(window.innerWidth / baseW, window.innerHeight / baseH);
-    scaleX = s;
-    scaleY = s;
-  }
-
-  stage.style.transform = `translate(-50%, -50%) scale(${scaleX}, ${scaleY})`;
-
-  const quickAspectLabel = document.getElementById('tn02-aspect-label');
-  if (quickAspectLabel) {
-    quickAspectLabel.textContent = is43 ? 'Format: 4:3' : 'Format: 16:9';
-  }
+  stage.style.left = '0px';
+  stage.style.top = `${stageTop}px`;
+  stage.style.transformOrigin = '0 0';
+  stage.style.transform = `scale(${s})`;
 }
 window.addEventListener('resize', updateTN02Scale);
 
 function applyTN02Styles() {
-  const is43 = tn02Params.aspectRatio && tn02Params.aspectRatio.startsWith('4:3');
-  const stageW = is43 ? 852 : 1191;
+  const stageW = getTN02VideoMetrics().baseW;
 
   const front = document.getElementById('tn02-clock-front');
   if (front) {
@@ -7038,7 +7147,7 @@ function applyTN02Styles() {
     front.style.opacity = (tn02Params.frontOpacity / 100).toFixed(2);
     front.style.mixBlendMode = tn02Params.frontBlend;
     front.style.fontWeight = tn02Params.frontWeight || '600';
-    front.style.letterSpacing = `${tn02Params.frontSpacing}px`;
+    front.style.letterSpacing = '0px';
     front.style.filter = tn02Params.frontBlur > 0 ? `blur(${tn02Params.frontBlur}px)` : 'none';
     front.style.textShadow = tn02Params.frontShadow ? '0 2px 10px rgba(0, 0, 0, 0.4)' : 'none';
   }
@@ -7054,20 +7163,53 @@ function applyTN02Styles() {
     back.style.opacity = (tn02Params.backOpacity / 100).toFixed(2);
     back.style.mixBlendMode = tn02Params.backBlend;
     back.style.fontWeight = tn02Params.backWeight || '700';
-    back.style.letterSpacing = `${tn02Params.backSpacing}px`;
+    back.style.letterSpacing = '0px';
     back.style.filter = tn02Params.backBlur > 0 ? `blur(${tn02Params.backBlur}px)` : 'none';
   }
 
   updateTN02Scale();
   lastTN02Second = -1;
-  updateTN02Clock();
+  updateTN02Clock(true);
 }
 
-function updateTN02Clock() {
-  if (currentAppMode !== '2002') return;
+// Compensació òptica de sidebearings d'AkzidenzGroteskBQ perquè tots els números
+// mantinguin exactament la mateixa distància visual (encara que hi hagi '1's)
+const TN02_DIGIT_BEARINGS = {
+  ext: {
+    '0': [0, -0.02], '1': [-0.09, -0.23], '2': [-0.02, -0.02], '3': [0, -0.01], '4': [0.01, 0],
+    '5': [0, 0], '6': [-0.02, 0.02], '7': [-0.03, -0.03], '8': [0, 0], '9': [0.01, 0]
+  },
+  medext: {
+    '0': [0.02, -0.01], '1': [-0.07, -0.23], '2': [0, -0.02], '3': [0.02, 0], '4': [0.01, -0.01],
+    '5': [0.01, -0.01], '6': [0, 0], '7': [-0.02, -0.03], '8': [0, 0], '9': [0.01, -0.01]
+  }
+};
+
+function renderTN02FormattedTime(el, str, fontType, letterSpacingPx, colonGapPx, colonXPx, colonYPx) {
+  if (!el) return;
+  const table = TN02_DIGIT_BEARINGS[fontType] || TN02_DIGIT_BEARINGS.ext;
+  const halfGap = (letterSpacingPx || 0) / 2;
+  const cGap = colonGapPx || 0;
+  const cx = colonXPx || 0;
+  const cy = colonYPx || 0;
+  let html = '';
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === ':') {
+      html += `<span class="tn02-colon" style="margin-left:calc(-0.04em + ${halfGap + cGap}px);margin-right:calc(0.00em + ${halfGap + cGap}px);transform:translate(${cx}px, ${cy}px)">:</span>`;
+    } else {
+      const b = table[ch] || [0, 0];
+      html += `<span class="tn02-char" style="margin-left:calc(${b[0]}em + ${halfGap}px);margin-right:calc(${b[1]}em + ${halfGap}px)">${ch}</span>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function updateTN02Clock(force) {
+  if (currentAppMode !== '2002' && !force) return;
   const now = new Date();
   const sec = now.getSeconds();
-  if (sec === lastTN02Second) return;
+  if (!force && sec === lastTN02Second) return;
   lastTN02Second = sec;
 
   const hStr = String(now.getHours()).padStart(2, '0');
@@ -7076,12 +7218,14 @@ function updateTN02Clock() {
 
   const frontEl = document.getElementById('tn02-clock-front-text');
   if (frontEl) {
-    frontEl.textContent = (tn02Params.frontFormat === 'HH:MM') ? `${hStr}:${mStr}` : `${hStr}:${mStr}:${sStr}`;
+    const fStr = (tn02Params.frontFormat === 'HH:MM') ? `${hStr}:${mStr}` : `${hStr}:${mStr}:${sStr}`;
+    renderTN02FormattedTime(frontEl, fStr, 'ext', tn02Params.frontSpacing, tn02Params.frontColonGap, tn02Params.frontColonX, tn02Params.frontColonY);
   }
 
   const backEl = document.getElementById('tn02-clock-back-text');
   if (backEl) {
-    backEl.textContent = (tn02Params.backFormat === 'HH:MM:SS') ? `${hStr}:${mStr}:${sStr}` : `${hStr}:${mStr}`;
+    const bStr = (tn02Params.backFormat === 'HH:MM:SS') ? `${hStr}:${mStr}:${sStr}` : `${hStr}:${mStr}`;
+    renderTN02FormattedTime(backEl, bStr, 'medext', tn02Params.backSpacing, tn02Params.backColonGap, tn02Params.backColonX, tn02Params.backColonY);
   }
 }
 
@@ -7892,9 +8036,10 @@ function updateTN05Ticker(dt) {
 }
 
 function switchAudioForMode(mode) {
+  const audioEl = getBgAudioEl();
   if (mode === '1999' || mode === '2001') {
-    if (bgAudio) {
-      bgAudio.pause();
+    if (audioEl) {
+      audioEl.pause();
     }
     stopTN02SeamlessAudio();
     stopTN05SeamlessAudio();
@@ -7903,8 +8048,8 @@ function switchAudioForMode(mode) {
   }
 
   if (mode === '2002') {
-    if (bgAudio) {
-      bgAudio.pause();
+    if (audioEl) {
+      audioEl.pause();
     }
     stopTN99SeamlessAudio();
     stopTN05SeamlessAudio();
@@ -7913,8 +8058,8 @@ function switchAudioForMode(mode) {
   }
 
   if (mode === '2005') {
-    if (bgAudio) {
-      bgAudio.pause();
+    if (audioEl) {
+      audioEl.pause();
     }
     stopTN99SeamlessAudio();
     stopTN02SeamlessAudio();
@@ -7927,7 +8072,7 @@ function switchAudioForMode(mode) {
   stopTN02SeamlessAudio();
   stopTN05SeamlessAudio();
 
-  if (!bgAudio) return;
+  if (!audioEl) return;
   let targetSrc = (mode === '2025') ? 'audio/music_2025.m4a' : 'audio/music.m4a';
   const isPlaying = !isAudioMuted && !bgAudio.muted;
 
@@ -8268,7 +8413,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
 
   const btnToggleAspect = document.getElementById('btn-toggle-tn02-aspect');
   if (btnToggleAspect) {
-    btnToggleAspect.style.display = (mode === '2002') ? '' : 'none';
+    btnToggleAspect.style.display = 'none';
   }
 
   if (btn1999) btn1999.classList.toggle('active', mode === '1999');
@@ -9706,54 +9851,10 @@ if (selectTn25Easing) {
   }
 
   // --- TN 2002 Controls ---
-  // Aspect Ratio & Video Fit
-  const sel02Aspect = document.getElementById('select-tn02-aspect');
-  const sel02Fit = document.getElementById('select-tn02-fit');
-  const btnToggle02Aspect = document.getElementById('btn-toggle-tn02-aspect');
-  const btn02Preset169 = document.getElementById('btn-tn02-preset-169');
-  const btn02Preset43 = document.getElementById('btn-tn02-preset-43');
-
-  function setTN02Aspect(ratio, fit) {
-    tn02Params.aspectRatio = ratio;
-    if (fit) tn02Params.videoFit = fit;
-    if (sel02Aspect) sel02Aspect.value = ratio;
-    if (sel02Fit && fit) sel02Fit.value = fit;
-    applyTN02Styles();
-  }
-
-  if (sel02Aspect) {
-    sel02Aspect.addEventListener('change', (e) => {
-      tn02Params.aspectRatio = e.target.value;
-      applyTN02Styles();
-    });
-  }
-
-  if (sel02Fit) {
-    sel02Fit.addEventListener('change', (e) => {
-      tn02Params.videoFit = e.target.value;
-      applyTN02Styles();
-    });
-  }
-
-  if (btnToggle02Aspect) {
-    btnToggle02Aspect.addEventListener('click', () => {
-      const is43 = tn02Params.aspectRatio && tn02Params.aspectRatio.startsWith('4:3');
-      const nextRatio = is43 ? '16:9' : '4:3';
-      setTN02Aspect(nextRatio, 'cover');
-    });
-  }
-
-  if (btn02Preset169) {
-    btn02Preset169.addEventListener('click', () => {
-      setTN02Aspect('16:9', 'cover');
-    });
-  }
-
-  if (btn02Preset43) {
-    btn02Preset43.addEventListener('click', () => {
-      setTN02Aspect('4:3', 'cover');
-    });
-  }
+  syncNumberSlider(document.getElementById('num-tn02-video-align-y'), document.getElementById('slider-tn02-video-align-y'), (val) => {
+    tn02Params.videoAlignY = val;
+    updateTN02Scale();
+  });
 
   // Front Clock
   syncNumberSlider(document.getElementById('num-tn02-front-size'), document.getElementById('slider-tn02-front-size'), (val) => {
@@ -9782,6 +9883,18 @@ if (selectTn25Easing) {
   });
   syncNumberSlider(document.getElementById('num-tn02-front-spacing'), document.getElementById('slider-tn02-front-spacing'), (val) => {
     tn02Params.frontSpacing = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-colon-gap'), document.getElementById('slider-tn02-front-colon-gap'), (val) => {
+    tn02Params.frontColonGap = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-colon-x'), document.getElementById('slider-tn02-front-colon-x'), (val) => {
+    tn02Params.frontColonX = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-front-colon-y'), document.getElementById('slider-tn02-front-colon-y'), (val) => {
+    tn02Params.frontColonY = val;
     applyTN02Styles();
   });
   syncNumberSlider(document.getElementById('num-tn02-front-blur'), document.getElementById('slider-tn02-front-blur'), (val) => {
@@ -9835,6 +9948,18 @@ if (selectTn25Easing) {
     tn02Params.backSpacing = val;
     applyTN02Styles();
   });
+  syncNumberSlider(document.getElementById('num-tn02-back-colon-gap'), document.getElementById('slider-tn02-back-colon-gap'), (val) => {
+    tn02Params.backColonGap = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-colon-x'), document.getElementById('slider-tn02-back-colon-x'), (val) => {
+    tn02Params.backColonX = val;
+    applyTN02Styles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-back-colon-y'), document.getElementById('slider-tn02-back-colon-y'), (val) => {
+    tn02Params.backColonY = val;
+    applyTN02Styles();
+  });
   syncNumberSlider(document.getElementById('num-tn02-back-blur'), document.getElementById('slider-tn02-back-blur'), (val) => {
     tn02Params.backBlur = val;
     applyTN02Styles();
@@ -9869,8 +9994,7 @@ if (selectTn25Easing) {
   const btnResetTn02 = document.getElementById('btn-reset-tn02');
   if (btnResetTn02) {
     btnResetTn02.addEventListener('click', () => {
-      tn02Params.aspectRatio = '16:9';
-      tn02Params.videoFit = 'cover';
+      tn02Params.videoAlignY = 50;
       tn02Params.frontSize = 8.0;
       tn02Params.frontScaleX = 102;
       tn02Params.frontScaleY = 91;
@@ -9884,10 +10008,13 @@ if (selectTn25Easing) {
       tn02Params.frontSpacing = -2;
       tn02Params.frontBlur = 1.5;
       tn02Params.frontShadow = true;
+      tn02Params.frontColonGap = 0;
+      tn02Params.frontColonX = 0;
+      tn02Params.frontColonY = 0;
 
       tn02Params.backSize = 25.5;
       tn02Params.backX = 50;
-      tn02Params.backY = 25.5;
+      tn02Params.backY = 34.0;
       tn02Params.backColor = '#FFFFFF';
       tn02Params.backOpacity = 74;
       tn02Params.backBlend = 'overlay';
@@ -9895,11 +10022,12 @@ if (selectTn25Easing) {
       tn02Params.backWeight = '700';
       tn02Params.backSpacing = 2;
       tn02Params.backBlur = 1.5;
-
-      if (sel02Aspect) sel02Aspect.value = '16:9';
-      if (sel02Fit) sel02Fit.value = 'cover';
+      tn02Params.backColonGap = 0;
+      tn02Params.backColonX = 0;
+      tn02Params.backColonY = 0;
 
       const pairs02 = [
+        ['num-tn02-video-align-y', 'slider-tn02-video-align-y', 50],
         ['num-tn02-front-size', 'slider-tn02-front-size', 8.0],
         ['num-tn02-front-scale-x', 'slider-tn02-front-scale-x', 102],
         ['num-tn02-front-scale-y', 'slider-tn02-front-scale-y', 91],
@@ -9907,12 +10035,18 @@ if (selectTn25Easing) {
         ['num-tn02-front-y', 'slider-tn02-front-y', 58.0],
         ['num-tn02-front-opacity', 'slider-tn02-front-opacity', 76],
         ['num-tn02-front-spacing', 'slider-tn02-front-spacing', -2],
+        ['num-tn02-front-colon-gap', 'slider-tn02-front-colon-gap', 0],
+        ['num-tn02-front-colon-x', 'slider-tn02-front-colon-x', 0],
+        ['num-tn02-front-colon-y', 'slider-tn02-front-colon-y', 0],
         ['num-tn02-front-blur', 'slider-tn02-front-blur', 1.5],
         ['num-tn02-back-size', 'slider-tn02-back-size', 25.5],
         ['num-tn02-back-x', 'slider-tn02-back-x', 50],
-        ['num-tn02-back-y', 'slider-tn02-back-y', 25.5],
+        ['num-tn02-back-y', 'slider-tn02-back-y', 34.0],
         ['num-tn02-back-opacity', 'slider-tn02-back-opacity', 74],
         ['num-tn02-back-spacing', 'slider-tn02-back-spacing', 2],
+        ['num-tn02-back-colon-gap', 'slider-tn02-back-colon-gap', 0],
+        ['num-tn02-back-colon-x', 'slider-tn02-back-colon-x', 0],
+        ['num-tn02-back-colon-y', 'slider-tn02-back-colon-y', 0],
         ['num-tn02-back-blur', 'slider-tn02-back-blur', 1.5]
       ];
       pairs02.forEach(([nid, sid, val]) => {
@@ -10261,9 +10395,9 @@ if (selectTn25Easing) {
     function getTN02ConfigText() {
     return [
       `=== CONFIGURACIÓ RELLOTGE TN 2002 ===`,
-      `Format Pantalla: AspectRatio=${tn02Params.aspectRatio} | AjustVídeo=${tn02Params.videoFit}`,
-      `Rellotge Davant: Mida=${tn02Params.frontSize}vw | EscalaX=${tn02Params.frontScaleX}% | EscalaY=${tn02Params.frontScaleY}% | Pos X=${tn02Params.frontX}% | Pos Y=${tn02Params.frontY}% | Opacitat=${tn02Params.frontOpacity}% | Espaiat=${tn02Params.frontSpacing}px | Desenfoc=${tn02Params.frontBlur}px | Fusió=${tn02Params.frontBlend} | Format=${tn02Params.frontFormat} | Gruix=${tn02Params.frontWeight} | Color=${tn02Params.frontColor.toUpperCase()}`,
-      `Rellotge Fons: Mida=${tn02Params.backSize}vw | Pos X=Centrat | Pos Y=${tn02Params.backY}% | Opacitat=${tn02Params.backOpacity}% | Espaiat=${tn02Params.backSpacing}px | Desenfoc=${tn02Params.backBlur}px | Fusió=${tn02Params.backBlend} | Format=${tn02Params.backFormat} | Gruix=${tn02Params.backWeight} | Color=${tn02Params.backColor.toUpperCase()}`
+      `Vídeo Fons: RetallVertical=${tn02Params.videoAlignY}%`,
+      `Rellotge Davant: Mida=${tn02Params.frontSize}vw | EscalaX=${tn02Params.frontScaleX}% | EscalaY=${tn02Params.frontScaleY}% | Pos X=${tn02Params.frontX}% | Pos Y=${tn02Params.frontY}% | Opacitat=${tn02Params.frontOpacity}% | Espaiat=${tn02Params.frontSpacing}px | DosPunts(Gap=${tn02Params.frontColonGap}px|X=${tn02Params.frontColonX}px|Y=${tn02Params.frontColonY}px) | Desenfoc=${tn02Params.frontBlur}px | Fusió=${tn02Params.frontBlend} | Format=${tn02Params.frontFormat} | Gruix=${tn02Params.frontWeight} | Color=${tn02Params.frontColor.toUpperCase()}`,
+      `Rellotge Fons: Mida=${tn02Params.backSize}vw | Pos X=Centrat | Pos Y=${tn02Params.backY}% | Opacitat=${tn02Params.backOpacity}% | Espaiat=${tn02Params.backSpacing}px | DosPunts(Gap=${tn02Params.backColonGap}px|X=${tn02Params.backColonX}px|Y=${tn02Params.backColonY}px) | Desenfoc=${tn02Params.backBlur}px | Fusió=${tn02Params.backBlend} | Format=${tn02Params.backFormat} | Gruix=${tn02Params.backWeight} | Color=${tn02Params.backColor.toUpperCase()}`
     ].join("\n");
   }
 
