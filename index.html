@@ -2,7 +2,13 @@
 <html lang="ca">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rellotge TN">
+  <meta name="theme-color" id="meta-theme-color" content="#dbe1df">
+  <link rel="manifest" href="manifest.json">
   <title>Rellotge TN</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
 
@@ -197,17 +203,26 @@
     }
 
     body, html {
+      position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
+      overscroll-behavior: none;
       background: #dbe1df;
       font-family: 'Akkurat Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
+    html[data-mode="1999"], html[data-mode="1999"] body,
+    html[data-mode="2001"], html[data-mode="2001"] body { background: #E5ECE4; }
+    html[data-mode="2002"], html[data-mode="2002"] body { background: #000000; }
+    html[data-mode="2005"], html[data-mode="2005"] body { background: #DE4C00; }
+    html[data-mode="2014"], html[data-mode="2014"] body { background: #dbe1df; }
+    html[data-mode="2025"], html[data-mode="2025"] body { background: #F56115; }
+
     #webgl-container {
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
       z-index: 1;
@@ -225,8 +240,8 @@
     /* Minimal discreet controls at top-right (Autohides when mouse is idle) */
     .minimal-controls {
       position: fixed;
-      top: 18px;
-      right: 22px;
+      top: max(18px, calc(env(safe-area-inset-top, 0px) + 10px));
+      right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px));
       z-index: 9999;
       display: flex;
       gap: 8px;
@@ -807,8 +822,8 @@
 
 @media (max-width: 640px) {
   .minimal-controls {
-    top: 10px;
-    right: 10px;
+    top: max(10px, calc(env(safe-area-inset-top, 0px) + 6px));
+    right: max(10px, calc(env(safe-area-inset-right, 0px) + 10px));
     gap: 5px;
   }
   .btn-minimal {
@@ -879,8 +894,8 @@
 #view-tn-2002 {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   z-index: 5;
   background: #000;
@@ -964,8 +979,8 @@
 #view-tn-2005 {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   z-index: 5;
   user-select: none;
@@ -1052,7 +1067,8 @@
 .tn05-ticker-bar {
   position: absolute;
   left: 0;
-  width: 100vw;
+  right: 0;
+  width: 100%;
   top: 66.0vh;
   height: calc(56px * var(--tn05-stage-scale, 1));
   background: transparent !important;
@@ -1106,8 +1122,8 @@
 #view-tn-2025 {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   z-index: 5;
   display: none;
   font-family: '3Cat', -apple-system, sans-serif;
@@ -1121,8 +1137,8 @@
 .tn25-stage {
   position: absolute;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: var(--tn25-orange);
 }
@@ -1442,8 +1458,8 @@
 #tv-transition-overlay {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   z-index: 99999;
   background: #000;
   overflow: hidden;
@@ -8394,7 +8410,21 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   const btnResetView = document.getElementById('btn-reset-view');
   const btnSyncAudio = document.getElementById('btn-sync-audio');
 
-  // Accent color per mode (#CC181E per a 1999, #04336F per a 2002!)
+  // Accent color i color de fons arrel / theme-color per mode (#CC181E per a 1999, #04336F per a 2002!)
+  const modeBgColors = {
+    '1999': '#E5ECE4',
+    '2001': '#E5ECE4',
+    '2002': '#000000',
+    '2005': '#DE4C00',
+    '2014': '#dbe1df',
+    '2025': '#F56115'
+  };
+  const activeBg = modeBgColors[mode] || '#dbe1df';
+  document.documentElement.style.backgroundColor = activeBg;
+  if (document.body) document.body.style.backgroundColor = activeBg;
+  const metaThemeColor = document.getElementById('meta-theme-color');
+  if (metaThemeColor) metaThemeColor.setAttribute('content', activeBg);
+
   if (mode === '1999' || mode === '2001') {
     document.documentElement.style.setProperty('--theme-accent', '#CC181E');
   } else if (mode === '2002') {
@@ -8587,34 +8617,31 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       const btnAudio = document.getElementById('btn-toggle-audio');
       if (btnAudio) btnAudio.addEventListener('click', toggleAudioMute);
 
-      // 3. Pantalla Completa (Fullscreen)
-      const btnFullscreen = document.getElementById('btn-fullscreen');
-      const iconFsEnter = document.getElementById('icon-fs-enter');
-      const iconFsExit = document.getElementById('icon-fs-exit');
-
-      if (btnFullscreen) {
-        btnFullscreen.addEventListener('click', () => {
-          if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => {});
-          } else {
-            document.exitFullscreen().catch(() => {});
-          }
-        });
-
-        document.addEventListener('fullscreenchange', () => {
-          const isFs = !!document.fullscreenElement;
-          if (iconFsEnter) iconFsEnter.style.display = isFs ? 'none' : 'block';
-          if (iconFsExit) iconFsExit.style.display = isFs ? 'block' : 'none';
-        });
-      }
-
-      // 4. Controls auto-hide on mouse idle (disappear if inactive, reappear on move)
+      // 3 & 4. Controls auto-hide + Pantalla Completa (Fullscreen amb fallback per a iOS)
       const controlsContainer = document.getElementById('controls-container');
       const masterEditorPanel = document.getElementById('master-editor-panel');
       const syncPopover = document.getElementById('sync-popover');
       let mouseIdleTimer = null;
+      let isCleanScreenActive = false;
+
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      const iconFsEnter = document.getElementById('icon-fs-enter');
+      const iconFsExit = document.getElementById('icon-fs-exit');
+
+      function getNativeFullscreenElement() {
+        return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || null;
+      }
+
+      function updateFullscreenIcon(isFs) {
+        if (iconFsEnter) iconFsEnter.style.display = isFs ? 'none' : 'block';
+        if (iconFsExit) iconFsExit.style.display = isFs ? 'block' : 'none';
+      }
 
       function showControls() {
+        isCleanScreenActive = false;
+        if (!getNativeFullscreenElement()) {
+          updateFullscreenIcon(false);
+        }
         if (controlsContainer) controlsContainer.classList.add('visible');
         clearTimeout(mouseIdleTimer);
         mouseIdleTimer = setTimeout(() => {
@@ -8622,6 +8649,69 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
           if (syncPopover && syncPopover.classList.contains('open')) return;
           if (controlsContainer) controlsContainer.classList.remove('visible');
         }, 2500);
+      }
+
+      function toggleCleanScreenFallback() {
+        isCleanScreenActive = !isCleanScreenActive;
+        clearTimeout(mouseIdleTimer);
+        try { window.scrollTo(0, 1); } catch (_) {}
+        if (isCleanScreenActive) {
+          if (controlsContainer) controlsContainer.classList.remove('visible');
+          updateFullscreenIcon(true);
+        } else {
+          showControls();
+        }
+      }
+
+      if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const fsEl = getNativeFullscreenElement();
+          const rootEl = document.documentElement;
+          const reqFs = rootEl.requestFullscreen || rootEl.webkitRequestFullscreen || rootEl.mozRequestFullScreen || rootEl.msRequestFullscreen;
+          const exitFs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+          const isFsAllowed = document.fullscreenEnabled !== false && document.webkitFullscreenEnabled !== false;
+
+          if (!fsEl) {
+            if (reqFs && isFsAllowed) {
+              try {
+                const res = reqFs.call(rootEl);
+                if (res && typeof res.catch === 'function') {
+                  res.catch(() => toggleCleanScreenFallback());
+                }
+              } catch (_) {
+                toggleCleanScreenFallback();
+              }
+            } else {
+              toggleCleanScreenFallback();
+            }
+          } else {
+            if (exitFs) {
+              try {
+                const res = exitFs.call(document);
+                if (res && typeof res.catch === 'function') {
+                  res.catch(() => toggleCleanScreenFallback());
+                }
+              } catch (_) {
+                toggleCleanScreenFallback();
+              }
+            } else {
+              toggleCleanScreenFallback();
+            }
+          }
+        });
+
+        const handleNativeFsChange = () => {
+          const isFs = !!getNativeFullscreenElement();
+          isCleanScreenActive = isFs;
+          updateFullscreenIcon(isFs);
+          if (typeof syncViewportAllModes === 'function') {
+            syncViewportAllModes();
+            setTimeout(syncViewportAllModes, 120);
+          }
+        };
+        document.addEventListener('fullscreenchange', handleNativeFsChange);
+        document.addEventListener('webkitfullscreenchange', handleNativeFsChange);
       }
 
       window.addEventListener('mousemove', showControls);
@@ -10558,6 +10648,28 @@ if (selectTn25Easing) {
     }
 
     
+function syncViewportAllModes() {
+  if (typeof camera !== 'undefined' && typeof renderer !== 'undefined' && camera && renderer && typeof onWindowResize === 'function') {
+    onWindowResize();
+  }
+  if (typeof updateTN02Scale === 'function') updateTN02Scale();
+  if (typeof updateTN05Styles === 'function') updateTN05Styles();
+  if (typeof resizeTN05Canvas === 'function') resizeTN05Canvas();
+  if (typeof updateTN25Scale === 'function') updateTN25Scale();
+  if (typeof resizeTN99Canvases === 'function') resizeTN99Canvases();
+}
+
+function handleIOSViewportRotation() {
+  syncViewportAllModes();
+  setTimeout(syncViewportAllModes, 120);
+  setTimeout(syncViewportAllModes, 350);
+}
+
+window.addEventListener('orientationchange', handleIOSViewportRotation);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', handleIOSViewportRotation);
+}
+
 window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>

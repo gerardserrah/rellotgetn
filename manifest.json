@@ -1,0 +1,19 @@
+{
+  "name": "Rellotge TN",
+  "short_name": "Rellotge TN",
+  "description": "Rellotge 3D interactiu dels Telenotícies de TV3",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#dbe1df",
+  "icons": [
+    {
+      "src": "favicon-2014.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
