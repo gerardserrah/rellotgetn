@@ -4121,6 +4121,51 @@ let flankCubesParams = {
       return geom;
     }
 
+    // --- Cross-platform WebGL Color Grading (matches iOS Safari & macOS identically) ---
+    const colorGradeUniforms = {
+      uGradeBrightness: { value: 0.89 },
+      uGradeContrast: { value: 1.57 },
+      uGradeSaturation: { value: 1.13 },
+      uGradeGammaExp: { value: 100.0 / 85.0 },
+      uGradeEnabled: { value: 1.0 }
+    };
+
+    const TV3_COLOR_GRADE_GLSL = `
+      uniform float uGradeBrightness;
+      uniform float uGradeContrast;
+      uniform float uGradeSaturation;
+      uniform float uGradeGammaExp;
+      uniform float uGradeEnabled;
+      vec3 applyTV3ColorGrade(vec3 col) {
+        if (uGradeEnabled < 0.5) return col;
+        vec3 c = pow(max(col, vec3(0.0)), vec3(uGradeGammaExp));
+        c = c * uGradeBrightness;
+        c = (c - 0.5) * uGradeContrast + 0.5;
+        float luma = dot(c, vec3(0.2126, 0.7152, 0.0722));
+        return clamp(mix(vec3(luma), c, uGradeSaturation), 0.0, 1.0);
+      }
+    `;
+
+    function attachColorGradingToMaterial(mat) {
+      if (!mat || mat._tv3Graded) return;
+      mat._tv3Graded = true;
+      if (mat.isShaderMaterial) return; // ShaderMaterials (bgMat, ringMat, reflector) include grading directly
+      const prevOnBeforeCompile = mat.onBeforeCompile;
+      mat.onBeforeCompile = function(shader, rendererObj) {
+        if (prevOnBeforeCompile) prevOnBeforeCompile.call(this, shader, rendererObj);
+        shader.uniforms.uGradeBrightness = colorGradeUniforms.uGradeBrightness;
+        shader.uniforms.uGradeContrast = colorGradeUniforms.uGradeContrast;
+        shader.uniforms.uGradeSaturation = colorGradeUniforms.uGradeSaturation;
+        shader.uniforms.uGradeGammaExp = colorGradeUniforms.uGradeGammaExp;
+        shader.uniforms.uGradeEnabled = colorGradeUniforms.uGradeEnabled;
+        shader.fragmentShader = TV3_COLOR_GRADE_GLSL + '\n' + shader.fragmentShader.replace(
+          '#include <dithering_fragment>',
+          '#include <dithering_fragment>\n gl_FragColor.rgb = applyTV3ColorGrade(gl_FragColor.rgb);'
+        );
+      };
+      mat.needsUpdate = true;
+    }
+
     // --- 3D Scene Initialization ---
     async function init() {
       const container = document.getElementById('webgl-container');
@@ -4256,25 +4301,26 @@ let flankCubesParams = {
       onWindowResize();
       setupUIEvents();
 
-      // Suport per arrencar directament en un any concret (mode salvapantalles o paràmetre ?mode=...)
+      // Suport per arrencar directament en un any concret i actualitzar URL en canviar d'any
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        let initialMode = window.__SCREENSAVER_YEAR__ || urlParams.get('mode') || urlParams.get('year');
-        if (initialMode === 'auto') {
-          const day = new Date().getDay();
-          const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
-          initialMode = autoModes[day];
-        }
-        if (initialMode === '2001') initialMode = '1999';
-        if (initialMode && (initialMode === '1999' || initialMode === '2002' || initialMode === '2005' || initialMode === '2014' || initialMode === '2025')) {
+        const initialMode = getModeFromUrl();
+        if (initialMode) {
           if (initialMode !== '2014') {
-            applyModeSwitch(initialMode);
+            applyModeSwitch(initialMode, true);
           } else {
             updateDynamicFavicon('2014');
           }
+          updateUrlForMode(initialMode, true);
         } else {
           updateDynamicFavicon(currentAppMode || '2014');
+          updateUrlForMode(currentAppMode || '2014', true);
         }
+        window.addEventListener('popstate', () => {
+          const target = getModeFromUrl() || '2014';
+          if (target !== currentAppMode) {
+            applyModeSwitch(target, true);
+          }
+        });
       } catch (e) {}
 
       initAudio();
@@ -4309,7 +4355,7 @@ let flankCubesParams = {
         }
       `;
 
-      const fragmentShader = `
+      const fragmentShader = TV3_COLOR_GRADE_GLSL + `
         varying vec3 vWorldPosition;
         uniform vec3 uWallColor;
         uniform vec3 uHorizonColor;
@@ -4327,7 +4373,7 @@ let flankCubesParams = {
             float t = smoothstep(0.0, -0.65 * s, h);
             color = mix(uHorizonColor, uFloorNearColor, t);
           }
-          gl_FragColor = vec4(color, 1.0);
+          gl_FragColor = vec4(applyTV3ColorGrade(color), 1.0);
         }
       `;
 
@@ -4339,7 +4385,12 @@ let flankCubesParams = {
           uWallColor: { value: new THREE.Color(bgParams.wallColor) },
           uHorizonColor: { value: new THREE.Color(bgParams.horizonColor) },
           uFloorNearColor: { value: new THREE.Color(bgParams.floorNearColor) },
-          uSubtlety: { value: bgParams.subtlety / 100.0 }
+          uSubtlety: { value: bgParams.subtlety / 100.0 },
+          uGradeBrightness: colorGradeUniforms.uGradeBrightness,
+          uGradeContrast: colorGradeUniforms.uGradeContrast,
+          uGradeSaturation: colorGradeUniforms.uGradeSaturation,
+          uGradeGammaExp: colorGradeUniforms.uGradeGammaExp,
+          uGradeEnabled: colorGradeUniforms.uGradeEnabled
         },
         side: THREE.BackSide,
         depthWrite: false
@@ -4526,6 +4577,29 @@ let flankCubesParams = {
       floorReflector.rotation.x = -Math.PI / 2;
       floorReflector.position.y = 0;
       floorReflector.renderOrder = 0;
+      if (floorReflector.material) {
+        floorReflector.material.uniforms.uGradeBrightness = colorGradeUniforms.uGradeBrightness;
+        floorReflector.material.uniforms.uGradeContrast = colorGradeUniforms.uGradeContrast;
+        floorReflector.material.uniforms.uGradeSaturation = colorGradeUniforms.uGradeSaturation;
+        floorReflector.material.uniforms.uGradeGammaExp = colorGradeUniforms.uGradeGammaExp;
+        floorReflector.material.uniforms.uGradeEnabled = colorGradeUniforms.uGradeEnabled;
+        floorReflector.material.fragmentShader = TV3_COLOR_GRADE_GLSL + '\n' +
+          floorReflector.material.fragmentShader.replace(
+            'gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );',
+            'gl_FragColor = vec4( applyTV3ColorGrade( blendOverlay( base.rgb, color ) ), 1.0 );'
+          );
+        floorReflector.material._tv3Graded = true;
+        floorReflector.material.needsUpdate = true;
+      }
+      const origReflectorBeforeRender = floorReflector.onBeforeRender;
+      floorReflector.onBeforeRender = function(rendererObj, sceneObj, cameraObj) {
+        colorGradeUniforms.uGradeEnabled.value = 0.0;
+        try {
+          if (origReflectorBeforeRender) origReflectorBeforeRender.call(this, rendererObj, sceneObj, cameraObj);
+        } finally {
+          colorGradeUniforms.uGradeEnabled.value = 1.0;
+        }
+      };
       scene.add(floorReflector);
 
       // Floor base color (#ADBBBB)
@@ -4948,7 +5022,12 @@ rightMat = new THREE.MeshStandardMaterial({
           uRepeat: { value: uRepeat },
           uOffset: { value: 0.0 },
           fadeStartZ: { value: -1.0 },
-          fadeEndZ: { value: -4.2 }
+          fadeEndZ: { value: -4.2 },
+          uGradeBrightness: colorGradeUniforms.uGradeBrightness,
+          uGradeContrast: colorGradeUniforms.uGradeContrast,
+          uGradeSaturation: colorGradeUniforms.uGradeSaturation,
+          uGradeGammaExp: colorGradeUniforms.uGradeGammaExp,
+          uGradeEnabled: colorGradeUniforms.uGradeEnabled
         },
         vertexShader: `
           varying vec2 vUv;
@@ -4965,13 +5044,13 @@ rightMat = new THREE.MeshStandardMaterial({
             gl_Position = projectionMatrix * viewMatrix * worldPos;
           }
         `,
-        fragmentShader: `
+        fragmentShader: TV3_COLOR_GRADE_GLSL + `
           uniform sampler2D map;
           varying vec2 vUv;
           varying float vAlpha;
           void main() {
             vec4 tex = texture2D(map, vUv);
-            gl_FragColor = vec4(tex.rgb, tex.a * vAlpha);
+            gl_FragColor = vec4(applyTV3ColorGrade(tex.rgb), tex.a * vAlpha);
           }
         `,
         transparent: true,
@@ -5115,6 +5194,14 @@ rightMat = new THREE.MeshStandardMaterial({
       }
 
       if (!isCameraAnimating && controls) controls.update();
+      scene.traverse((obj) => {
+        if (!obj.material) return;
+        if (Array.isArray(obj.material)) {
+          obj.material.forEach(attachColorGradingToMaterial);
+        } else {
+          attachColorGradingToMaterial(obj.material);
+        }
+      });
       renderer.render(scene, camera);
     }
 
@@ -8067,12 +8154,64 @@ function switchMode(mode) {
   });
 }
 
-function applyModeSwitch(mode) {
+function getModeFromUrl() {
+  try {
+    const pathMatch = window.location.pathname.match(/^\/(1999|2001|2002|2005|2014|2025)\/?$/);
+    if (pathMatch) return pathMatch[1] === '2001' ? '1999' : pathMatch[1];
+    const urlParams = new URLSearchParams(window.location.search);
+    let m = window.__SCREENSAVER_YEAR__ || urlParams.get('mode') || urlParams.get('year');
+    if (!m) {
+      const rawSearch = window.location.search.replace(/^\?/, '');
+      if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawSearch)) m = rawSearch;
+    }
+    if (!m && window.location.hash) {
+      const rawHash = window.location.hash.replace(/^#\/?/, '');
+      if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawHash)) m = rawHash;
+    }
+    if (m === 'auto') {
+      const day = new Date().getDay();
+      const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
+      m = autoModes[day];
+    }
+    if (m === '2001') m = '1999';
+    if (m && (m === '1999' || m === '2002' || m === '2005' || m === '2014' || m === '2025')) {
+      return m;
+    }
+  } catch (e) {}
+  return null;
+}
+
+function updateUrlForMode(mode, replace = false) {
+  try {
+    const normMode = (mode === '2001') ? '1999' : mode;
+    document.title = `Rellotge TN ${normMode}`;
+    const url = new URL(window.location.href);
+    if (/^\/(1999|2001|2002|2005|2014|2025)\/?$/.test(url.pathname)) {
+      url.pathname = '/';
+    }
+    url.searchParams.set('mode', normMode);
+    if (url.searchParams.has('year')) url.searchParams.delete('year');
+    const newRel = url.pathname + url.search + url.hash;
+    const curRel = window.location.pathname + window.location.search + window.location.hash;
+    if (newRel !== curRel) {
+      if (replace) {
+        window.history.replaceState({ mode: normMode }, '', newRel);
+      } else {
+        window.history.pushState({ mode: normMode }, '', newRel);
+      }
+    }
+  } catch (e) {}
+}
+
+function applyModeSwitch(mode, skipUrlUpdate = false) {
   if (mode === '2001') mode = '1999';
   currentAppMode = mode;
   document.documentElement.setAttribute('data-mode', mode);
   document.body.setAttribute('data-mode', mode);
   updateDynamicFavicon(mode);
+  if (!skipUrlUpdate) {
+    updateUrlForMode(mode, false);
+  }
   const selectVer = document.getElementById('select-tn-version');
   if (selectVer) {
     if (selectVer.value !== mode) selectVer.value = mode;
@@ -8398,18 +8537,16 @@ function applyModeSwitch(mode) {
         const s = numS ? parseFloat(numS.value) : 113;
         const l = numL ? parseFloat(numL.value) : 85;
 
-        // Apply Gamma to SVG filter: exponent = 100 / levels
+        // Apply Gamma/Color Grading in WebGL shaders so iOS Safari matches macOS identically
         const exp = Math.max(0.1, 100.0 / Math.max(1, l));
-        const feR = document.getElementById('fe-func-r');
-        const feG = document.getElementById('fe-func-g');
-        const feB = document.getElementById('fe-func-b');
-        if (feR) feR.setAttribute('exponent', exp.toFixed(4));
-        if (feG) feG.setAttribute('exponent', exp.toFixed(4));
-        if (feB) feB.setAttribute('exponent', exp.toFixed(4));
+        colorGradeUniforms.uGradeBrightness.value = b / 100.0;
+        colorGradeUniforms.uGradeContrast.value = c / 100.0;
+        colorGradeUniforms.uGradeSaturation.value = s / 100.0;
+        colorGradeUniforms.uGradeGammaExp.value = exp;
 
         const canvas = renderer ? renderer.domElement : document.querySelector('#webgl-container canvas');
         if (canvas) {
-          canvas.style.filter = `url(#levels-filter) brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
+          canvas.style.filter = 'none';
         }
         try {
           localStorage.setItem('tv3_color_adjustments_v2', JSON.stringify({ brightness: b, contrast: c, saturation: s, levels: l }));
@@ -8442,11 +8579,11 @@ function applyModeSwitch(mode) {
 
       if (btnResetColor) {
         btnResetColor.addEventListener('click', () => {
-          applyColorGrading(89, 157, 113, 85);
           if (sliderB && numB) sliderB.value = numB.value = "89";
           if (sliderC && numC) sliderC.value = numC.value = "157";
           if (sliderS && numS) sliderS.value = numS.value = "113";
           if (sliderL && numL) sliderL.value = numL.value = "85";
+          applyColorFilter();
           updateCubeTextColor('#ffffff');
           innerShadowParams.opacity = 11;
           innerShadowParams.depth = 180;

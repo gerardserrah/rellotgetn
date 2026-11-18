@@ -2,6 +2,14 @@
   "version": 2,
   "name": "rellotgetn",
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/1999", "destination": "/index.html?mode=1999" },
+    { "source": "/2001", "destination": "/index.html?mode=1999" },
+    { "source": "/2002", "destination": "/index.html?mode=2002" },
+    { "source": "/2005", "destination": "/index.html?mode=2005" },
+    { "source": "/2014", "destination": "/index.html?mode=2014" },
+    { "source": "/2025", "destination": "/index.html?mode=2025" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
