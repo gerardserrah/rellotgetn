@@ -853,6 +853,218 @@
   }
 }
 
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  #btn-fullscreen {
+    display: none !important;
+  }
+}
+html.is-mobile-device #btn-fullscreen {
+  display: none !important;
+}
+
+/* Timeline d'anys 1983–2025 (només visible en local i Desktop) */
+.tn-timeline-bar {
+  display: none;
+  align-items: center;
+  height: 34px;
+  width: clamp(500px, 48vw, 640px);
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.48);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: visible;
+  pointer-events: auto;
+  font-family: '3Cat', -apple-system, sans-serif;
+}
+
+.tn-timeline-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tn-timeline-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10.5px;
+  height: 1.5px;
+  background: rgba(30, 41, 59, 0.22);
+  border-radius: 2px;
+}
+
+.tn-tl-tick {
+  position: absolute;
+  top: 5px;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 14px;
+  cursor: default;
+  display: flex;
+  justify-content: center;
+}
+
+.tn-tl-tick::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 4px;
+  margin-top: 4px;
+  background: rgba(30, 41, 59, 0.28);
+  border-radius: 1px;
+  transition: height 0.15s ease, background 0.15s ease;
+}
+
+.tn-tl-tick.decade::before {
+  height: 6px;
+  margin-top: 3px;
+  background: rgba(30, 41, 59, 0.48);
+}
+
+.tn-tl-tick.origin::before {
+  width: 1.5px;
+  height: 7px;
+  margin-top: 2.5px;
+  background: rgba(30, 41, 59, 0.58);
+}
+
+.tn-tl-tick:hover::before {
+  height: 8px;
+  margin-top: 2px;
+  background: var(--theme-accent, #F56115);
+}
+
+.tn-tl-tick-label {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  color: rgba(30, 41, 59, 0.62);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tn-tl-node {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  height: 100%;
+  min-width: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  outline: none;
+}
+
+.tn-tl-dot {
+  position: absolute;
+  top: 7.5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #475569;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tn-tl-year {
+  position: absolute;
+  top: 18px;
+  font-family: '3Cat', -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.2px;
+  color: #1e293b;
+  white-space: nowrap;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.tn-tl-node:hover .tn-tl-dot {
+  transform: scale(1.28);
+  background: var(--theme-accent, #F56115);
+}
+
+.tn-tl-node:hover .tn-tl-year {
+  color: var(--theme-accent, #F56115);
+}
+
+.tn-tl-node.active .tn-tl-dot {
+  width: 9px;
+  height: 9px;
+  top: 6.5px;
+  background: var(--theme-accent, #F56115);
+  box-shadow: 0 0 0 2.5px rgba(255, 255, 255, 0.85), 0 1px 5px rgba(0, 0, 0, 0.25);
+}
+
+.tn-tl-node.active .tn-tl-year {
+  color: var(--theme-accent, #F56115);
+  font-weight: 800;
+}
+
+.tn-tl-tooltip {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  background: rgba(15, 23, 42, 0.9);
+  color: #ffffff;
+  font-family: '3Cat', -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 4px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  z-index: 10001;
+}
+
+.tn-tl-tick:hover .tn-tl-tooltip,
+.tn-tl-node:hover .tn-tl-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (min-width: 901px) {
+  html:not(.hide-config):not(.is-mobile-device) #tn-version-dropdown-wrap {
+    display: none;
+  }
+  html:not(.hide-config):not(.is-mobile-device) #tn-timeline-bar {
+    display: flex;
+  }
+}
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  html:not(.hide-config) #tn-version-dropdown-wrap {
+    display: inline-flex;
+  }
+  #tn-timeline-bar {
+    display: none !important;
+  }
+}
+
+html.hide-config #tn-timeline-bar,
+html.is-mobile-device #tn-timeline-bar {
+  display: none !important;
+}
+
 .tn-version-toggle {
   display: none;
 }
@@ -1641,6 +1853,9 @@ html.hide-config #master-editor-panel {
         if (forceHide) {
           document.documentElement.classList.add('hide-config');
         }
+        if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          document.documentElement.classList.add('is-mobile-device');
+        }
         if (params.has('screensaver') || params.get('screensaver') === '1' || params.has('saver')) {
           document.documentElement.classList.add('screensaver-mode');
         }
@@ -1847,6 +2062,11 @@ html.hide-config #master-editor-panel {
     <button type="button" class="tn-ver-btn" id="btn-ver-2005" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2014" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2025" style="display:none;"></button>
+  </div>
+  <div class="tn-timeline-bar" id="tn-timeline-bar" aria-label="Línia temporal dels rellotges del TN (1983–2025)">
+    <div class="tn-timeline-track" id="tn-timeline-track">
+      <div class="tn-timeline-line"></div>
+    </div>
   </div>
     <button class="btn-minimal" id="btn-sync-audio" title="Sincronitza la sintonia amb l'emissió">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -5439,12 +5659,15 @@ rightMat = new THREE.MeshStandardMaterial({
         } else if (el) {
           el.muted = false;
           if (el.paused) {
-            if (m === '2025') alignTN25AudioToClock();
+            if (m === '2025' || m === '2014') alignBgAudioToClock(m);
             try {
               await el.play();
               unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
             } catch (e) {}
           } else {
+            if ((m === '2025' || m === '2014') && !el._bgClockAlignedOnce) {
+              alignBgAudioToClock(m);
+            }
             unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
           }
         }
@@ -5801,10 +6024,15 @@ rightMat = new THREE.MeshStandardMaterial({
 
       const targetSrc = TN_MODE_AUDIO_SRC[currentAppMode] || 'audio/music.m4a';
       if (!bgAudio.src || !bgAudio.src.endsWith(targetSrc)) {
+        bgAudio._bgClockAlignedOnce = false;
         bgAudio.src = targetSrc;
       }
-      if (currentAppMode === '2025') {
-        alignTN25AudioToClock();
+      if (currentAppMode === '2025' || currentAppMode === '2014') {
+        if (bgAudio.readyState >= 1) {
+          alignBgAudioToClock(currentAppMode);
+        } else {
+          bgAudio.addEventListener('loadedmetadata', () => alignBgAudioToClock(currentAppMode), { once: true });
+        }
       }
       try {
         await bgAudio.play();
@@ -5843,8 +6071,8 @@ rightMat = new THREE.MeshStandardMaterial({
         return;
       }
       if (!isAudioMuted && bgAudio.paused) {
-        if (currentAppMode === '2025') {
-          alignTN25AudioToClock();
+        if (currentAppMode === '2025' || currentAppMode === '2014') {
+          alignBgAudioToClock(currentAppMode);
         }
         bgAudio.play().catch(e => console.log(e));
       }
@@ -5884,7 +6112,7 @@ rightMat = new THREE.MeshStandardMaterial({
       // Exact seconds remaining until the clock reaches :00 (next minute mark)
       const secondsRemaining = 60.0 - (s + ms / 1000.0);
 
-const targetSongTimeAtNext00 = (currentAppMode === '2025') ? 40.0 : 124.19;
+const targetSongTimeAtNext00 = (currentAppMode === '2025') ? 40.0 : 124.04;
 const songDuration = (bgAudio && bgAudio.duration && !isNaN(bgAudio.duration) && bgAudio.duration > 5)
   ? bgAudio.duration
   : ((currentAppMode === '2025') ? 43.5 : 240.0);
@@ -5930,8 +6158,8 @@ while (targetSongTimeNow < 0) {
       const targetDate = getTargetSyncDate();
       const diffSec = (targetDate.getTime() - now.getTime()) / 1000.0;
 
-      // Punt clau de sincronització: segon 03:19 (199.0s) per al 2025, segon 23.8s per al 2005, segon 02:04.19 (124.19s) per al 2014
-      const targetSongTime = (currentAppMode === '2025') ? 199.0 : (currentAppMode === '2005' ? 23.8 : 124.19);
+      // Punt clau de sincronització: segon 03:19 (199.0s) per al 2025, segon 23.8s per al 2005, segon 02:04.04 (124.04s) per al 2014
+      const targetSongTime = (currentAppMode === '2025') ? 199.0 : (currentAppMode === '2005' ? 23.8 : 124.04);
       const songDuration = (bgAudio && bgAudio.duration && !isNaN(bgAudio.duration) && bgAudio.duration > 5)
         ? ((currentAppMode === '2025') ? 199.0 : bgAudio.duration)
         : ((currentAppMode === '2025') ? 199.0 : (currentAppMode === '2005' ? 24.24 : 240.0));
@@ -5994,6 +6222,38 @@ while (targetSongTimeNow < 0) {
         let targetSongNow = (199.0 - secToNextMin) % 199.0;
         while (targetSongNow < 0) targetSongNow += 199.0;
         bgAudio.currentTime = targetSongNow;
+      }
+      if (bgAudio.readyState >= 1) bgAudio._bgClockAlignedOnce = true;
+    }
+
+    function alignTN14AudioToClock() {
+      if (!bgAudio || currentAppMode !== '2014') return;
+      const now = new Date();
+      const curMs = now.getMilliseconds() / 1000.0;
+      bgAudio.playbackRate = 1.0;
+      const dur = 240.0;
+      const refAt00 = 124.04;
+      if (isSyncActive) {
+        const targetDate = getTargetSyncDate();
+        const diffSec = (targetDate.getTime() - now.getTime()) / 1000.0;
+        let targetSongNow = (refAt00 - diffSec) % dur;
+        while (targetSongNow < 0) targetSongNow += dur;
+        bgAudio.currentTime = targetSongNow;
+      } else {
+        const secToNextMin = 60.0 - (now.getSeconds() + curMs);
+        let targetSongNow = (refAt00 - secToNextMin) % dur;
+        while (targetSongNow < 0) targetSongNow += dur;
+        bgAudio.currentTime = targetSongNow;
+      }
+      if (bgAudio.readyState >= 1) bgAudio._bgClockAlignedOnce = true;
+    }
+
+    function alignBgAudioToClock(mode) {
+      const m = mode || currentAppMode || '2014';
+      if (m === '2025') {
+        alignTN25AudioToClock();
+      } else if (m === '2014') {
+        alignTN14AudioToClock();
       }
     }
 
@@ -8189,15 +8449,17 @@ function switchAudioForMode(mode) {
   if (!audioEl) return;
   let targetSrc = (mode === '2025') ? 'audio/music_2025.m4a' : 'audio/music.m4a';
   const isPlaying = !isAudioMuted && !bgAudio.muted;
+  const shouldAlign = (mode === '2025' || mode === '2014');
 
   if (!bgAudio.src.endsWith(targetSrc)) {
+    bgAudio._bgClockAlignedOnce = false;
     bgAudio.src = targetSrc;
     const onLoaded = () => {
       if (isSyncActive) {
         applySyncToCurrentMode();
       } else if (isPlaying) {
-        if (mode === '2025') {
-          alignTN25AudioToClock();
+        if (shouldAlign) {
+          alignBgAudioToClock(mode);
         } else {
           bgAudio.currentTime = 0;
         }
@@ -8207,16 +8469,16 @@ function switchAudioForMode(mode) {
     bgAudio.addEventListener('loadedmetadata', onLoaded, { once: true });
     bgAudio.load();
     if (isSyncActive || isPlaying) {
-      if (mode === '2025' && !isSyncActive) {
-        alignTN25AudioToClock();
+      if (shouldAlign && !isSyncActive && bgAudio.readyState >= 1) {
+        alignBgAudioToClock(mode);
       }
       bgAudio.play().catch(e => console.warn(e));
     }
   } else if (isSyncActive) {
     applySyncToCurrentMode();
   } else if (isPlaying && bgAudio.paused) {
-    if (mode === '2025') {
-      alignTN25AudioToClock();
+    if (shouldAlign) {
+      alignBgAudioToClock(mode);
     }
     bgAudio.play().catch(e => console.warn(e));
   }
@@ -8492,6 +8754,9 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   if (selectChevron) {
     selectChevron.style.color = (mode === '1999' || mode === '2001') ? '#CC181E' : ((mode === '2002') ? '#04336F' : (mode === '2005' ? '#F5820D' : ''));
   }
+  document.querySelectorAll('#tn-timeline-track .tn-tl-node').forEach(node => {
+    node.classList.toggle('active', node.getAttribute('data-year') === mode);
+  });
   const btn1999 = document.getElementById('btn-ver-1999');
   const btn2001 = document.getElementById('btn-ver-2001');
   const btn2002 = document.getElementById('btn-ver-2002');
@@ -8691,6 +8956,44 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
           onChange(val);
         });
       }
+      // 0. Timeline d'anys 1983–2025 (Desktop en local)
+      const timelineTrack = document.getElementById('tn-timeline-track');
+      if (timelineTrack) {
+        const availableYears = new Set([1999, 2002, 2005, 2014, 2025]);
+        const startYear = 1983;
+        const endYear = 2025;
+        const span = endYear - startYear;
+        for (let yr = startYear; yr <= endYear; yr++) {
+          const pct = ((yr - startYear) / span) * 100;
+          if (availableYears.has(yr)) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'tn-tl-node' + (String(yr) === (currentAppMode || '2014') ? ' active' : '');
+            btn.setAttribute('data-year', String(yr));
+            btn.setAttribute('aria-label', `Rellotge TN ${yr}`);
+            btn.style.left = pct.toFixed(4) + '%';
+            btn.innerHTML = `<span class="tn-tl-dot"></span><span class="tn-tl-year">${yr}</span><span class="tn-tl-tooltip">TN ${yr}</span>`;
+            btn.addEventListener('click', () => {
+              if (typeof switchMode === 'function') switchMode(String(yr));
+              showControls();
+            });
+            timelineTrack.appendChild(btn);
+          } else {
+            const tick = document.createElement('div');
+            const isDecade = (yr % 10 === 0);
+            const isOrigin = (yr === 1983);
+            tick.className = 'tn-tl-tick' + (isDecade ? ' decade' : '') + (isOrigin ? ' origin' : '');
+            tick.style.left = pct.toFixed(4) + '%';
+            if (isOrigin) {
+              tick.innerHTML = `<span class="tn-tl-tick-label">1983</span><span class="tn-tl-tooltip">1983 · Primer Telenotícies (TV3)</span>`;
+            } else {
+              tick.innerHTML = `<span class="tn-tl-tooltip">${yr}</span>`;
+            }
+            timelineTrack.appendChild(tick);
+          }
+        }
+      }
+
       // 1. Reset View (Punt inicial)
       const btnResetView = document.getElementById('btn-reset-view');
       if (btnResetView) {
