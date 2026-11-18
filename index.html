@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="Rellotge TN">
   <meta name="theme-color" id="meta-theme-color" content="#b0c3c3">
   <link rel="manifest" href="manifest.json">
-  <title>Rellotge TN</title>
+  <title>Rellotge TN | 2014</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
 
   <!-- Favicon i Apple Touch Icon Dinàmics (canvien segons l'any del TN) -->
@@ -685,7 +685,7 @@
   --tn25-slit-crop: 48vh;
   --tn25-duration: 380ms;
   --tn25-easing: cubic-bezier(0.25, 1, 0.5, 1);
-  --tn25-pack-x: 26px;
+  --tn25-pack-x: -15px;
   --tn25-pack-y: 0px;
   --tn25-hours-x: 0px;
   --tn25-hours-y: 0px;
@@ -698,7 +698,7 @@
   --tn25-date-scale: 1.05;
   --tn25-divider-width: 3px;
   --tn25-dot-col-w: 106px;
-  --tn25-dot-x: 0px;
+  --tn25-dot-x: -5px;
   --tn25-dot-y: 0px;
   --tn25-ticker-pos-y: 54px;
   --tn25-ticker-font-size: 29px;
@@ -873,19 +873,27 @@ html.is-mobile-device #btn-fullscreen {
   display: none !important;
 }
 
-/* Timeline d'anys 1983–2025 (només visible en local i Desktop) */
+/* Fons gradual desenfocat i enfosquit darrere la timeline sense marc quan és activa */
+.tn-timeline-scrim {
+  display: none;
+}
+html.screensaver-mode .tn-timeline-scrim {
+  display: none !important;
+}
+
+/* Timeline d'anys 1983–2025 (sense marc, només visible en local i Desktop) */
 .tn-timeline-bar {
   display: none;
   align-items: center;
-  height: 40px;
+  height: 44px;
   width: clamp(500px, 48vw, 640px);
-  padding: 0 28px;
-  background: rgba(255, 255, 255, 0.48);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 22px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 0 12px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   position: relative;
   overflow: visible;
   pointer-events: auto;
@@ -902,15 +910,16 @@ html.is-mobile-device #btn-fullscreen {
   position: absolute;
   left: 0;
   right: 0;
-  top: 12px;
+  top: 13px;
   height: 2px;
-  background: rgba(30, 41, 59, 0.20);
+  background: rgba(255, 255, 255, 0.28);
   border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
 }
 
 .tn-tl-tick {
   position: absolute;
-  top: 4px;
+  top: 5px;
   transform: translateX(-50%);
   width: 12px;
   height: 18px;
@@ -925,52 +934,49 @@ html.is-mobile-device #btn-fullscreen {
   width: 1.5px;
   height: 5px;
   margin-top: 5.5px;
-  background: rgba(30, 41, 59, 0.28);
+  background: rgba(255, 255, 255, 0.36);
   border-radius: 1.5px;
-  transform: scaleY(var(--tl-tick-scale, 1));
   transform-origin: center;
-  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.16s ease;
 }
 
 .tn-tl-tick.decade::before {
   height: 7px;
   margin-top: 4.5px;
-  background: rgba(30, 41, 59, 0.48);
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .tn-tl-tick.origin::before {
   width: 2px;
   height: 8px;
   margin-top: 4px;
-  background: rgba(30, 41, 59, 0.62);
+  background: rgba(255, 255, 255, 0.78);
 }
 
-.tn-tl-tick:hover::before,
-.tn-tl-tick.is-near::before {
-  background: var(--theme-accent, #F56115);
+.tn-tl-tick:hover::before {
+  background: #ffffff;
+  transform: scaleY(1.9);
 }
 
 .tn-tl-tick-label {
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 50%;
-  transform: translateX(-50%) scale(var(--tl-tick-label-scale, 1));
+  transform: translateX(-50%);
   transform-origin: top center;
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-  color: rgba(30, 41, 59, 0.68);
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
   letter-spacing: -0.2px;
   white-space: nowrap;
   pointer-events: none;
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
 }
 
-.tn-tl-tick.origin:hover .tn-tl-tick-label,
-.tn-tl-tick.origin.is-near .tn-tl-tick-label {
-  color: var(--theme-accent, #F56115);
-}
 .tn-tl-tick.origin:hover .tn-tl-tick-label {
+  color: #ffffff;
   transform: translateX(-50%) scale(1.28);
 }
 
@@ -992,71 +998,65 @@ html.is-mobile-device #btn-fullscreen {
 
 .tn-tl-dot {
   position: absolute;
-  top: 8.5px;
+  top: 9.5px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #475569;
-  border: 1.5px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
-  transform: scale(var(--tl-dot-scale, 1));
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, box-shadow 0.18s ease;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(15, 23, 42, 0.45);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.38);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .tn-tl-year {
   position: absolute;
-  top: 20px;
+  top: 21px;
   font-family: '3Cat', -apple-system, sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.2px;
-  color: #1e293b;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.62);
   white-space: nowrap;
-  transform: translateY(var(--tl-year-y, 0px)) scale(var(--tl-year-scale, 1));
+  transform: translateY(0) scale(1);
   transform-origin: top center;
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease;
-}
-
-.tn-tl-node.is-near .tn-tl-dot,
-.tn-tl-node:hover .tn-tl-dot {
-  background: var(--theme-accent, #F56115);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 3px 9px rgba(0, 0, 0, 0.22);
-}
-
-.tn-tl-node.is-near .tn-tl-year,
-.tn-tl-node:hover .tn-tl-year {
-  color: var(--theme-accent, #F56115);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease, text-shadow 0.18s ease;
 }
 
 .tn-tl-node:hover .tn-tl-dot {
   transform: scale(1.65);
-  box-shadow: 0 0 0 3.5px rgba(255, 255, 255, 0.9), 0 3px 10px rgba(0, 0, 0, 0.25);
+  background: var(--theme-accent, #F56115);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3.5px rgba(255, 255, 255, 0.35), 0 3px 10px rgba(0, 0, 0, 0.45);
 }
 
 .tn-tl-node:hover .tn-tl-year {
-  transform: translateY(1px) scale(1.38);
-  color: var(--theme-accent, #F56115);
+  transform: translateY(2px) scale(1.42);
+  color: #ffffff;
   font-weight: 800;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.78);
 }
 
 .tn-tl-node.active .tn-tl-dot {
   width: 10px;
   height: 10px;
-  top: 7.5px;
+  top: 8.5px;
   background: var(--theme-accent, #F56115);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.26);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.28), 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .tn-tl-node.active .tn-tl-year {
   font-size: 12.5px;
-  color: var(--theme-accent, #F56115);
+  color: #ffffff;
   font-weight: 800;
+  text-shadow: 0 0 10px var(--theme-accent, #F56115), 0 1px 6px rgba(0, 0, 0, 0.78);
 }
 
 .tn-tl-tooltip {
   position: absolute;
-  top: 38px;
+  top: 39px;
   left: 50%;
   transform: translateX(-50%) translateY(-4px) scale(0.92);
   background: rgba(15, 23, 42, 0.9);
@@ -1093,7 +1093,7 @@ html.is-mobile-device #btn-fullscreen {
 
 .tn-tl-logo-tooltip {
   position: absolute;
-  top: 46px;
+  top: 48px;
   left: 50%;
   transform: translateX(-50%) translateY(-8px) scale(0.78);
   transform-origin: top center;
@@ -1129,6 +1129,45 @@ html.is-mobile-device #btn-fullscreen {
 }
 
 @media (min-width: 901px) {
+  html:not(.hide-config):not(.is-mobile-device) .tn-timeline-scrim {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 128px;
+    background: linear-gradient(
+      to bottom,
+      rgba(8, 12, 22, 0.64) 0%,
+      rgba(8, 12, 22, 0.36) 46%,
+      rgba(8, 12, 22, 0.12) 76%,
+      rgba(8, 12, 22, 0) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 45%,
+      rgba(0, 0, 0, 0.3) 75%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 45%,
+      rgba(0, 0, 0, 0.3) 75%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: 900;
+  }
+  html:not(.hide-config):not(.is-mobile-device) .minimal-controls.visible ~ .tn-timeline-scrim,
+  html:not(.hide-config):not(.is-mobile-device) .minimal-controls:hover ~ .tn-timeline-scrim {
+    opacity: 1;
+  }
   html:not(.hide-config):not(.is-mobile-device) .minimal-controls {
     left: max(22px, calc(env(safe-area-inset-left, 0px) + 14px));
     right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px));
@@ -2185,6 +2224,7 @@ html.hide-config #master-editor-panel {
       <span>Ajustos</span>
     </button>
   </div>
+  <div class="tn-timeline-scrim" aria-hidden="true"></div>
 
   <!-- Synchronization Popover Panel -->
   <div id="sync-popover" class="sync-popover">
@@ -2715,8 +2755,8 @@ html.hide-config #master-editor-panel {
   <div class="panel-section-title" style="margin-top: 14px;">Posició Global Pack 2025</div>
   <div class="coord-row">
     <label>Pack X (px)</label>
-    <input type="number" id="num-tn25-pack-x" min="-300" max="300" step="1" value="26">
-    <input type="range" id="slider-tn25-pack-x" min="-300" max="300" step="1" value="26">
+    <input type="number" id="num-tn25-pack-x" min="-300" max="300" step="1" value="-15">
+    <input type="range" id="slider-tn25-pack-x" min="-300" max="300" step="1" value="-15">
   </div>
   <div class="coord-row">
     <label>Pack Y (px)</label>
@@ -6433,7 +6473,7 @@ let tn25Params = {
   white: '#FFFFFF',
   dark: '#3A3A3A',
   light: '#DCDBDB',
-  packX: 26,
+  packX: -15,
   packY: 0,
   hoursX: 0,
   hoursY: 0,
@@ -8800,7 +8840,7 @@ function getModeFromUrl() {
 function updateUrlForMode(mode, replace = false) {
   try {
     const normMode = (mode === '2001') ? '1999' : mode;
-    document.title = `Rellotge TN ${normMode}`;
+    document.title = `Rellotge TN | ${normMode}`;
     const url = new URL(window.location.href);
     if (/^\/(1999|2001|2002|2005|2014|2025)\/?$/.test(url.pathname)) {
       url.pathname = '/';
@@ -8824,6 +8864,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   currentAppMode = mode;
   document.documentElement.setAttribute('data-mode', mode);
   document.body.setAttribute('data-mode', mode);
+  document.title = `Rellotge TN | ${mode}`;
   updateDynamicFavicon(mode);
   if (!skipUrlUpdate) {
     updateUrlForMode(mode, false);
@@ -9101,15 +9142,12 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
 </svg>`
       };
 
-      const timelineBar = document.getElementById('tn-timeline-bar');
       const timelineTrack = document.getElementById('tn-timeline-track');
       if (timelineTrack) {
         const availableYears = new Set([1999, 2002, 2005, 2014, 2025]);
         const startYear = 1983;
         const endYear = 2025;
         const span = endYear - startYear;
-        const tlTicks = [];
-        const tlNodes = [];
 
         for (let yr = startYear; yr <= endYear; yr++) {
           const pct = ((yr - startYear) / span) * 100;
@@ -9127,7 +9165,6 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
               showControls();
             });
             timelineTrack.appendChild(btn);
-            tlNodes.push(btn);
           } else {
             const tick = document.createElement('div');
             const isDecade = (yr % 10 === 0);
@@ -9140,58 +9177,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
               tick.innerHTML = `<span class="tn-tl-tooltip">${yr}</span>`;
             }
             timelineTrack.appendChild(tick);
-            tlTicks.push(tick);
           }
-        }
-
-        if (timelineBar) {
-          timelineBar.addEventListener('mousemove', (e) => {
-            const mx = e.clientX;
-            tlTicks.forEach((t) => {
-              const r = t.getBoundingClientRect();
-              const dx = Math.abs(mx - (r.left + r.width / 2));
-              if (dx < 80) {
-                const tf = Math.cos((dx / 80) * (Math.PI / 2));
-                t.style.setProperty('--tl-tick-scale', (1 + 1.3 * tf).toFixed(3));
-                t.style.setProperty('--tl-tick-label-scale', (1 + 0.28 * tf).toFixed(3));
-                t.classList.toggle('is-near', tf > 0.35);
-              } else {
-                t.style.removeProperty('--tl-tick-scale');
-                t.style.removeProperty('--tl-tick-label-scale');
-                t.classList.remove('is-near');
-              }
-            });
-            tlNodes.forEach((n) => {
-              const r = n.getBoundingClientRect();
-              const dx = Math.abs(mx - (r.left + r.width / 2));
-              if (dx < 110) {
-                const f = Math.cos((dx / 110) * (Math.PI / 2));
-                n.style.setProperty('--tl-year-scale', (1 + 0.38 * f).toFixed(3));
-                n.style.setProperty('--tl-year-y', (1.5 * f).toFixed(2) + 'px');
-                n.style.setProperty('--tl-dot-scale', (1 + 0.65 * f).toFixed(3));
-                n.classList.toggle('is-near', f > 0.45);
-              } else {
-                n.style.removeProperty('--tl-year-scale');
-                n.style.removeProperty('--tl-year-y');
-                n.style.removeProperty('--tl-dot-scale');
-                n.classList.remove('is-near');
-              }
-            });
-          });
-
-          timelineBar.addEventListener('mouseleave', () => {
-            tlTicks.forEach((t) => {
-              t.style.removeProperty('--tl-tick-scale');
-              t.style.removeProperty('--tl-tick-label-scale');
-              t.classList.remove('is-near');
-            });
-            tlNodes.forEach((n) => {
-              n.style.removeProperty('--tl-year-scale');
-              n.style.removeProperty('--tl-year-y');
-              n.style.removeProperty('--tl-dot-scale');
-              n.classList.remove('is-near');
-            });
-          });
         }
       }
 
@@ -10209,7 +10195,7 @@ if (selectTn25Easing) {
       tn25Params.white = '#FFFFFF';
       tn25Params.dark = '#3A3A3A';
       tn25Params.light = '#DCDBDB';
-      tn25Params.packX = 26;
+      tn25Params.packX = -15;
       tn25Params.packY = 0;
       tn25Params.hoursX = 0;
       tn25Params.hoursY = 0;
@@ -10222,7 +10208,7 @@ if (selectTn25Easing) {
       tn25Params.dateScale = 105;
       tn25Params.dividerWidth = 3;
       tn25Params.dotColWidth = 7.5;
-      tn25Params.dotX = 0;
+      tn25Params.dotX = -5;
       tn25Params.dotY = 0;
       tn25Params.tickerPosY = 54;
       tn25Params.tickerFontSize = 29;
@@ -10240,11 +10226,11 @@ if (selectTn25Easing) {
       const pairs = [
         ['num-tn25-divider', 'slider-tn25-divider', 3],
         ['num-tn25-dot-col-w', 'slider-tn25-dot-col-w', 7.5],
-        ['num-tn25-dot-x', 'slider-tn25-dot-x', 0],
+        ['num-tn25-dot-x', 'slider-tn25-dot-x', -5],
         ['num-tn25-dot-y', 'slider-tn25-dot-y', 0],
         ['num-tn25-ticker-pos-y', 'slider-tn25-ticker-pos-y', 54],
         ['num-tn25-ticker-font', 'slider-tn25-ticker-font', 29],
-        ['num-tn25-pack-x', 'slider-tn25-pack-x', 26],
+        ['num-tn25-pack-x', 'slider-tn25-pack-x', -15],
         ['num-tn25-pack-y', 'slider-tn25-pack-y', 0],
         ['num-tn25-hours-x', 'slider-tn25-hours-x', 0],
         ['num-tn25-hours-y', 'slider-tn25-hours-y', 0],
