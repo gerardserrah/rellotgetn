@@ -7,7 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rellotge TN">
-  <meta name="theme-color" id="meta-theme-color" content="#dbe1df">
+  <meta name="theme-color" id="meta-theme-color" content="#b0c3c3">
   <link rel="manifest" href="manifest.json">
   <title>Rellotge TN</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
@@ -202,29 +202,37 @@
       user-select: none;
     }
 
-    body, html {
-      position: fixed;
-      inset: 0;
+    html, body {
+      margin: 0;
+      padding: 0;
       width: 100%;
       height: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      min-height: -webkit-fill-available;
       overflow: hidden;
       overscroll-behavior: none;
-      background: #dbe1df;
+      background: #b0c3c3;
       font-family: 'Akkurat Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     html[data-mode="1999"], html[data-mode="1999"] body,
     html[data-mode="2001"], html[data-mode="2001"] body { background: #E5ECE4; }
     html[data-mode="2002"], html[data-mode="2002"] body { background: #000000; }
-    html[data-mode="2005"], html[data-mode="2005"] body { background: #DE4C00; }
-    html[data-mode="2014"], html[data-mode="2014"] body { background: #dbe1df; }
+    html[data-mode="2005"], html[data-mode="2005"] body { background: #F16806; }
+    html[data-mode="2014"], html[data-mode="2014"] body { background: #b0c3c3; }
     html[data-mode="2025"], html[data-mode="2025"] body { background: #F56115; }
 
     #webgl-container {
       position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      width: 100dvw;
+      height: 100dvh;
       z-index: 1;
     }
 
@@ -232,8 +240,8 @@
 
     #webgl-container canvas {
       display: block;
-      width: 100%;
-      height: 100%;
+      width: 100% !important;
+      height: 100% !important;
       transition: filter 0.05s ease;
     }
 
@@ -858,9 +866,13 @@
    ========================================================================== */
 #view-tn-1999 {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
   height: 100dvh;
   overflow: hidden;
   z-index: 5;
@@ -893,9 +905,14 @@
    ========================================================================== */
 #view-tn-2002 {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   overflow: hidden;
   z-index: 5;
   background: #000;
@@ -978,9 +995,14 @@
    ========================================================================== */
 #view-tn-2005 {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   overflow: hidden;
   z-index: 5;
   user-select: none;
@@ -1121,9 +1143,14 @@
 
 #view-tn-2025 {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   z-index: 5;
   display: none;
   font-family: '3Cat', -apple-system, sans-serif;
@@ -1457,9 +1484,14 @@
 /* Transició retro neu TV antiga */
 #tv-transition-overlay {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   z-index: 99999;
   background: #000;
   overflow: hidden;
@@ -5235,10 +5267,50 @@ rightMat = new THREE.MeshStandardMaterial({
         }
       });
       renderer.render(scene, camera);
+      syncTN14TopBarColor(false);
+    }
+
+    let _lastRootThemeHex = '';
+    let _tn14TopSyncFrame = 0;
+    let _tn14PixelBuf = null;
+
+    function applyRootThemeColor(hex) {
+      if (!hex || hex === _lastRootThemeHex) return;
+      _lastRootThemeHex = hex;
+      document.documentElement.style.backgroundColor = hex;
+      if (document.body) document.body.style.backgroundColor = hex;
+      const metaThemeColor = document.getElementById('meta-theme-color');
+      if (metaThemeColor) metaThemeColor.setAttribute('content', hex);
+    }
+
+    function syncTN14TopBarColor(force) {
+      if (typeof currentAppMode !== 'undefined' && currentAppMode !== '2014') return;
+      if (!renderer || !renderer.getContext) return;
+      if (!force) {
+        _tn14TopSyncFrame = (_tn14TopSyncFrame + 1) % 15;
+        if (_tn14TopSyncFrame !== 1) return;
+      }
+      const gl = renderer.getContext();
+      if (!gl || gl.drawingBufferWidth < 2 || gl.drawingBufferHeight < 3) return;
+      if (!_tn14PixelBuf) _tn14PixelBuf = new Uint8Array(4);
+      try {
+        const pxX = Math.floor(gl.drawingBufferWidth / 2);
+        const pxY = Math.max(0, gl.drawingBufferHeight - 2);
+        gl.readPixels(pxX, pxY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, _tn14PixelBuf);
+        if (_tn14PixelBuf[3] > 0) {
+          const toHex = (n) => n.toString(16).padStart(2, '0');
+          const hex = '#' + toHex(_tn14PixelBuf[0]) + toHex(_tn14PixelBuf[1]) + toHex(_tn14PixelBuf[2]);
+          applyRootThemeColor(hex);
+        }
+      } catch (_) {}
     }
 
     function onWindowResize() {
-      const aspect = window.innerWidth / window.innerHeight;
+      const container = document.getElementById('webgl-container');
+      const rect = container ? container.getBoundingClientRect() : null;
+      const w = Math.max(window.innerWidth, rect ? Math.round(rect.width) : 0);
+      const h = Math.max(window.innerHeight, rect ? Math.round(rect.height) : 0);
+      const aspect = w / h;
       camera.aspect = aspect;
 
       // Centrat responsiu per a pantalles verticals / portrait:
@@ -5254,11 +5326,11 @@ rightMat = new THREE.MeshStandardMaterial({
       }
 
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(w, h);
 
       if (floorReflector) {
-        const refW = Math.min(512, Math.max(256, Math.round(window.innerWidth * 0.35)));
-        const refH = Math.min(512, Math.max(256, Math.round(window.innerHeight * 0.35)));
+        const refW = Math.min(512, Math.max(256, Math.round(w * 0.35)));
+        const refH = Math.min(512, Math.max(256, Math.round(h * 0.35)));
         floorReflector.getRenderTarget().setSize(refW, refH);
       }
 
@@ -6613,6 +6685,16 @@ function drawTN99Background() {
       tn99BgCtx.fillRect(sx, sy, sw, sh);
     }
     tn99BgCtx.restore();
+  }
+
+  if ((currentAppMode === '1999' || currentAppMode === '2001') && typeof applyRootThemeColor === 'function' && cw > 0 && ch > 2) {
+    try {
+      const px = tn99BgCtx.getImageData(Math.floor(cw / 2), Math.min(ch - 1, 2), 1, 1).data;
+      if (px[3] > 0) {
+        const toHex = (n) => n.toString(16).padStart(2, '0');
+        applyRootThemeColor('#' + toHex(px[0]) + toHex(px[1]) + toHex(px[2]));
+      }
+    } catch (_) {}
   }
 }
 
@@ -8415,15 +8497,23 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
     '1999': '#E5ECE4',
     '2001': '#E5ECE4',
     '2002': '#000000',
-    '2005': '#DE4C00',
-    '2014': '#dbe1df',
+    '2005': '#F16806',
+    '2014': '#b0c3c3',
     '2025': '#F56115'
   };
-  const activeBg = modeBgColors[mode] || '#dbe1df';
-  document.documentElement.style.backgroundColor = activeBg;
-  if (document.body) document.body.style.backgroundColor = activeBg;
-  const metaThemeColor = document.getElementById('meta-theme-color');
-  if (metaThemeColor) metaThemeColor.setAttribute('content', activeBg);
+  const activeBg = modeBgColors[mode] || '#b0c3c3';
+  if (typeof applyRootThemeColor === 'function') {
+    applyRootThemeColor(activeBg);
+  } else {
+    document.documentElement.style.backgroundColor = activeBg;
+    if (document.body) document.body.style.backgroundColor = activeBg;
+    const metaThemeColor = document.getElementById('meta-theme-color');
+    if (metaThemeColor) metaThemeColor.setAttribute('content', activeBg);
+  }
+  if (mode === '2014' && typeof syncTN14TopBarColor === 'function') {
+    _tn14TopSyncFrame = 0;
+    requestAnimationFrame(() => syncTN14TopBarColor(true));
+  }
 
   if (mode === '1999' || mode === '2001') {
     document.documentElement.style.setProperty('--theme-accent', '#CC181E');

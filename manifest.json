@@ -4,10 +4,9 @@
   "description": "Rellotge 3D interactiu dels Telenotícies de TV3",
   "start_url": "/",
   "scope": "/",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "any",
-  "background_color": "#000000",
-  "theme_color": "#dbe1df",
+  "background_color": "#b0c3c3",
   "icons": [
     {
       "src": "favicon-2014.png",
