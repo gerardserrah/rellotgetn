@@ -7,6 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rellotge TN">
+  <meta name="color-scheme" content="only light">
   <meta name="theme-color" id="meta-theme-color" content="#b0c3c3">
   <link rel="manifest" href="manifest.json">
   <title>Rellotge TN | 2014</title>
@@ -285,6 +286,7 @@
 
     :root {
       --theme-accent: #F56115;
+      color-scheme: only light;
     }
 
     .btn-minimal:hover {
@@ -682,10 +684,10 @@
   --tn25-white: #FFFFFF;
   --tn25-darkgrey: #3A3A3A;
   --tn25-lightgrey: #DCDBDB;
-  --tn25-slit-crop: 48vh;
+  --tn25-slit-crop: calc(48 * 8.2px * var(--tn25-stage-scale, 1));
   --tn25-duration: 380ms;
   --tn25-easing: cubic-bezier(0.25, 1, 0.5, 1);
-  --tn25-pack-x: -15px;
+  --tn25-pack-x: 0px;
   --tn25-pack-y: 0px;
   --tn25-hours-x: 0px;
   --tn25-hours-y: 0px;
@@ -1546,6 +1548,19 @@ html.is-mobile-device .tn-timeline-scrim {
   }
   .tn25-container {
     justify-content: center !important;
+  }
+}
+
+/* Pantalles més altes que l'escenari 1415x820 (vertical): cúpula i temperatures
+   enganxades al rellotge centrat, com a l'escenari original */
+@media (max-aspect-ratio: 1415/820) {
+  .tn25-date-dome {
+    bottom: auto;
+    top: calc(50% + 212px * var(--tn25-stage-scale, 1) - var(--tn25-date-y, 0px) * var(--tn25-stage-scale, 1));
+  }
+  .tn25-ticker-bar {
+    bottom: auto;
+    top: calc(50% + (356px - var(--tn25-ticker-pos-y, 54px)) * var(--tn25-stage-scale, 1));
   }
 }
 
@@ -2783,8 +2798,8 @@ html.hide-config #master-editor-panel {
   <div class="panel-section-title" style="margin-top: 14px;">Posició Global Pack 2025</div>
   <div class="coord-row">
     <label>Pack X (px)</label>
-    <input type="number" id="num-tn25-pack-x" min="-300" max="300" step="1" value="-15">
-    <input type="range" id="slider-tn25-pack-x" min="-300" max="300" step="1" value="-15">
+    <input type="number" id="num-tn25-pack-x" min="-300" max="300" step="1" value="0">
+    <input type="range" id="slider-tn25-pack-x" min="-300" max="300" step="1" value="0">
   </div>
   <div class="coord-row">
     <label>Pack Y (px)</label>
@@ -6501,7 +6516,7 @@ let tn25Params = {
   white: '#FFFFFF',
   dark: '#3A3A3A',
   light: '#DCDBDB',
-  packX: -15,
+  packX: 0,
   packY: 0,
   hoursX: 0,
   hoursY: 0,
@@ -6559,10 +6574,29 @@ function updateTN25Scale() {
     hoursCol.style.width = finalW + 'px';
   }
 
+  const stageEl = document.getElementById('tn25-stage') || document.body;
+
+  // Centra sempre l'hora visible (HH.MM.SS) horitzontalment a la pantalla
+  const contEl = document.querySelector('.tn25-container');
+  const sec2El = document.querySelector('.tn25-col-sec2');
+  if (contEl && hEl && sec2El) {
+    contEl.style.transition = 'none';
+    contEl.style.transform = 'translate(0px, var(--tn25-pack-y, 0px))';
+    const hR = hEl.getBoundingClientRect();
+    const sR = sec2El.getBoundingClientRect();
+    const stR = stageEl.getBoundingClientRect();
+    let autoX = 0;
+    if (hR.width > 0 && sR.width > 0 && stR.width > 0) {
+      autoX = (stR.left + stR.width / 2) - (hR.left + sR.right) / 2;
+    }
+    contEl.style.transform = `translate(calc(${autoX.toFixed(1)}px + var(--tn25-pack-x, 0px)), var(--tn25-pack-y, 0px))`;
+    void contEl.offsetWidth;
+    contEl.style.transition = '';
+  }
+
   // Posiciona dinàmicament el ticker bar just a la línia divisòria de l'hora
   const min1El = document.querySelector('.tn25-col-min1');
   const tickerBar = document.querySelector('.tn25-ticker-bar');
-  const stageEl = document.getElementById('tn25-stage') || document.body;
   if (min1El && tickerBar) {
     const min1Rect = min1El.getBoundingClientRect();
     const stageRect = stageEl.getBoundingClientRect();
@@ -6575,6 +6609,7 @@ function updateTN25Scale() {
 }
 window.addEventListener('resize', updateTN25Scale);
 updateTN25Scale();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => updateTN25Scale());
 
 function updateTN25Colors() {
   updateTN25Scale();
@@ -6583,7 +6618,7 @@ function updateTN25Colors() {
   root.style.setProperty('--tn25-white', tn25Params.white);
   root.style.setProperty('--tn25-darkgrey', tn25Params.dark);
   root.style.setProperty('--tn25-lightgrey', tn25Params.light);
-  root.style.setProperty('--tn25-slit-crop', tn25Params.slitCrop + 'vh');
+  root.style.setProperty('--tn25-slit-crop', `calc(${tn25Params.slitCrop} * 8.2px * var(--tn25-stage-scale, 1))`);
   root.style.setProperty('--tn25-duration', tn25Params.duration + 'ms');
   root.style.setProperty('--tn25-easing', tn25Params.easing);
 
@@ -6736,6 +6771,7 @@ function updateTN25Clock() {
   if (hoursEl && tn25State.h !== hStr) {
     tn25State.h = hStr;
     hoursEl.textContent = `${hStr}.`;
+    requestAnimationFrame(updateTN25Scale);
   }
 
   // Minutes tens
@@ -10224,7 +10260,7 @@ if (selectTn25Easing) {
       tn25Params.white = '#FFFFFF';
       tn25Params.dark = '#3A3A3A';
       tn25Params.light = '#DCDBDB';
-      tn25Params.packX = -15;
+      tn25Params.packX = 0;
       tn25Params.packY = 0;
       tn25Params.hoursX = 0;
       tn25Params.hoursY = 0;
@@ -10259,7 +10295,7 @@ if (selectTn25Easing) {
         ['num-tn25-dot-y', 'slider-tn25-dot-y', 0],
         ['num-tn25-ticker-pos-y', 'slider-tn25-ticker-pos-y', 54],
         ['num-tn25-ticker-font', 'slider-tn25-ticker-font', 29],
-        ['num-tn25-pack-x', 'slider-tn25-pack-x', -15],
+        ['num-tn25-pack-x', 'slider-tn25-pack-x', 0],
         ['num-tn25-pack-y', 'slider-tn25-pack-y', 0],
         ['num-tn25-hours-x', 'slider-tn25-hours-x', 0],
         ['num-tn25-hours-y', 'slider-tn25-hours-y', 0],
