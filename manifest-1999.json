@@ -1,0 +1,26 @@
+{
+  "id": "rellotgetn-1999",
+  "name": "Rellotge TN | 1999",
+  "short_name": "TN 1999",
+  "description": "Rellotge 3D interactiu dels Telenotícies de TV3 (1999)",
+  "start_url": "/?any=1999",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#E5ECE4",
+  "theme_color": "#E5ECE4",
+  "icons": [
+    {
+      "src": "apple-touch-icon-1999.png",
+      "sizes": "640x640",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon-1999.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

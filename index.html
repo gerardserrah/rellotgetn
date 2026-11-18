@@ -6,14 +6,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Rellotge TN">
+  <meta name="apple-mobile-web-app-title" id="meta-app-title" content="Rellotge TN">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
   <meta name="darkreader-lock">
   <meta name="theme-color" id="meta-theme-color" content="#b0c3c3">
   <meta name="theme-color" id="meta-theme-color-light" media="(prefers-color-scheme: light)" content="#b0c3c3">
   <meta name="theme-color" id="meta-theme-color-dark" media="(prefers-color-scheme: dark)" content="#b0c3c3">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" id="app-manifest" href="manifest-2014.json">
   <title>Rellotge TN | 2014</title>
   <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
 
@@ -2104,8 +2104,15 @@ html.hide-config #master-editor-panel {
           var rawS = window.location.search.replace(/^\?/, '');
           if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawS)) rawM = rawS;
         }
+        if (!rawM) {
+          try {
+            var storedMode = localStorage.getItem('tn_last_mode');
+            if (/^(1999|2001|2002|2005|2014|2025)$/.test(storedMode)) rawM = storedMode;
+          } catch (e) {}
+        }
         if (rawM === '2001') rawM = '1999';
         var initMode = /^(1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
+        try { localStorage.setItem('tn_last_mode', initMode); } catch (e) {}
         var modeBgColors = {
           '1999': '#E5ECE4',
           '2001': '#E5ECE4',
@@ -2127,6 +2134,14 @@ html.hide-config #master-editor-panel {
         var atiPrecomp = document.getElementById('dynamic-apple-touch-precomposed');
         if (atiPrecomp) {
           atiPrecomp.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v2';
+        }
+        var manifestLink = document.getElementById('app-manifest');
+        if (manifestLink) {
+          manifestLink.href = 'manifest-' + initMode + '.json?v=m_v1';
+        }
+        var appTitleMeta = document.getElementById('meta-app-title');
+        if (appTitleMeta) {
+          appTitleMeta.setAttribute('content', 'TN ' + initMode);
         }
       } catch (e) {}
     })();
@@ -8989,6 +9004,14 @@ function getModeFromUrl() {
       const rawHash = window.location.hash.replace(/^#\/?/, '');
       if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawHash)) m = rawHash;
     }
+    if (!m) {
+      try {
+        const stored = localStorage.getItem('tn_last_mode');
+        if (stored && (stored === '1999' || stored === '2002' || stored === '2005' || stored === '2014' || stored === '2025')) {
+          m = stored;
+        }
+      } catch (_) {}
+    }
     if (m === 'auto') {
       const day = new Date().getDay();
       const autoModes = ['2005', '2014', '2025', '2005', '2014', '2025', '2014'];
@@ -9028,6 +9051,17 @@ function updateUrlForMode(mode, replace = false) {
 function applyModeSwitch(mode, skipUrlUpdate = false) {
   if (mode === '2001') mode = '1999';
   currentAppMode = mode;
+  try {
+    localStorage.setItem('tn_last_mode', mode);
+  } catch (_) {}
+  const appManifest = document.getElementById('app-manifest');
+  if (appManifest) {
+    appManifest.href = `manifest-${mode}.json?v=m_v1`;
+  }
+  const appTitleMeta = document.getElementById('meta-app-title');
+  if (appTitleMeta) {
+    appTitleMeta.setAttribute('content', `TN ${mode}`);
+  }
   document.documentElement.setAttribute('data-mode', mode);
   document.body.setAttribute('data-mode', mode);
   document.title = `Rellotge TN | ${mode}`;
