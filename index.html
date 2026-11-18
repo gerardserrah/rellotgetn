@@ -15,7 +15,7 @@
   <!-- Favicon i Apple Touch Icon Dinàmics (canvien segons l'any del TN) -->
   <link rel="icon" type="image/png" href="favicon-2014.png">
   <link rel="shortcut icon" type="image/png" href="favicon-2014.png">
-  <link rel="apple-touch-icon" href="favicon-2014.png">
+  <link rel="apple-touch-icon" id="dynamic-apple-touch" href="apple-touch-icon-2014.png">
 
   <!-- Open Graph / Compartir link a xarxes (16:9) -->
   <meta property="og:type" content="website">
@@ -1139,7 +1139,7 @@ html.screensaver-mode .tn-timeline-scrim {
 }
 
 @media (min-width: 901px) {
-  html:not(.hide-config):not(.is-mobile-device) .tn-timeline-scrim {
+  html:not(.is-mobile-device) .tn-timeline-scrim {
     display: block;
     position: fixed;
     top: 0;
@@ -1177,19 +1177,19 @@ html.screensaver-mode .tn-timeline-scrim {
     transition: opacity 0.35s ease;
     z-index: 900;
   }
-  html:not(.hide-config):not(.is-mobile-device) .minimal-controls.visible ~ .tn-timeline-scrim,
-  html:not(.hide-config):not(.is-mobile-device) .minimal-controls:hover ~ .tn-timeline-scrim {
+  html:not(.is-mobile-device) .minimal-controls.visible ~ .tn-timeline-scrim,
+  html:not(.is-mobile-device) .minimal-controls:hover ~ .tn-timeline-scrim {
     opacity: 1;
   }
-  html:not(.hide-config):not(.is-mobile-device) .minimal-controls {
+  html:not(.is-mobile-device) .minimal-controls {
     left: max(22px, calc(env(safe-area-inset-left, 0px) + 14px));
     right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px));
     align-items: center;
   }
-  html:not(.hide-config):not(.is-mobile-device) #tn-version-dropdown-wrap {
+  html:not(.is-mobile-device) #tn-version-dropdown-wrap {
     display: none;
   }
-  html:not(.hide-config):not(.is-mobile-device) #tn-timeline-bar {
+  html:not(.is-mobile-device) #tn-timeline-bar {
     display: flex;
     flex: 1;
     min-width: 0;
@@ -1200,16 +1200,17 @@ html.screensaver-mode .tn-timeline-scrim {
 }
 
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  html:not(.hide-config) #tn-version-dropdown-wrap {
+  #tn-version-dropdown-wrap {
     display: inline-flex;
   }
-  #tn-timeline-bar {
+  #tn-timeline-bar,
+  .tn-timeline-scrim {
     display: none !important;
   }
 }
 
-html.hide-config #tn-timeline-bar,
-html.is-mobile-device #tn-timeline-bar {
+html.is-mobile-device #tn-timeline-bar,
+html.is-mobile-device .tn-timeline-scrim {
   display: none !important;
 }
 
@@ -2006,6 +2007,18 @@ html.hide-config #master-editor-panel {
         }
         if (params.has('screensaver') || params.get('screensaver') === '1' || params.has('saver')) {
           document.documentElement.classList.add('screensaver-mode');
+        }
+        var pathMatch = window.location.pathname.match(/^\/(1999|2001|2002|2005|2014|2025)\/?$/);
+        var rawM = pathMatch ? pathMatch[1] : (window.__SCREENSAVER_YEAR__ || params.get('mode') || params.get('year') || '');
+        if (!rawM) {
+          var rawS = window.location.search.replace(/^\?/, '');
+          if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawS)) rawM = rawS;
+        }
+        if (rawM === '2001') rawM = '1999';
+        var initMode = /^(1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
+        var atiLink = document.getElementById('dynamic-apple-touch');
+        if (atiLink) {
+          atiLink.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v1';
         }
       } catch (e) {}
     })();
@@ -8734,11 +8747,11 @@ function updateDynamicFavicon(mode) {
   link.href = `favicon-${targetMode}.png?v=${v}`;
   document.head.appendChild(link);
 
-  // 4. Apple Touch Icon
+  // 4. Apple Touch Icon específic per a cada versió
   const appleLink = document.createElement('link');
   appleLink.id = 'dynamic-apple-touch';
   appleLink.rel = 'apple-touch-icon';
-  appleLink.href = `favicon-${targetMode}.png?v=${v}`;
+  appleLink.href = `apple-touch-icon-${targetMode}.png?v=ati_v1`;
   document.head.appendChild(appleLink);
 }
 
