@@ -2095,11 +2095,11 @@ html.hide-config #master-editor-panel {
 }
 .patro-modal-card {
   width: 100%;
-  max-width: 380px;
+  max-width: 448px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: 22px;
-  padding: 24px 24px 20px;
+  padding: 24px 26px 22px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
   color: #1e293b;
   animation: patroModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2109,9 +2109,9 @@ html.hide-config #master-editor-panel {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .patro-modal-title {
-  font-family: '3Cat-Heavy', '3Cat', sans-serif;
+  font-family: 'Akkurat Pro', 'AkkuratPro-Bold', '3Cat', -apple-system, sans-serif;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 14px;
   letter-spacing: -0.02em;
   color: #0f172a;
@@ -2147,8 +2147,9 @@ html.hide-config #master-editor-panel {
 }
 .patro-color-grid {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 20px;
 }
 .patro-color-swatch {
@@ -11727,19 +11728,16 @@ function createPatroTextTexture(text, bgHex) {
   const isLight = patroIsLightColor(bgHex);
   const fgColor = isLight ? '#1e293b' : '#ffffff';
 
-  // Marc subtil interior
-  ctx.strokeStyle = isLight ? 'rgba(30,41,59,0.14)' : 'rgba(255,255,255,0.22)';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(22, 22, 468, 468);
-
-  // Text centrat amb salt de línia automàtic i escala adaptativa
+  // Text alineat a baix a l'esquerra amb la tipografia de les temperatures (Akkurat Pro Bold), sense marc
   const cleanText = (text || 'Patrocinat').trim();
-  const maxWidth = 420;
-  let fontSize = cleanText.length <= 10 ? 74 : (cleanText.length <= 22 ? 56 : 44);
+  const padLeft = 36;
+  const padBottom = 38;
+  const maxWidth = 512 - padLeft * 2;
+  let fontSize = cleanText.length <= 12 ? 68 : (cleanText.length <= 24 ? 54 : 42);
   let lines = [];
 
   const computeLines = (sz) => {
-    ctx.font = `800 ${sz}px "3Cat-Heavy", "3Cat", "Akkurat Pro", sans-serif`;
+    ctx.font = `700 ${sz}px "Akkurat Pro", "AkkuratPro-Bold", "Montserrat", sans-serif`;
     const words = cleanText.split(/\s+/);
     const out = [];
     let cur = '';
@@ -11749,7 +11747,6 @@ function createPatroTextTexture(text, bgHex) {
         cur = test;
       } else {
         if (cur) out.push(cur);
-        // Si una sola paraula és més ampla que maxWidth, la tallem
         if (ctx.measureText(w).width > maxWidth) {
           let chunk = '';
           for (const ch of w) {
@@ -11770,24 +11767,24 @@ function createPatroTextTexture(text, bgHex) {
     return out;
   };
 
-  while (fontSize >= 26) {
+  while (fontSize >= 24) {
     lines = computeLines(fontSize);
-    if (lines.length * (fontSize * 1.18) <= 390) break;
+    if (lines.length * (fontSize * 1.15) <= 410) break;
     fontSize -= 4;
   }
 
   ctx.fillStyle = fgColor;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.shadowColor = isLight ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
-  ctx.shadowBlur = 10;
-  ctx.shadowOffsetY = 3;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.shadowColor = isLight ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.22)';
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 2;
 
-  const lineH = fontSize * 1.18;
-  const totalH = lines.length * lineH;
-  const startY = 256 - totalH / 2 + lineH / 2;
+  const lineH = fontSize * 1.15;
+  const baseBottomY = 512 - padBottom;
   lines.forEach((ln, idx) => {
-    ctx.fillText(ln, 256, startY + idx * lineH);
+    const y = baseBottomY - (lines.length - 1 - idx) * lineH;
+    ctx.fillText(ln, padLeft, y);
   });
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -11836,13 +11833,10 @@ function updatePatroWebcamCanvas() {
     const sy = (vh - side) / 2;
 
     ctx.save();
-    // Fons del color triat amb marc subtil
-    ctx.fillStyle = patroState.chosenColor;
-    ctx.fillRect(0, 0, 512, 512);
-    // Mirall horitzontal per a webcam natural dins el marc
+    // Mirall horitzontal ocupant el 100% de la cara del cub (512x512)
     ctx.translate(512, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(v, sx, sy, side, side, 16, 16, 480, 480);
+    ctx.drawImage(v, sx, sy, side, side, 0, 0, 512, 512);
     ctx.restore();
 
     patroState.webcamTex.needsUpdate = true;
@@ -11999,6 +11993,16 @@ function updatePatroAnimation(nowMs) {
       patroState.phase = 'modal';
       openPatroModal();
     }
+  } else if (patroState.phase === 'camera_warmup') {
+    updatePatroWebcamCanvas();
+    if (elapsed >= 1000) {
+      rightCube.position.y = patroState.hiddenY;
+      rightCube.rotation.y = 0;
+      rightCube.visible = true;
+      rightCube.castShadow = true;
+      patroState.phase = 'rise_in';
+      patroState.phaseStart = nowMs;
+    }
   } else if (patroState.phase === 'rise_in') {
     updatePatroWebcamCanvas();
     const dur = 800;
@@ -12012,7 +12016,7 @@ function updatePatroAnimation(nowMs) {
     }
   } else if (patroState.phase === 'rotate_45') {
     updatePatroWebcamCanvas();
-    const dur = 1100;
+    const dur = 3000;
     const t = Math.min(1, elapsed / dur);
     const e = patroEaseInOutQuint(t);
     // Gira 45° en direcció de les broques del rellotge (eix Y negatiu vist des de dalt)
@@ -12024,7 +12028,7 @@ function updatePatroAnimation(nowMs) {
     }
   } else if (patroState.phase === 'hold') {
     updatePatroWebcamCanvas();
-    if (elapsed >= 5000) {
+    if (elapsed >= 7000) {
       patroState.phase = 'sponsor_sink';
       patroState.phaseStart = nowMs;
     }
@@ -12098,9 +12102,9 @@ function updatePatroAnimation(nowMs) {
       startPatroWebcam();
       rightCube.position.y = patroState.hiddenY;
       rightCube.rotation.y = 0;
-      rightCube.visible = true;
-      rightCube.castShadow = true;
-      patroState.phase = 'rise_in';
+      rightCube.visible = false;
+      rightCube.castShadow = false;
+      patroState.phase = 'camera_warmup';
       patroState.phaseStart = performance.now();
     });
   }
