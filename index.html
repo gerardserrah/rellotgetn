@@ -15,7 +15,7 @@
   <meta name="theme-color" id="meta-theme-color-dark" media="(prefers-color-scheme: dark)" content="#b0c3c3">
   <link rel="manifest" href="manifest.json">
   <title>Rellotge TN | 2014</title>
-  <meta name="description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
+  <meta name="description" content="Un recorregut històric pels rellotges dels Telenotícies de TV3.">
 
   <!-- Favicon i Apple Touch Icon Dinàmics (canvien segons l'any del TN) -->
   <link rel="icon" type="image/png" href="favicon-2014.png">
@@ -26,19 +26,19 @@
   <!-- Open Graph / Compartir link a xarxes (16:9) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Rellotge TN">
-  <meta property="og:description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
-  <meta property="og:image" content="https://rellotgetn.vercel.app/og-image.jpg">
-  <meta property="og:image:secure_url" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta property="og:description" content="Un recorregut històric pels rellotges dels Telenotícies de TV3.">
+  <meta property="og:image" id="meta-og-image" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta property="og:image:secure_url" id="meta-og-image-secure" content="https://rellotgetn.vercel.app/og-image.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1024">
   <meta property="og:image:height" content="576">
-  <meta property="og:image:alt" content="Rellotge TN 3D">
+  <meta property="og:image:alt" content="Rellotge TN">
 
   <!-- Twitter Card (16:9 resum gran) -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Rellotge TN">
-  <meta name="twitter:description" content="Rellotge 3D interactiu dels Telenotícies de TV3 (2005, 2014, 2025)">
-  <meta name="twitter:image" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta name="twitter:description" content="Un recorregut històric pels rellotges dels Telenotícies de TV3.">
+  <meta name="twitter:image" id="meta-twitter-image" content="https://rellotgetn.vercel.app/og-image.jpg">
 
   <!-- Webfonts for Museo Slab & Akkurat / Sans-serif -->
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/museo-slab">
@@ -1593,14 +1593,9 @@ html.is-mobile-device .tn-timeline-scrim {
 
 #view-tn-2025 {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: calc(100vh + env(safe-area-inset-top, 0px));
-  width: 100dvw;
-  height: calc(100dvh + env(safe-area-inset-top, 0px));
+  inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 5;
   display: none;
   font-family: '3Cat', -apple-system, sans-serif;
@@ -1663,7 +1658,7 @@ html.is-mobile-device .tn-timeline-scrim {
 .tn25-hours-display {
   position: absolute;
   top: 50%;
-  right: 21px;
+  right: calc(21px * var(--tn25-stage-scale, 1));
   left: auto;
   text-align: right;
   transform: translate(var(--tn25-hours-x, 0px), calc(-50% + var(--tn25-hours-y, 0px)));
@@ -2080,6 +2075,128 @@ html.hide-config #btn-toggle-tn02-aspect,
 html.hide-config #master-editor-panel {
   display: none !important;
 }
+
+/* Easter Egg 2014: Quadre de diàleg "Patrocina'm" */
+#patro-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: '3Cat', 'Akkurat Pro', -apple-system, sans-serif;
+  padding: 20px;
+}
+#patro-modal-overlay.open {
+  display: flex;
+}
+.patro-modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 22px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  color: #1e293b;
+  animation: patroModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes patroModalIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.patro-modal-title {
+  font-family: '3Cat-Heavy', '3Cat', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+.patro-modal-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+.patro-modal-input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: '3Cat', 'Akkurat Pro', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  margin-bottom: 16px;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.patro-modal-input:focus {
+  border-color: #F56115;
+  box-shadow: 0 0 0 3px rgba(245, 97, 21, 0.16);
+}
+.patro-color-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.patro-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 23, 42, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: 0;
+}
+.patro-color-swatch:hover {
+  transform: scale(1.12);
+}
+.patro-color-swatch.selected {
+  transform: scale(1.14);
+  box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5px #0f172a;
+}
+.patro-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.patro-btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  font-family: '3Cat', 'Akkurat Pro', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.patro-btn-cancel {
+  background: #e2e8f0;
+  color: #334155;
+}
+.patro-btn-cancel:hover {
+  background: #cbd5e1;
+}
+.patro-btn-submit {
+  background: #F56115;
+  color: #ffffff;
+}
+.patro-btn-submit:hover {
+  background: #e05209;
+  transform: translateY(-1px);
+}
 </style>
   <script>
     (function() {
@@ -2135,6 +2252,11 @@ html.hide-config #master-editor-panel {
         if (atiPrecomp) {
           atiPrecomp.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v2';
         }
+        var ogUrl = 'https://rellotgetn.vercel.app/og-image-' + initMode + '.jpg';
+        ['meta-og-image', 'meta-og-image-secure', 'meta-twitter-image'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.setAttribute('content', ogUrl);
+        });
       } catch (e) {}
     })();
   </script>
@@ -2213,9 +2335,7 @@ html.hide-config #master-editor-panel {
 <!-- TN 2002 BROADCAST VIEW (Fons Vídeo i Rellotge Superposat) -->
 <div id="view-tn-2002" style="display: none;">
   <div id="tn02-stage" class="tn02-stage">
-    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" autoplay loop muted playsinline preload="auto">
-      <source src="video/fons_2002.mp4" type="video/mp4">
-    </video>
+    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" autoplay loop muted playsinline webkit-playsinline="true" disableRemotePlayback preload="auto"></video>
     <div id="tn02-clock-back" class="tn02-clock-back">
       <span id="tn02-clock-back-text">20:29</span>
     </div>
@@ -2248,7 +2368,7 @@ html.hide-config #master-editor-panel {
     <div class="tn25-col-left"></div>
     <!-- Col 1: Hours & Date Dome -->
     <div class="tn25-col-hours">
-      <div id="tn25-hours-text" class="tn25-hours-display">06.</div>
+      <div id="tn25-hours-text" class="tn25-hours-display">6.</div>
       <div class="tn25-date-dome">
         <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax meet">\n            <!-- Full base semicircle arc reaching bottom edge -->\n            <path id="tn25-arc-base" d="M 12 200 A 188 188 0 0 1 388 200" fill="none" stroke="#3A3A3A" stroke-width="3" />
           <!-- Moving indicator capsule along the arc -->
@@ -3727,6 +3847,31 @@ html.hide-config #master-editor-panel {
       </button>
       <div id="copy-all-feedback" class="copy-feedback">Tots els paràmetres s'han copiat al porta-retalls!</div>
     </div>
+  </div>
+
+  <!-- Easter Egg 2014: Modal "Patrocina'm" -->
+  <div id="patro-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="patro-modal-title">
+    <form class="patro-modal-card" id="patro-modal-form">
+      <div class="patro-modal-title" id="patro-modal-title">Patrocina'm</div>
+      <label class="patro-modal-label" for="patro-text-input">Missatge</label>
+      <input type="text" id="patro-text-input" class="patro-modal-input" maxlength="60" placeholder="Escriu el teu text..." autocomplete="off" required>
+      <div class="patro-modal-label">Color</div>
+      <div class="patro-color-grid" id="patro-color-grid">
+        <button type="button" class="patro-color-swatch selected" data-color="#F56115" style="background:#F56115;" title="Taronja" aria-label="Taronja"></button>
+        <button type="button" class="patro-color-swatch" data-color="#E53935" style="background:#E53935;" title="Vermell" aria-label="Vermell"></button>
+        <button type="button" class="patro-color-swatch" data-color="#FDD835" style="background:#FDD835;" title="Groc" aria-label="Groc"></button>
+        <button type="button" class="patro-color-swatch" data-color="#43A047" style="background:#43A047;" title="Verd" aria-label="Verd"></button>
+        <button type="button" class="patro-color-swatch" data-color="#1E88E5" style="background:#1E88E5;" title="Blau" aria-label="Blau"></button>
+        <button type="button" class="patro-color-swatch" data-color="#8E24AA" style="background:#8E24AA;" title="Lila" aria-label="Lila"></button>
+        <button type="button" class="patro-color-swatch" data-color="#EC407A" style="background:#EC407A;" title="Rosa" aria-label="Rosa"></button>
+        <button type="button" class="patro-color-swatch" data-color="#1E293B" style="background:#1E293B;" title="Negre" aria-label="Negre"></button>
+        <button type="button" class="patro-color-swatch" data-color="#FFFFFF" style="background:#FFFFFF;" title="Blanc" aria-label="Blanc"></button>
+      </div>
+      <div class="patro-modal-actions">
+        <button type="button" class="patro-btn patro-btn-cancel" id="patro-btn-cancel">Cancel·lar</button>
+        <button type="submit" class="patro-btn patro-btn-submit">Enviar</button>
+      </div>
+    </form>
   </div>
 
   <!-- Local Libraries -->
@@ -5738,6 +5883,9 @@ rightMat = new THREE.MeshStandardMaterial({
 
       // Animate the mosaic dots on both flanking cubes throttled to ~20fps to eliminate GPU upload stalls
       const nowMs = performance.now();
+      if (typeof updatePatroAnimation === 'function') {
+        updatePatroAnimation(nowMs);
+      }
       if (!window._lastTexUpdateMs || (nowMs - window._lastTexUpdateMs) >= 50) {
         window._lastTexUpdateMs = nowMs;
         const elapsedSec = nowMs * 0.001;
@@ -6710,8 +6858,17 @@ function updateTN25Scale() {
   }
 }
 window.addEventListener('resize', updateTN25Scale);
+window.addEventListener('load', updateTN25Scale);
 updateTN25Scale();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => updateTN25Scale());
+if (typeof ResizeObserver !== 'undefined') {
+  const _tn25StageObsEl = document.getElementById('tn25-stage');
+  if (_tn25StageObsEl) {
+    new ResizeObserver(() => {
+      if (currentAppMode === '2025') updateTN25Scale();
+    }).observe(_tn25StageObsEl);
+  }
+}
 
 function updateTN25Colors() {
   updateTN25Scale();
@@ -6863,7 +7020,8 @@ function updateTN25Clock() {
   if (currentAppMode !== '2025') return;
 
   const now = new Date();
-  const hStr = String(now.getHours()).padStart(2, '0');
+  const hNum = now.getHours();
+  const hStr = (hNum === 0) ? '00' : String(hNum);
   const mStr = String(now.getMinutes()).padStart(2, '0');
   const sStr = String(now.getSeconds()).padStart(2, '0');
   const secVal = now.getSeconds();
@@ -8897,6 +9055,13 @@ function updateDynamicFavicon(mode) {
   applePrecomp.rel = 'apple-touch-icon-precomposed';
   applePrecomp.href = `apple-touch-icon-${targetMode}.png?v=ati_v2`;
   document.head.appendChild(applePrecomp);
+
+  // 5. Open Graph / Twitter Card 16:9 específic per a cada versió
+  const ogUrl = `https://rellotgetn.vercel.app/og-image-${targetMode}.jpg`;
+  ['meta-og-image', 'meta-og-image-secure', 'meta-twitter-image'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('content', ogUrl);
+  });
 }
 
 function triggerYearTransition(targetMode, onMidpoint) {
@@ -9181,35 +9346,59 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
     if (view1999) view1999.style.display = 'none';
     if (view2002) view2002.style.display = 'block';
     if (video02) {
+      video02.defaultMuted = true;
       video02.muted = true;
       video02.loop = true;
       video02.playsInline = true;
+      video02.setAttribute('muted', '');
+      video02.setAttribute('playsinline', '');
+      video02.setAttribute('webkit-playsinline', 'true');
+
+      const tryPlayTN02 = () => {
+        if (currentAppMode !== '2002' || !video02) return;
+        video02.defaultMuted = true;
+        video02.muted = true;
+        if (video02.ended || (video02.duration && video02.currentTime >= video02.duration - 0.05)) {
+          video02.currentTime = 0;
+        }
+        const p = video02.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {});
+        }
+      };
+
+      if (!video02._tn02ListenersBound) {
+        video02._tn02ListenersBound = true;
+        video02.addEventListener('ended', () => {
+          video02.currentTime = 0;
+          tryPlayTN02();
+        });
+        video02.addEventListener('loadeddata', () => {
+          if (video02.paused) tryPlayTN02();
+        });
+        video02.addEventListener('canplay', () => {
+          if (video02.paused) tryPlayTN02();
+        });
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && currentAppMode === '2002' && video02.paused) {
+            tryPlayTN02();
+          }
+        });
+        const unlockOnGesture = () => {
+          if (currentAppMode === '2002' && video02.paused) {
+            tryPlayTN02();
+          }
+        };
+        window.addEventListener('touchstart', unlockOnGesture, { passive: true });
+        window.addEventListener('pointerdown', unlockOnGesture, { passive: true });
+        window.addEventListener('click', unlockOnGesture);
+      }
+
       if (video02.readyState === 0) {
         video02.load();
       }
-      if (!video02._loopBound) {
-        video02._loopBound = true;
-        video02.addEventListener('ended', function() {
-          video02.currentTime = 0;
-          video02.play().catch(function(){});
-        });
-      }
-      if (video02.ended || video02.currentTime >= (video02.duration || 29)) {
-        video02.currentTime = 0;
-      }
-      const playPromise = video02.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(function() {
-          const onUserGesture = function() {
-            if (currentAppMode === '2002') {
-              video02.currentTime = 0;
-              video02.play().catch(function(){});
-            }
-          };
-          window.addEventListener('click', onUserGesture, { once: true });
-          window.addEventListener('touchstart', onUserGesture, { once: true });
-        });
-      }
+      tryPlayTN02();
+      setTimeout(tryPlayTN02, 250);
     }
     if (view2005) view2005.style.display = 'none';
     if (view2025) view2025.style.display = 'none';
@@ -9242,6 +9431,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
     initTN25Ticker();
     updateTN25Colors();
     updateTN25Clock();
+    requestAnimationFrame(() => updateTN25Scale());
   } else {
     // 2014
     if (view1999) view1999.style.display = 'none';
@@ -11471,6 +11661,464 @@ window.addEventListener('orientationchange', handleIOSViewportRotation);
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', handleIOSViewportRotation);
 }
+
+// =========================================================================
+// EASTER EGG 2014: "patro" ("Patrocina'm" amb webcam i text al cub dret)
+// =========================================================================
+const patroState = {
+  phase: 'idle', // 'idle' | 'sink_out' | 'modal' | 'rise_in' | 'rotate_45' | 'hold' | 'sponsor_sink' | 'restore_rise'
+  phaseStart: 0,
+  origMaterials: null,
+  origY: 2.75 / 2,
+  hiddenY: -1.65,
+  origRotY: -Math.PI / 4.4,
+  sponsorMaterials: null,
+  webcamStream: null,
+  webcamVideo: null,
+  webcamCanvas: null,
+  webcamCtx: null,
+  webcamTex: null,
+  webcamReady: false,
+  textCanvas: null,
+  textTex: null,
+  chosenColor: '#F56115',
+  chosenText: '',
+  keyBuffer: ''
+};
+
+function patroEaseInOutCubic(t) {
+  t = Math.max(0, Math.min(1, t));
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+function patroEaseOutCubic(t) {
+  t = Math.max(0, Math.min(1, t));
+  return 1 - Math.pow(1 - t, 3);
+}
+function patroEaseInOutQuint(t) {
+  t = Math.max(0, Math.min(1, t));
+  return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+}
+
+function patroIsLightColor(hex) {
+  const c = (hex || '#F56115').replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16) || 0;
+  const g = parseInt(c.substring(2, 4), 16) || 0;
+  const b = parseInt(c.substring(4, 6), 16) || 0;
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 170;
+}
+
+function createPatroTextTexture(text, bgHex) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  // Fons amb el color triat + subtil brillantor d'estudi
+  ctx.fillStyle = bgHex;
+  ctx.fillRect(0, 0, 512, 512);
+
+  const grad = ctx.createLinearGradient(0, 0, 512, 512);
+  grad.addColorStop(0, 'rgba(255,255,255,0.16)');
+  grad.addColorStop(0.5, 'rgba(255,255,255,0.0)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.16)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 512, 512);
+
+  const isLight = patroIsLightColor(bgHex);
+  const fgColor = isLight ? '#1e293b' : '#ffffff';
+
+  // Marc subtil interior
+  ctx.strokeStyle = isLight ? 'rgba(30,41,59,0.14)' : 'rgba(255,255,255,0.22)';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(22, 22, 468, 468);
+
+  // Text centrat amb salt de línia automàtic i escala adaptativa
+  const cleanText = (text || 'Patrocinat').trim();
+  const maxWidth = 420;
+  let fontSize = cleanText.length <= 10 ? 74 : (cleanText.length <= 22 ? 56 : 44);
+  let lines = [];
+
+  const computeLines = (sz) => {
+    ctx.font = `800 ${sz}px "3Cat-Heavy", "3Cat", "Akkurat Pro", sans-serif`;
+    const words = cleanText.split(/\s+/);
+    const out = [];
+    let cur = '';
+    for (const w of words) {
+      const test = cur ? (cur + ' ' + w) : w;
+      if (ctx.measureText(test).width <= maxWidth) {
+        cur = test;
+      } else {
+        if (cur) out.push(cur);
+        // Si una sola paraula és més ampla que maxWidth, la tallem
+        if (ctx.measureText(w).width > maxWidth) {
+          let chunk = '';
+          for (const ch of w) {
+            if (ctx.measureText(chunk + ch).width > maxWidth && chunk) {
+              out.push(chunk);
+              chunk = ch;
+            } else {
+              chunk += ch;
+            }
+          }
+          cur = chunk;
+        } else {
+          cur = w;
+        }
+      }
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
+
+  while (fontSize >= 26) {
+    lines = computeLines(fontSize);
+    if (lines.length * (fontSize * 1.18) <= 390) break;
+    fontSize -= 4;
+  }
+
+  ctx.fillStyle = fgColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = isLight ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.25)';
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetY = 3;
+
+  const lineH = fontSize * 1.18;
+  const totalH = lines.length * lineH;
+  const startY = 256 - totalH / 2 + lineH / 2;
+  lines.forEach((ln, idx) => {
+    ctx.fillText(ln, 256, startY + idx * lineH);
+  });
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  return { canvas, tex };
+}
+
+function drawPatroWebcamFallback(ctx, bgHex) {
+  ctx.fillStyle = bgHex;
+  ctx.fillRect(0, 0, 512, 512);
+  const grad = ctx.createRadialGradient(256, 256, 40, 256, 256, 360);
+  grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.22)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 512, 512);
+
+  const isLight = patroIsLightColor(bgHex);
+  const fg = isLight ? '#1e293b' : '#ffffff';
+  ctx.strokeStyle = fg;
+  ctx.lineWidth = 14;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  // Icona càmera senzilla
+  ctx.beginPath();
+  ctx.roundRect ? ctx.roundRect(140, 186, 176, 140, 22) : ctx.rect(140, 186, 176, 140);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(316, 230);
+  ctx.lineTo(374, 196);
+  ctx.lineTo(374, 316);
+  ctx.lineTo(316, 282);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function updatePatroWebcamCanvas() {
+  if (!patroState.webcamCtx || !patroState.webcamTex) return;
+  const ctx = patroState.webcamCtx;
+  const v = patroState.webcamVideo;
+  if (patroState.webcamReady && v && v.readyState >= 2 && v.videoWidth > 0 && v.videoHeight > 0) {
+    const vw = v.videoWidth;
+    const vh = v.videoHeight;
+    const side = Math.min(vw, vh);
+    const sx = (vw - side) / 2;
+    const sy = (vh - side) / 2;
+
+    ctx.save();
+    // Fons del color triat amb marc subtil
+    ctx.fillStyle = patroState.chosenColor;
+    ctx.fillRect(0, 0, 512, 512);
+    // Mirall horitzontal per a webcam natural dins el marc
+    ctx.translate(512, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(v, sx, sy, side, side, 16, 16, 480, 480);
+    ctx.restore();
+
+    patroState.webcamTex.needsUpdate = true;
+  }
+}
+
+function cleanupPatroResources() {
+  if (patroState.webcamStream) {
+    try {
+      patroState.webcamStream.getTracks().forEach(t => t.stop());
+    } catch (_) {}
+    patroState.webcamStream = null;
+  }
+  if (patroState.webcamVideo) {
+    try {
+      patroState.webcamVideo.pause();
+      patroState.webcamVideo.srcObject = null;
+    } catch (_) {}
+    patroState.webcamVideo = null;
+  }
+  patroState.webcamReady = false;
+  if (patroState.webcamTex) {
+    patroState.webcamTex.dispose();
+    patroState.webcamTex = null;
+  }
+  if (patroState.textTex) {
+    patroState.textTex.dispose();
+    patroState.textTex = null;
+  }
+  if (patroState.sponsorMaterials) {
+    patroState.sponsorMaterials.forEach(m => {
+      if (m && m.dispose) m.dispose();
+    });
+    patroState.sponsorMaterials = null;
+  }
+}
+
+function applyPatroSponsorMaterials(text, bgHex) {
+  if (!rightCube) return;
+  if (!patroState.origMaterials) {
+    patroState.origMaterials = rightCube.material;
+  }
+
+  // Canvas per a la webcam (cara esquerra després de girar 45° CW = índex 4, +Z)
+  const wCanvas = document.createElement('canvas');
+  wCanvas.width = 512;
+  wCanvas.height = 512;
+  const wCtx = wCanvas.getContext('2d');
+  drawPatroWebcamFallback(wCtx, bgHex);
+  const wTex = new THREE.CanvasTexture(wCanvas);
+  wTex.anisotropy = 4;
+  wTex.needsUpdate = true;
+  patroState.webcamCanvas = wCanvas;
+  patroState.webcamCtx = wCtx;
+  patroState.webcamTex = wTex;
+
+  // Canvas per al text (cara del costat / dreta després de girar 45° CW = índex 0, +X)
+  const textRes = createPatroTextTexture(text, bgHex);
+  patroState.textCanvas = textRes.canvas;
+  patroState.textTex = textRes.tex;
+
+  const baseColor = new THREE.Color(bgHex);
+  const solidMat = new THREE.MeshStandardMaterial({
+    color: baseColor,
+    roughness: 0.28,
+    metalness: 0.05
+  });
+  const topMat = new THREE.MeshStandardMaterial({
+    color: baseColor,
+    roughness: 0.32,
+    metalness: 0.05
+  });
+  const webcamMat = new THREE.MeshStandardMaterial({
+    map: wTex,
+    color: 0xffffff,
+    roughness: 0.22,
+    metalness: 0.04
+  });
+  const textMat = new THREE.MeshStandardMaterial({
+    map: textRes.tex,
+    color: 0xffffff,
+    roughness: 0.24,
+    metalness: 0.04
+  });
+
+  // BoxGeometry order: [0: +X (dreta/text), 1: -X, 2: +Y (top), 3: -Y (bot), 4: +Z (esquerra/webcam), 5: -Z]
+  const mats = [textMat, solidMat, topMat, solidMat, webcamMat, solidMat];
+  patroState.sponsorMaterials = [textMat, solidMat, topMat, webcamMat];
+  rightCube.material = mats;
+}
+
+function startPatroWebcam() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } },
+    audio: false
+  }).then((stream) => {
+    if (patroState.phase === 'idle' || patroState.phase === 'restore_rise') {
+      stream.getTracks().forEach(t => t.stop());
+      return;
+    }
+    patroState.webcamStream = stream;
+    const vid = document.createElement('video');
+    vid.srcObject = stream;
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.setAttribute('playsinline', '');
+    vid.play().then(() => {
+      patroState.webcamReady = true;
+    }).catch(() => {});
+    patroState.webcamVideo = vid;
+  }).catch(() => {
+    // Si l'usuari denega la webcam o no n'hi ha, es manté el fallback net
+  });
+}
+
+function openPatroModal() {
+  const overlay = document.getElementById('patro-modal-overlay');
+  const input = document.getElementById('patro-text-input');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  if (input) {
+    input.value = '';
+    setTimeout(() => input.focus(), 60);
+  }
+}
+
+function closePatroModal() {
+  const overlay = document.getElementById('patro-modal-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function triggerPatroEasterEgg() {
+  if (currentAppMode !== '2014' || !rightCube || patroState.phase !== 'idle') return;
+  patroState.origY = rightCube.position.y;
+  patroState.origRotY = rightCube.rotation.y;
+  patroState.origMaterials = rightCube.material;
+  patroState.phase = 'sink_out';
+  patroState.phaseStart = performance.now();
+}
+
+function updatePatroAnimation(nowMs) {
+  if (!rightCube || patroState.phase === 'idle') return;
+  const elapsed = nowMs - patroState.phaseStart;
+
+  if (patroState.phase === 'sink_out') {
+    const dur = 700;
+    const t = Math.min(1, elapsed / dur);
+    const e = patroEaseInOutCubic(t);
+    rightCube.position.y = THREE.MathUtils.lerp(patroState.origY, patroState.hiddenY, e);
+    if (t >= 1) {
+      rightCube.visible = false;
+      rightCube.castShadow = false;
+      patroState.phase = 'modal';
+      openPatroModal();
+    }
+  } else if (patroState.phase === 'rise_in') {
+    updatePatroWebcamCanvas();
+    const dur = 800;
+    const t = Math.min(1, elapsed / dur);
+    const e = patroEaseOutCubic(t);
+    rightCube.position.y = THREE.MathUtils.lerp(patroState.hiddenY, patroState.origY, e);
+    if (t >= 1) {
+      rightCube.position.y = patroState.origY;
+      patroState.phase = 'rotate_45';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'rotate_45') {
+    updatePatroWebcamCanvas();
+    const dur = 1100;
+    const t = Math.min(1, elapsed / dur);
+    const e = patroEaseInOutQuint(t);
+    // Gira 45° en direcció de les broques del rellotge (eix Y negatiu vist des de dalt)
+    rightCube.rotation.y = THREE.MathUtils.lerp(0, -Math.PI / 4, e);
+    if (t >= 1) {
+      rightCube.rotation.y = -Math.PI / 4;
+      patroState.phase = 'hold';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'hold') {
+    updatePatroWebcamCanvas();
+    if (elapsed >= 5000) {
+      patroState.phase = 'sponsor_sink';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'sponsor_sink') {
+    updatePatroWebcamCanvas();
+    const dur = 700;
+    const t = Math.min(1, elapsed / dur);
+    const e = patroEaseInOutCubic(t);
+    rightCube.position.y = THREE.MathUtils.lerp(patroState.origY, patroState.hiddenY, e);
+    if (t >= 1) {
+      cleanupPatroResources();
+      if (patroState.origMaterials) {
+        rightCube.material = patroState.origMaterials;
+      }
+      rightCube.rotation.y = patroState.origRotY;
+      patroState.phase = 'restore_rise';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'restore_rise') {
+    const dur = 800;
+    const t = Math.min(1, elapsed / dur);
+    const e = patroEaseOutCubic(t);
+    rightCube.visible = true;
+    rightCube.castShadow = true;
+    rightCube.position.y = THREE.MathUtils.lerp(patroState.hiddenY, patroState.origY, e);
+    if (t >= 1) {
+      rightCube.position.y = patroState.origY;
+      rightCube.rotation.y = patroState.origRotY;
+      patroState.phase = 'idle';
+    }
+  }
+}
+
+// Configura events del modal "Patrocina'm" i escolta la paraula secreta "patro"
+(function setupPatroEasterEgg() {
+  const colorGrid = document.getElementById('patro-color-grid');
+  const form = document.getElementById('patro-modal-form');
+  const input = document.getElementById('patro-text-input');
+  const btnCancel = document.getElementById('patro-btn-cancel');
+
+  if (colorGrid) {
+    colorGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.patro-color-swatch');
+      if (!btn) return;
+      colorGrid.querySelectorAll('.patro-color-swatch').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      patroState.chosenColor = btn.getAttribute('data-color') || '#F56115';
+    });
+  }
+
+  if (btnCancel) {
+    btnCancel.addEventListener('click', () => {
+      closePatroModal();
+      if (patroState.phase === 'modal' && rightCube) {
+        rightCube.rotation.y = patroState.origRotY;
+        rightCube.visible = true;
+        rightCube.castShadow = true;
+        patroState.phase = 'restore_rise';
+        patroState.phaseStart = performance.now();
+      }
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (patroState.phase !== 'modal' || !rightCube) return;
+      patroState.chosenText = (input && input.value.trim()) ? input.value.trim() : "Patrocina'm";
+      closePatroModal();
+      applyPatroSponsorMaterials(patroState.chosenText, patroState.chosenColor);
+      startPatroWebcam();
+      rightCube.position.y = patroState.hiddenY;
+      rightCube.rotation.y = 0;
+      rightCube.visible = true;
+      rightCube.castShadow = true;
+      patroState.phase = 'rise_in';
+      patroState.phaseStart = performance.now();
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (currentAppMode !== '2014' || patroState.phase !== 'idle') return;
+    const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key && e.key.length === 1) {
+      patroState.keyBuffer = (patroState.keyBuffer + e.key.toLowerCase()).slice(-10);
+      if (patroState.keyBuffer.endsWith('patro')) {
+        patroState.keyBuffer = '';
+        triggerPatroEasterEgg();
+      }
+    }
+  });
+})();
 
 window.addEventListener('DOMContentLoaded', init);
   </script>

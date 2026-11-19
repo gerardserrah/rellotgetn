@@ -1,7 +1,7 @@
 {
   "name": "Rellotge TN",
   "short_name": "Rellotge TN",
-  "description": "Rellotge 3D interactiu dels Telenotícies de TV3",
+  "description": "Un recorregut històric pels rellotges dels Telenotícies de TV3.",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#b0c3c3",
