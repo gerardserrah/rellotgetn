@@ -25,10 +25,11 @@
 
   <!-- Open Graph / Compartir link a xarxes (16:9) -->
   <meta property="og:type" content="website">
+  <meta property="og:url" id="meta-og-url" content="https://rellotgetn.gerard.sh/">
   <meta property="og:title" content="Rellotge TN">
   <meta property="og:description" content="Un recorregut històric pels rellotges dels Telenotícies de TV3.">
-  <meta property="og:image" id="meta-og-image" content="https://rellotgetn.vercel.app/og-image.jpg">
-  <meta property="og:image:secure_url" id="meta-og-image-secure" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta property="og:image" id="meta-og-image" content="https://rellotgetn.gerard.sh/og-image.jpg">
+  <meta property="og:image:secure_url" id="meta-og-image-secure" content="https://rellotgetn.gerard.sh/og-image.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1024">
   <meta property="og:image:height" content="576">
@@ -38,7 +39,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Rellotge TN">
   <meta name="twitter:description" content="Un recorregut històric pels rellotges dels Telenotícies de TV3.">
-  <meta name="twitter:image" id="meta-twitter-image" content="https://rellotgetn.vercel.app/og-image.jpg">
+  <meta name="twitter:image" id="meta-twitter-image" content="https://rellotgetn.gerard.sh/og-image.jpg">
 
   <!-- Webfonts for Museo Slab & Akkurat / Sans-serif -->
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/museo-slab">
@@ -2382,6 +2383,7 @@ html.hide-config #master-editor-panel {
           } catch (e) {}
         }
         if (rawM === '2001') rawM = '1999';
+        if (forceHide && rawM === '1996') rawM = '2014';
         var initMode = /^(1996|1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
         try { localStorage.setItem('tn_last_mode', initMode); } catch (e) {}
         var modeBgColors = {
@@ -2407,7 +2409,8 @@ html.hide-config #master-editor-panel {
         if (atiPrecomp) {
           atiPrecomp.href = 'apple-touch-icon-' + initMode + '.png?v=ati_v2';
         }
-        var ogUrl = 'https://rellotgetn.vercel.app/og-image-' + initMode + '.jpg';
+        var ogOrigin = (h !== 'localhost' && h !== '127.0.0.1' && window.location.origin) ? window.location.origin : 'https://rellotgetn.gerard.sh';
+        var ogUrl = ogOrigin + '/og-image-' + initMode + '.jpg';
         ['meta-og-image', 'meta-og-image-secure', 'meta-twitter-image'].forEach(function(id) {
           var el = document.getElementById(id);
           if (el) el.setAttribute('content', ogUrl);
@@ -2495,7 +2498,7 @@ html.hide-config #master-editor-panel {
 <!-- TN 2002 BROADCAST VIEW (Fons Vídeo i Rellotge Superposat) -->
 <div id="view-tn-2002" style="display: none;">
   <div id="tn02-stage" class="tn02-stage">
-    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" loop muted playsinline webkit-playsinline="true" disablePictureInPicture disableRemotePlayback x-webkit-airplay="deny" controlsList="nodownload nofullscreen noremoteplayback" preload="metadata"></video>
+    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" loop muted playsinline webkit-playsinline="true" disablePictureInPicture disableRemotePlayback x-webkit-airplay="deny" controlsList="nodownload nofullscreen noremoteplayback" preload="auto"></video>
     <div id="tn02-clock-back" class="tn02-clock-back">
       <span id="tn02-clock-back-text">20:29</span>
     </div>
@@ -3340,13 +3343,13 @@ html.hide-config #master-editor-panel {
   <div class="panel-section-title">Esfera & Anells 1996</div>
   <div class="coord-row">
     <label>Mida esfera (%)</label>
-    <input type="number" id="num-tn96-scale" min="25" max="48" step="0.5" value="40">
-    <input type="range" id="slider-tn96-scale" min="25" max="48" step="0.5" value="40">
+    <input type="number" id="num-tn96-scale" min="25" max="48" step="0.5" value="39">
+    <input type="range" id="slider-tn96-scale" min="25" max="48" step="0.5" value="39">
   </div>
   <div class="coord-row">
     <label>Radi cercle interior (%)</label>
-    <input type="number" id="num-tn96-inner" min="65" max="95" step="0.5" value="84">
-    <input type="range" id="slider-tn96-inner" min="65" max="95" step="0.5" value="84">
+    <input type="number" id="num-tn96-inner" min="65" max="95" step="0.5" value="83.5">
+    <input type="range" id="slider-tn96-inner" min="65" max="95" step="0.5" value="83.5">
   </div>
   <div class="coord-row">
     <label>Gruix anell vidre (px)</label>
@@ -3360,37 +3363,37 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Llum anell (%)</label>
-    <input type="number" id="num-tn96-bezel-light" min="0" max="100" step="1" value="80">
-    <input type="range" id="slider-tn96-bezel-light" min="0" max="100" step="1" value="80">
+    <input type="number" id="num-tn96-bezel-light" min="0" max="100" step="1" value="84">
+    <input type="range" id="slider-tn96-bezel-light" min="0" max="100" step="1" value="84">
   </div>
   <div class="coord-row">
     <label>Ombra anell (%)</label>
-    <input type="number" id="num-tn96-bezel-shadow" min="0" max="100" step="1" value="62">
-    <input type="range" id="slider-tn96-bezel-shadow" min="0" max="100" step="1" value="62">
+    <input type="number" id="num-tn96-bezel-shadow" min="0" max="100" step="1" value="68">
+    <input type="range" id="slider-tn96-bezel-shadow" min="0" max="100" step="1" value="68">
   </div>
 
   <div class="panel-section-title" style="margin-top: 12px;">Eixos & Horitzó</div>
   <div class="coord-row">
     <label>Gruix eixos (px)</label>
-    <input type="number" id="num-tn96-axis-w" min="0.5" max="6" step="0.1" value="1.8">
-    <input type="range" id="slider-tn96-axis-w" min="0.5" max="6" step="0.1" value="1.8">
+    <input type="number" id="num-tn96-axis-w" min="0.5" max="6" step="0.1" value="1.5">
+    <input type="range" id="slider-tn96-axis-w" min="0.5" max="6" step="0.1" value="1.5">
   </div>
   <div class="coord-row">
     <label>Ombra horitzó (%)</label>
-    <input type="number" id="num-tn96-horizon-sh" min="0" max="80" step="1" value="38">
-    <input type="range" id="slider-tn96-horizon-sh" min="0" max="80" step="1" value="38">
+    <input type="number" id="num-tn96-horizon-sh" min="0" max="80" step="1" value="48">
+    <input type="range" id="slider-tn96-horizon-sh" min="0" max="80" step="1" value="48">
   </div>
 
   <div class="panel-section-title" style="margin-top: 12px;">Broques & Marcador Segons</div>
   <div class="coord-row">
     <label>Llargada hora (%)</label>
-    <input type="number" id="num-tn96-h-len" min="35" max="90" step="1" value="64">
-    <input type="range" id="slider-tn96-h-len" min="35" max="90" step="1" value="64">
+    <input type="number" id="num-tn96-h-len" min="35" max="90" step="1" value="66">
+    <input type="range" id="slider-tn96-h-len" min="35" max="90" step="1" value="66">
   </div>
   <div class="coord-row">
     <label>Gruix hora (px)</label>
-    <input type="number" id="num-tn96-h-w" min="6" max="36" step="1" value="18">
-    <input type="range" id="slider-tn96-h-w" min="6" max="36" step="1" value="18">
+    <input type="number" id="num-tn96-h-w" min="6" max="36" step="1" value="16">
+    <input type="range" id="slider-tn96-h-w" min="6" max="36" step="1" value="16">
   </div>
   <div class="coord-row">
     <label>Llargada minuts (%)</label>
@@ -3399,8 +3402,8 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Gruix minuts (px)</label>
-    <input type="number" id="num-tn96-m-w" min="3" max="20" step="0.5" value="8">
-    <input type="range" id="slider-tn96-m-w" min="3" max="20" step="0.5" value="8">
+    <input type="number" id="num-tn96-m-w" min="3" max="20" step="0.5" value="8.5">
+    <input type="range" id="slider-tn96-m-w" min="3" max="20" step="0.5" value="8.5">
   </div>
   <div class="coord-row">
     <label>Amplada bloc segons</label>
@@ -3409,52 +3412,62 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Llargada bloc segons</label>
-    <input type="number" id="num-tn96-s-len" min="8" max="44" step="1" value="24">
-    <input type="range" id="slider-tn96-s-len" min="8" max="44" step="1" value="24">
+    <input type="number" id="num-tn96-s-len" min="8" max="50" step="1" value="39">
+    <input type="range" id="slider-tn96-s-len" min="8" max="50" step="1" value="39">
   </div>
   <div class="coord-row">
     <label>Moviment segons</label>
     <select id="select-tn96-sec-mode" style="flex:1; padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11.5px;">
-      <option value="smooth" selected>Continu (Suau)</option>
-      <option value="step">Salt per segon</option>
+      <option value="step" selected>Salt per segon</option>
+      <option value="smooth">Continu (Suau)</option>
     </select>
   </div>
   <div class="coord-row">
     <label>Color broques</label>
-    <input type="color" id="color-tn96-hand" value="#19212c">
-    <input type="text" id="hex-tn96-hand" value="#19212C" style="width: 72px; font-family: monospace; font-size: 11px;">
+    <input type="color" id="color-tn96-hand" value="#0e131a">
+    <input type="text" id="hex-tn96-hand" value="#0E131A" style="width: 72px; font-family: monospace; font-size: 11px;">
   </div>
 
   <div class="panel-section-title" style="margin-top: 12px;">Fons Prismes & Animació</div>
   <div class="coord-row">
     <label>Dalt Esquerra</label>
-    <input type="color" id="color-tn96-tl" value="#9ec4e2">
-    <input type="text" id="hex-tn96-tl" value="#9EC4E2" style="width: 72px; font-family: monospace; font-size: 11px;">
+    <input type="color" id="color-tn96-tl" value="#89aec8">
+    <input type="text" id="hex-tn96-tl" value="#89AEC8" style="width: 72px; font-family: monospace; font-size: 11px;">
   </div>
   <div class="coord-row">
     <label>Dalt Dreta</label>
-    <input type="color" id="color-tn96-tr" value="#2ec0f5">
-    <input type="text" id="hex-tn96-tr" value="#2EC0F5" style="width: 72px; font-family: monospace; font-size: 11px;">
+    <input type="color" id="color-tn96-tr" value="#1db8f0">
+    <input type="text" id="hex-tn96-tr" value="#1DB8F0" style="width: 72px; font-family: monospace; font-size: 11px;">
   </div>
   <div class="coord-row">
     <label>Baix Esquerra</label>
-    <input type="color" id="color-tn96-bl" value="#2359d9">
-    <input type="text" id="hex-tn96-bl" value="#2359D9" style="width: 72px; font-family: monospace; font-size: 11px;">
+    <input type="color" id="color-tn96-bl" value="#1c4ed8">
+    <input type="text" id="hex-tn96-bl" value="#1C4ED8" style="width: 72px; font-family: monospace; font-size: 11px;">
   </div>
   <div class="coord-row">
     <label>Baix Dreta</label>
-    <input type="color" id="color-tn96-br" value="#97b4cf">
-    <input type="text" id="hex-tn96-br" value="#97B4CF" style="width: 72px; font-family: monospace; font-size: 11px;">
+    <input type="color" id="color-tn96-br" value="#859bb4">
+    <input type="text" id="hex-tn96-br" value="#859BB4" style="width: 72px; font-family: monospace; font-size: 11px;">
+  </div>
+  <div class="coord-row">
+    <label>Intensitat degradats (%)</label>
+    <input type="number" id="num-tn96-prism-int" min="0" max="200" step="5" value="115">
+    <input type="range" id="slider-tn96-prism-int" min="0" max="200" step="5" value="115">
+  </div>
+  <div class="coord-row">
+    <label>Suavitat degradats (px)</label>
+    <input type="number" id="num-tn96-prism-blur" min="0" max="60" step="1" value="13">
+    <input type="range" id="slider-tn96-prism-blur" min="0" max="60" step="1" value="13">
   </div>
   <div class="coord-row">
     <label>Velocitat llums (%)</label>
-    <input type="number" id="num-tn96-anim" min="0" max="300" step="5" value="100">
-    <input type="range" id="slider-tn96-anim" min="0" max="300" step="5" value="100">
+    <input type="number" id="num-tn96-anim" min="0" max="300" step="5" value="0">
+    <input type="range" id="slider-tn96-anim" min="0" max="300" step="5" value="0">
   </div>
   <div class="coord-row">
     <label>Suavitat TV (px)</label>
-    <input type="number" id="num-tn96-soft" min="0" max="4" step="0.1" value="1.0">
-    <input type="range" id="slider-tn96-soft" min="0" max="4" step="0.1" value="1.0">
+    <input type="number" id="num-tn96-soft" min="0" max="4" step="0.1" value="2.8">
+    <input type="range" id="slider-tn96-soft" min="0" max="4" step="0.1" value="2.8">
   </div>
 
   <div class="tab-actions" style="margin-top: 14px; display: flex; gap: 6px;">
@@ -9281,6 +9294,18 @@ let isYearTransitioning = false;
 let tvNoiseRaf = null;
 
 const TV_YEAR_LOGOS = {
+  '1996': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="86 46 480 310" width="100%" height="100%">
+  <defs>
+    <filter id="tvTrans96Shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.85" />
+    </filter>
+  </defs>
+  <g filter="url(#tvTrans96Shadow)" fill="#FFFFFF">
+    <path d="M 176,128 L 216,74 C 220,68 226,68 228,74 C 232,84 244,86 264,86 L 314,86 C 332,86 342,81 352,70 C 356,66 363,69 360,75 L 330,132 C 327,137 321,135 322,129 C 324,112 318,102 298,102 L 277,102 L 176,292 C 168,307 172,314 193,316 C 200,317 199,326 192,326 L 110,326 C 103,326 104,317 111,316 C 130,314 138,308 146,292 L 247,102 L 228,102 C 210,102 197,111 184,131 C 180,136 173,133 176,128 Z"/>
+    <path d="M 238,326 C 231,326 232,317 239,316 C 256,314 265,308 275,290 L 371,112 C 375,104 372,97 358,96 C 351,95 352,86 359,86 L 410,86 C 417,86 419,90 419,97 L 417,264 L 494,115 C 500,104 497,97 482,96 C 475,95 476,86 483,86 L 540,86 C 547,86 546,95 539,96 C 522,98 515,103 506,120 L 399,332 C 396,337 389,335 389,328 L 389,128 L 291,293 C 284,306 286,314 303,316 C 310,317 309,326 302,326 Z"/>
+  </g>
+</svg>`,
+
   '1999': `<svg class="tv-trans-logo" xmlns="http://www.w3.org/2000/svg" viewBox="56 60 400 278" width="100%" height="100%">
   <defs>
     <filter id="tvTrans99Shadow" x="-30%" y="-30%" width="160%" height="160%">
@@ -9348,7 +9373,7 @@ const TV_YEAR_LOGOS = {
 };
 
 function updateDynamicFavicon(mode) {
-  let targetMode = (mode === '1999' || mode === '2001' || mode === '2002' || mode === '2005' || mode === '2025') ? mode : '2014';
+  let targetMode = (mode === '1996' || mode === '1999' || mode === '2001' || mode === '2002' || mode === '2005' || mode === '2025') ? mode : '2014';
   if (targetMode === '2001') targetMode = '1999';
   const v = 't_trans_99'; // Cache buster per forçar la càrrega del nou favicon transparent
 
@@ -9388,7 +9413,10 @@ function updateDynamicFavicon(mode) {
   document.head.appendChild(applePrecomp);
 
   // 5. Open Graph / Twitter Card 16:9 específic per a cada versió
-  const ogUrl = `https://rellotgetn.vercel.app/og-image-${targetMode}.jpg`;
+  const ogOrigin = (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.origin)
+    ? window.location.origin
+    : 'https://rellotgetn.gerard.sh';
+  const ogUrl = `${ogOrigin}/og-image-${targetMode}.jpg`;
   ['meta-og-image', 'meta-og-image-secure', 'meta-twitter-image'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.setAttribute('content', ogUrl);
@@ -9488,7 +9516,11 @@ function switchMode(mode) {
 function getModeFromUrl() {
   try {
     const pathMatch = window.location.pathname.match(/^\/(1996|1999|2001|2002|2005|2014|2025)\/?$/);
-    if (pathMatch) return pathMatch[1] === '2001' ? '1999' : pathMatch[1];
+    if (pathMatch) {
+      const pm = pathMatch[1] === '2001' ? '1999' : pathMatch[1];
+      if (pm === '1996' && document.documentElement.classList.contains('hide-config')) return '2014';
+      return pm;
+    }
     const urlParams = new URLSearchParams(window.location.search);
     let m = window.__SCREENSAVER_YEAR__ || urlParams.get('any') || urlParams.get('mode') || urlParams.get('year');
     if (!m) {
@@ -9513,6 +9545,9 @@ function getModeFromUrl() {
       m = autoModes[day];
     }
     if (m === '2001') m = '1999';
+    if (m === '1996' && document.documentElement.classList.contains('hide-config')) {
+      return '2014';
+    }
     if (m && (m === '1996' || m === '1999' || m === '2002' || m === '2005' || m === '2014' || m === '2025')) {
       return m;
     }
@@ -9702,12 +9737,19 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       video02.defaultMuted = true;
       video02.muted = true;
       video02.loop = true;
+      video02.autoplay = true;
+      video02.preload = 'auto';
       video02.playsInline = true;
       video02.disablePictureInPicture = true;
       video02.setAttribute('muted', '');
       video02.setAttribute('playsinline', '');
       video02.setAttribute('webkit-playsinline', 'true');
       video02.setAttribute('disablepictureinpicture', '');
+
+      if (!video02.getAttribute('src')) {
+        video02.src = 'video/fons_2002.mp4';
+        video02.load();
+      }
 
       const tryPlayTN02 = () => {
         if (currentAppMode !== '2002' || !video02) return;
@@ -9754,9 +9796,6 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
         window.addEventListener('click', unlockOnGesture);
       }
 
-      if (video02.readyState === 0) {
-        video02.load();
-      }
       tryPlayTN02();
       setTimeout(tryPlayTN02, 250);
     }
@@ -9837,11 +9876,9 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       }
       // 0. Timeline d'anys 1983–2025 (Desktop en local)
       const TIMELINE_SVG_LOGOS = {
-        '1996': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%" fill="none">
-  <circle cx="60" cy="60" r="46" stroke="#FFFFFF" stroke-width="5" stroke-opacity="0.85"/>
-  <circle cx="60" cy="60" r="37" stroke="#FFFFFF" stroke-width="1.6" stroke-opacity="0.7"/>
-  <line x1="60" y1="60" x2="40" y2="80" stroke="#FFFFFF" stroke-width="5" stroke-linecap="butt"/>
-  <line x1="60" y1="60" x2="64" y2="95" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="butt"/>
+        '1996': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="86 46 480 310" width="100%" height="100%" fill="#FFFFFF">
+  <path d="M 176,128 L 216,74 C 220,68 226,68 228,74 C 232,84 244,86 264,86 L 314,86 C 332,86 342,81 352,70 C 356,66 363,69 360,75 L 330,132 C 327,137 321,135 322,129 C 324,112 318,102 298,102 L 277,102 L 176,292 C 168,307 172,314 193,316 C 200,317 199,326 192,326 L 110,326 C 103,326 104,317 111,316 C 130,314 138,308 146,292 L 247,102 L 228,102 C 210,102 197,111 184,131 C 180,136 173,133 176,128 Z"/>
+  <path d="M 238,326 C 231,326 232,317 239,316 C 256,314 265,308 275,290 L 371,112 C 375,104 372,97 358,96 C 351,95 352,86 359,86 L 410,86 C 417,86 419,90 419,97 L 417,264 L 494,115 C 500,104 497,97 482,96 C 475,95 476,86 483,86 L 540,86 C 547,86 546,95 539,96 C 522,98 515,103 506,120 L 399,332 C 396,337 389,335 389,328 L 389,128 L 291,293 C 284,306 286,314 303,316 C 310,317 309,326 302,326 Z"/>
 </svg>`,
         '1999': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="56 60 400 278" width="100%" height="100%">
   <defs>
@@ -11961,7 +11998,9 @@ if (selectTn25Easing) {
       const activeTab = document.querySelector('.tab-content.active');
       const activeTabId = activeTab ? activeTab.id : '';
 
-      if (activeTabId === 'tab-tn1999' || currentAppMode === '1999' || currentAppMode === '2001') {
+      if (activeTabId === 'tab-tn1996' || currentAppMode === '1996') {
+        copyConfigToClipboard(getTN96ConfigText(), "Configuració de TN 1996 copiada al porta-retalls!");
+      } else if (activeTabId === 'tab-tn1999' || currentAppMode === '1999' || currentAppMode === '2001') {
         copyConfigToClipboard(getTN99ConfigText(), "Configuració de TN 1999 copiada al porta-retalls!");
       } else if (activeTabId === 'tab-tn2002' || currentAppMode === '2002') {
         copyConfigToClipboard(getTN02ConfigText(), "Configuració de TN 2002 copiada al porta-retalls!");
@@ -12697,28 +12736,30 @@ function updatePatroAnimation(nowMs) {
 // TN 1996 ENGINE (TN TV3 - 1996) - Prismes Blaus, Vidre, Eixos i Broques
 // =========================================================================
 const TN96_DEFAULTS = {
-  scale: 40,
-  innerRatio: 84,
+  scale: 39,
+  innerRatio: 83.5,
   bezelWidth: 18,
   bezelBlur: 6,
-  bezelLightOp: 80,
-  bezelShadowOp: 62,
-  axisThick: 1.8,
-  horizonShadowOp: 38,
-  hourLen: 64,
-  hourWidth: 18,
+  bezelLightOp: 84,
+  bezelShadowOp: 68,
+  axisThick: 1.5,
+  horizonShadowOp: 48,
+  hourLen: 66,
+  hourWidth: 16,
   minLen: 99,
-  minWidth: 8,
+  minWidth: 8.5,
   secWidth: 15,
-  secLen: 24,
-  secMode: 'smooth',
-  handColor: '#19212c',
-  bgTL: '#9ec4e2',
-  bgTR: '#2ec0f5',
-  bgBL: '#2359d9',
-  bgBR: '#97b4cf',
-  animSpeed: 100,
-  broadcastSoftness: 1.0
+  secLen: 39,
+  secMode: 'step',
+  handColor: '#0e131a',
+  bgTL: '#89aec8',
+  bgTR: '#1db8f0',
+  bgBL: '#1c4ed8',
+  bgBR: '#859bb4',
+  prismIntensity: 115,
+  prismBlur: 13,
+  animSpeed: 0,
+  broadcastSoftness: 2.8
 };
 
 let tn96Params = { ...TN96_DEFAULTS };
@@ -12785,143 +12826,195 @@ function updateTN96Clock() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   // =========================================================================
-  // 1. FONS 4 QUADRANTS + PRISMES DE LLUM EN MOVIMENT SUAU (ESTÈTICA 1996)
+  // 1. FONS 4 QUADRANTS + PLA DIAGONAL CENTRAL + PRISMES DE LLUM (HD 1996)
   // =========================================================================
-  const drift1 = Math.sin(tSec * 0.22) * w * 0.018;
-  const drift2 = Math.cos(tSec * 0.17) * h * 0.016;
+  const drift1 = Math.sin(tSec * 0.22) * w * 0.012;
+  const drift2 = Math.cos(tSec * 0.17) * h * 0.012;
+  // Punt superior i inferior de la diagonal principal que creua exactament pel centre (cx, cy)
+  const diagDx = h * 0.34; // ~34° respecte la vertical, com a la captura HD
+  const diagTopX = cx + diagDx + drift1 * 0.4;
+  const diagBotX = cx - diagDx - drift1 * 0.4;
 
-  // Quadrant Dalt-Esquerra (gris-blau suau / gel lluminós)
+  // --- Quadrant Dalt-Esquerra (gris-blau plata suau) ---
   const gTL = ctx.createLinearGradient(0, 0, cx, cy);
-  gTL.addColorStop(0, tn96Params.bgTL);
-  gTL.addColorStop(0.65, '#b8d7ec');
-  gTL.addColorStop(1, '#d2eefb');
+  gTL.addColorStop(0, tn96ShadeHex(tn96Params.bgTL, 0.94));
+  gTL.addColorStop(0.55, tn96Params.bgTL);
+  gTL.addColorStop(1, '#a9c9df');
   ctx.fillStyle = gTL;
   ctx.fillRect(0, 0, cx + 1, cy + 1);
 
-  // Quadrant Dalt-Dreta (cian-cel elèctric vibrant)
-  const gTR = ctx.createLinearGradient(cx, 0, w, cy);
-  gTR.addColorStop(0, '#44b4ec');
-  gTR.addColorStop(0.5, tn96Params.bgTR);
-  gTR.addColorStop(1, '#1d8ce4');
-  ctx.fillStyle = gTR;
-  ctx.fillRect(cx, 0, w - cx, cy + 1);
+  // --- Quadrant Dalt-Dreta (dividit per la diagonal principal!) ---
+  // Part esquerra de la diagonal (blau ceruli mitjà)
+  const gTRLeft = ctx.createLinearGradient(cx, 0, diagTopX, cy);
+  gTRLeft.addColorStop(0, '#3d88cc');
+  gTRLeft.addColorStop(0.65, '#4aa2de');
+  gTRLeft.addColorStop(1, '#6ec3ec');
+  ctx.fillStyle = gTRLeft;
+  ctx.beginPath();
+  ctx.moveTo(cx, 0);
+  ctx.lineTo(diagTopX, 0);
+  ctx.lineTo(cx, cy);
+  ctx.closePath();
+  ctx.fill();
 
-  // Quadrant Baix-Esquerra (blau cobalt profund -> marí)
-  const gBL = ctx.createLinearGradient(0, cy, cx, h);
-  gBL.addColorStop(0, tn96Params.bgBL);
-  gBL.addColorStop(0.55, tn96ShadeHex(tn96Params.bgBL, 0.72));
-  gBL.addColorStop(1, tn96ShadeHex(tn96Params.bgBL, 0.42));
-  ctx.fillStyle = gBL;
-  ctx.fillRect(0, cy, cx + 1, h - cy);
+  // Part dreta de la diagonal (cian-turquesa elèctric vibrant!)
+  const gTRRight = ctx.createLinearGradient(diagTopX, 0, w, cy);
+  gTRRight.addColorStop(0, '#36ccf7');
+  gTRRight.addColorStop(0.45, tn96Params.bgTR);
+  gTRRight.addColorStop(1, '#197ad8');
+  ctx.fillStyle = gTRRight;
+  ctx.beginPath();
+  ctx.moveTo(diagTopX, 0);
+  ctx.lineTo(w, 0);
+  ctx.lineTo(w, cy + 1);
+  ctx.lineTo(cx, cy + 1);
+  ctx.closePath();
+  ctx.fill();
 
-  // Quadrant Baix-Dreta (plata-blau metàl·lic fred)
+  // --- Quadrant Baix-Esquerra (dividit per la diagonal principal!) ---
+  // Part esquerra de la diagonal (cobalt intens -> marí profund)
+  const gBLLeft = ctx.createLinearGradient(0, cy, cx * 0.8, h);
+  gBLLeft.addColorStop(0, tn96Params.bgBL);
+  gBLLeft.addColorStop(0.52, tn96ShadeHex(tn96Params.bgBL, 0.70));
+  gBLLeft.addColorStop(1, tn96ShadeHex(tn96Params.bgBL, 0.36));
+  ctx.fillStyle = gBLLeft;
+  ctx.beginPath();
+  ctx.moveTo(0, cy);
+  ctx.lineTo(cx, cy);
+  ctx.lineTo(diagBotX, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fill();
+
+  // Part dreta de la diagonal (blau pissarra més suau i fred)
+  const gBLRight = ctx.createLinearGradient(diagBotX, h, cx, cy);
+  gBLRight.addColorStop(0, '#2a4d8f');
+  gBLRight.addColorStop(0.55, '#426aa6');
+  gBLRight.addColorStop(1, '#648dc2');
+  ctx.fillStyle = gBLRight;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + 1, h);
+  ctx.lineTo(diagBotX, h);
+  ctx.closePath();
+  ctx.fill();
+
+  // --- Quadrant Baix-Dreta (plata-pissarra metàl·lic fred) ---
   const gBR = ctx.createLinearGradient(cx, cy, w, h);
-  gBR.addColorStop(0, tn96Params.bgBR);
-  gBR.addColorStop(0.55, '#a8c1d8');
-  gBR.addColorStop(1, tn96ShadeHex(tn96Params.bgBR, 0.85));
+  gBR.addColorStop(0, tn96ShadeHex(tn96Params.bgBR, 0.92));
+  gBR.addColorStop(0.5, '#96adc5');
+  gBR.addColorStop(1, tn96ShadeHex(tn96Params.bgBR, 0.78));
   ctx.fillStyle = gBR;
   ctx.fillRect(cx, cy, w - cx, h - cy);
 
   // --- Prismes / Feixos diagonals de llum translúcida ---
-  // Feix diagonal brillant des de dalt-esquerra cap al centre
+  const pInt = Math.max(0, tn96Params.prismIntensity / 100);
+  const pBlur = Math.max(0, tn96Params.prismBlur * s);
+  const pAlpha = (a) => Math.min(1, a * pInt).toFixed(3);
+
   ctx.save();
-  const beamTL = ctx.createLinearGradient(w * 0.08 + drift1, 0, cx + R_outer * 0.5, cy + R_outer * 0.4);
-  beamTL.addColorStop(0, 'rgba(235, 250, 255, 0.58)');
-  beamTL.addColorStop(0.55, 'rgba(215, 245, 255, 0.30)');
+  if (pBlur > 0.2) ctx.filter = `blur(${pBlur.toFixed(1)}px)`;
+
+  // 1. Con de llum cian-gel des de dalt-esquerra cap al centre de l'esfera
+  const beamTL = ctx.createLinearGradient(w * 0.14 + drift1, 0, cx + R_outer * 0.25, cy + R_outer * 0.15);
+  beamTL.addColorStop(0, `rgba(218, 246, 255, ${pAlpha(0.62)})`);
+  beamTL.addColorStop(0.55, `rgba(195, 238, 252, ${pAlpha(0.36)})`);
   beamTL.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
   ctx.fillStyle = beamTL;
   ctx.beginPath();
-  ctx.moveTo(w * 0.04 + drift1, 0);
-  ctx.lineTo(w * 0.44 + drift1, 0);
-  ctx.lineTo(cx + R_outer * 0.55 + drift2, cy + R_outer * 0.35);
-  ctx.lineTo(cx - R_outer * 0.75 + drift1, cy + R_outer * 0.12);
+  ctx.moveTo(w * 0.06 + drift1, 0);
+  ctx.lineTo(w * 0.30 + drift1, 0);
+  ctx.lineTo(cx + R_outer * 0.38, cy + R_outer * 0.05);
+  ctx.lineTo(cx - R_outer * 0.62, cy + R_outer * 0.02);
   ctx.closePath();
   ctx.fill();
 
-  // Tascó blau profund a la cantonada superior dreta (efecte prisma)
-  const wedgeTR = ctx.createLinearGradient(w * 0.72, 0, w, cy * 0.85);
-  wedgeTR.addColorStop(0, 'rgba(26, 76, 178, 0.48)');
-  wedgeTR.addColorStop(0.5, 'rgba(46, 192, 245, 0.16)');
+  // 2. Triangle lluminós blanc-cian a l'interior superior de l'esfera (a l'esquerra de la diagonal)
+  const coneCenter = ctx.createLinearGradient(cx, cy - R_outer * 0.85, cx, cy + R_outer * 0.2);
+  coneCenter.addColorStop(0, `rgba(215, 248, 255, ${pAlpha(0.55)})`);
+  coneCenter.addColorStop(0.65, `rgba(185, 236, 252, ${pAlpha(0.30)})`);
+  coneCenter.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+  ctx.fillStyle = coneCenter;
+  ctx.beginPath();
+  ctx.moveTo(cx - R_outer * 0.25, cy - R_outer * 0.95);
+  ctx.lineTo(diagTopX, 0);
+  ctx.lineTo(cx, cy);
+  ctx.lineTo(cx - R_outer * 0.85, cy);
+  ctx.closePath();
+  ctx.fill();
+
+  // 3. Tascó blau profund a la cantonada superior dreta (darrere el feix cian)
+  const wedgeTR = ctx.createLinearGradient(diagTopX, 0, w, cy * 0.55);
+  wedgeTR.addColorStop(0, `rgba(18, 62, 165, ${pAlpha(0.56)})`);
+  wedgeTR.addColorStop(0.45, `rgba(28, 128, 224, ${pAlpha(0.20)})`);
   wedgeTR.addColorStop(1, 'rgba(30, 120, 220, 0.0)');
   ctx.fillStyle = wedgeTR;
   ctx.beginPath();
-  ctx.moveTo(w * 0.68 - drift1, 0);
-  ctx.lineTo(w, 0);
-  ctx.lineTo(w, cy * 0.7);
-  ctx.lineTo(cx + R_outer * 0.18, cy * 0.65);
+  ctx.moveTo(diagTopX, 0);
+  ctx.lineTo(w * 0.92, 0);
+  ctx.lineTo(diagTopX - R_outer * 0.15, cy * 0.35);
   ctx.closePath();
   ctx.fill();
 
-  // Feix diagonal brillant cian al quadrant superior dret cap al centre
-  const beamTR = ctx.createLinearGradient(w * 0.92 - drift2, 0, cx - R_outer * 0.2, cy + R_outer * 0.5);
-  beamTR.addColorStop(0, 'rgba(130, 232, 255, 0.42)');
-  beamTR.addColorStop(0.5, 'rgba(180, 242, 255, 0.25)');
-  beamTR.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
-  ctx.fillStyle = beamTR;
-  ctx.beginPath();
-  ctx.moveTo(w * 0.76 - drift1, 0);
-  ctx.lineTo(w, 0);
-  ctx.lineTo(cx + R_outer * 0.85, cy);
-  ctx.lineTo(cx - R_outer * 0.15, cy);
-  ctx.closePath();
-  ctx.fill();
-
-  // Feix lluminós diagonal al quadrant inferior esquerre
-  const beamBL = ctx.createLinearGradient(0, cy + h * 0.15, cx, h);
-  beamBL.addColorStop(0, 'rgba(120, 178, 255, 0.36)');
-  beamBL.addColorStop(0.6, 'rgba(38, 102, 224, 0.18)');
-  beamBL.addColorStop(1, 'rgba(14, 30, 90, 0.0)');
+  // 4. Feix diagonal lluminós blau-cel al quadrant inferior esquerre
+  const beamBL = ctx.createLinearGradient(0, cy + h * 0.06, cx * 0.7, h * 0.82);
+  beamBL.addColorStop(0, `rgba(105, 168, 255, ${pAlpha(0.48)})`);
+  beamBL.addColorStop(0.55, `rgba(42, 108, 236, ${pAlpha(0.24)})`);
+  beamBL.addColorStop(1, 'rgba(12, 26, 86, 0.0)');
   ctx.fillStyle = beamBL;
   ctx.beginPath();
-  ctx.moveTo(0, cy + h * 0.04 + drift2);
-  ctx.lineTo(cx * 0.72, cy);
-  ctx.lineTo(cx * 0.95 + drift1, h);
-  ctx.lineTo(0, h * 0.78);
+  ctx.moveTo(0, cy + h * 0.03 + drift2);
+  ctx.lineTo(cx * 0.65, cy);
+  ctx.lineTo(diagBotX * 1.15, h);
+  ctx.lineTo(0, h * 0.86);
   ctx.closePath();
   ctx.fill();
 
-  // Ombra prismàtica diagonal suau al quadrant inferior dret (dins i fora l'esfera)
-  const prismBR = ctx.createLinearGradient(cx - R_outer * 0.3, cy, cx + R_outer * 0.8, h);
-  prismBR.addColorStop(0, 'rgba(22, 52, 108, 0.22)');
-  prismBR.addColorStop(0.55, 'rgba(42, 82, 140, 0.12)');
-  prismBR.addColorStop(1, 'rgba(150, 180, 210, 0.0)');
-  ctx.fillStyle = prismBR;
+  // 5. Bandes metàl·liques diagonals al quadrant inferior dret (reflexes de vidre)
+  const bandBR1 = ctx.createLinearGradient(cx, cy + h * 0.25, w, cy + h * 0.05);
+  bandBR1.addColorStop(0, `rgba(225, 240, 252, ${pAlpha(0.32)})`);
+  bandBR1.addColorStop(0.5, `rgba(195, 218, 238, ${pAlpha(0.22)})`);
+  bandBR1.addColorStop(1, 'rgba(160, 185, 210, 0.0)');
+  ctx.fillStyle = bandBR1;
   ctx.beginPath();
-  ctx.moveTo(cx - R_outer * 0.2, cy);
-  ctx.lineTo(cx + R_outer * 0.65 + drift1, cy);
-  ctx.lineTo(w * 0.82, h);
-  ctx.lineTo(cx - R_outer * 0.6, h);
+  ctx.moveTo(cx, cy + R_outer * 0.72);
+  ctx.lineTo(w, cy + R_outer * 0.05 + drift2);
+  ctx.lineTo(w, cy + R_outer * 0.45 + drift2);
+  ctx.lineTo(cx, h);
   ctx.closePath();
   ctx.fill();
 
-  // Brillantor interior translúcida de lupa/vidre a l'esfera (dalt-centre-esquerra)
-  const dialGlow = ctx.createRadialGradient(
-    cx - R_outer * 0.12, cy - R_outer * 0.18, R_outer * 0.06,
-    cx, cy, R_outer * 0.98
-  );
-  dialGlow.addColorStop(0, 'rgba(230, 250, 255, 0.44)');
-  dialGlow.addColorStop(0.55, 'rgba(195, 236, 255, 0.16)');
-  dialGlow.addColorStop(1, 'rgba(180, 220, 245, 0.0)');
-  ctx.fillStyle = dialGlow;
+  // Ombra diagonal suau sota la banda metàl·lica cap a baix-dreta
+  const bandBR2 = ctx.createLinearGradient(cx, cy + R_outer * 0.55, w, h);
+  bandBR2.addColorStop(0, `rgba(24, 42, 72, ${pAlpha(0.28)})`);
+  bandBR2.addColorStop(0.5, `rgba(38, 60, 92, ${pAlpha(0.14)})`);
+  bandBR2.addColorStop(1, 'rgba(100, 125, 155, 0.0)');
+  ctx.fillStyle = bandBR2;
   ctx.beginPath();
-  ctx.arc(cx, cy, R_outer, 0, Math.PI * 2);
+  ctx.moveTo(cx, cy + R_outer * 0.48);
+  ctx.lineTo(w, cy + R_outer * 0.02);
+  ctx.lineTo(w, cy + R_outer * 0.22);
+  ctx.lineTo(cx, cy + R_outer * 0.76);
+  ctx.closePath();
   ctx.fill();
+
+  ctx.filter = 'none';
 
   // Ombra característica sota la línia de l'horitzó a la meitat dreta
-  const horShadowH = 26 * s;
+  const horShadowH = 22 * s;
   const horOp = tn96Params.horizonShadowOp / 100;
   if (horOp > 0) {
     const gHorSh = ctx.createLinearGradient(0, cy, 0, cy + horShadowH);
-    gHorSh.addColorStop(0, `rgba(12, 24, 42, ${horOp.toFixed(3)})`);
-    gHorSh.addColorStop(0.35, `rgba(16, 32, 56, ${(horOp * 0.45).toFixed(3)})`);
-    gHorSh.addColorStop(1, 'rgba(16, 32, 56, 0)');
+    gHorSh.addColorStop(0, `rgba(8, 16, 28, ${horOp.toFixed(3)})`);
+    gHorSh.addColorStop(0.32, `rgba(12, 24, 42, ${(horOp * 0.45).toFixed(3)})`);
+    gHorSh.addColorStop(1, 'rgba(12, 24, 42, 0)');
     ctx.fillStyle = gHorSh;
     ctx.fillRect(cx, cy, w - cx, horShadowH);
   }
   ctx.restore();
 
   // =========================================================================
-  // 2. ANELL EXTERIOR DE VIDRE ESMERILAT (LLUM DALT-ESQ / OMBRA BAIX-DRETA)
+  // 2. ANELL EXTERIOR DE VIDRE BISSELLAT 3D (LLUM DALT-ESQ / OMBRA BAIX-DRETA)
   // =========================================================================
   const bezelW = tn96Params.bezelWidth * s;
   const bezelBlur = tn96Params.bezelBlur * s;
@@ -12929,105 +13022,107 @@ function updateTN96Clock() {
   const shadowOp = tn96Params.bezelShadowOp / 100;
 
   ctx.save();
-  // Passada d'ombra (costat inferior dret)
-  ctx.shadowColor = `rgba(10, 22, 40, ${(shadowOp * 0.75).toFixed(3)})`;
-  ctx.shadowBlur = bezelBlur * 1.6;
+  // Passada d'ombra exterior profunda (costat inferior dret)
+  ctx.shadowColor = `rgba(6, 16, 34, ${(shadowOp * 0.85).toFixed(3)})`;
+  ctx.shadowBlur = bezelBlur * 1.5;
   ctx.shadowOffsetX = 3 * s;
-  ctx.shadowOffsetY = 3 * s;
+  ctx.shadowOffsetY = 3.5 * s;
   const gBezelSh = ctx.createLinearGradient(cx - R_outer, cy - R_outer, cx + R_outer, cy + R_outer);
   gBezelSh.addColorStop(0.0, 'rgba(255, 255, 255, 0)');
-  gBezelSh.addColorStop(0.45, 'rgba(18, 32, 54, 0.08)');
-  gBezelSh.addColorStop(0.75, `rgba(14, 28, 48, ${(shadowOp * 0.78).toFixed(3)})`);
-  gBezelSh.addColorStop(1.0, `rgba(10, 20, 36, ${shadowOp.toFixed(3)})`);
+  gBezelSh.addColorStop(0.42, 'rgba(16, 32, 56, 0.10)');
+  gBezelSh.addColorStop(0.72, `rgba(12, 26, 48, ${(shadowOp * 0.82).toFixed(3)})`);
+  gBezelSh.addColorStop(1.0, `rgba(8, 18, 36, ${shadowOp.toFixed(3)})`);
   ctx.strokeStyle = gBezelSh;
   ctx.lineWidth = bezelW;
   ctx.beginPath();
   ctx.arc(cx, cy, R_outer, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Passada de llum (costat superior esquerre)
-  ctx.shadowColor = `rgba(235, 250, 255, ${(lightOp * 0.7).toFixed(3)})`;
-  ctx.shadowBlur = bezelBlur * 1.4;
+  // Passada de llum blanca esmerilada (costat superior esquerre)
+  ctx.shadowColor = `rgba(230, 248, 255, ${(lightOp * 0.72).toFixed(3)})`;
+  ctx.shadowBlur = bezelBlur * 1.25;
   ctx.shadowOffsetX = -2 * s;
   ctx.shadowOffsetY = -2 * s;
   const gBezelLt = ctx.createLinearGradient(cx - R_outer, cy - R_outer, cx + R_outer, cy + R_outer);
   gBezelLt.addColorStop(0.0, `rgba(255, 255, 255, ${lightOp.toFixed(3)})`);
-  gBezelLt.addColorStop(0.38, `rgba(235, 248, 255, ${(lightOp * 0.62).toFixed(3)})`);
-  gBezelLt.addColorStop(0.62, 'rgba(255, 255, 255, 0.05)');
+  gBezelLt.addColorStop(0.36, `rgba(232, 246, 255, ${(lightOp * 0.65).toFixed(3)})`);
+  gBezelLt.addColorStop(0.58, 'rgba(255, 255, 255, 0.04)');
   gBezelLt.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
   ctx.strokeStyle = gBezelLt;
-  ctx.lineWidth = bezelW * 0.92;
+  ctx.lineWidth = bezelW * 0.88;
   ctx.beginPath();
   ctx.arc(cx, cy, R_outer, 0, Math.PI * 2);
   ctx.stroke();
+
+  // Subtil bissell fosc interior a l'esquerra de l'anell (efecte gruix de vidre de la captura HD)
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  const gInnerRim = ctx.createLinearGradient(cx - R_outer, cy - R_outer * 0.4, cx + R_outer * 0.5, cy + R_outer);
+  gInnerRim.addColorStop(0.0, 'rgba(18, 42, 76, 0.24)');
+  gInnerRim.addColorStop(0.45, 'rgba(18, 42, 76, 0.05)');
+  gInnerRim.addColorStop(1.0, 'rgba(255, 255, 255, 0.14)');
+  ctx.strokeStyle = gInnerRim;
+  ctx.lineWidth = bezelW * 0.35;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R_outer - bezelW * 0.45, 0, Math.PI * 2);
+  ctx.stroke();
   ctx.restore();
 
   // =========================================================================
-  // 3. CERCLE INTERIOR FINÍSSIM (BLANC DALT-ESQ / FOSC BAIX-DRETA)
+  // 3. EIXOS CREUATS ALTERNATS (BLANC/NEGRE NÍTIDS COM A LA CAPTURA HD)
   // =========================================================================
   const axisW = Math.max(0.8, tn96Params.axisThick * s);
   ctx.save();
-  const gInner = ctx.createLinearGradient(cx - R_inner, cy - R_inner, cx + R_inner, cy + R_inner);
-  gInner.addColorStop(0.0, 'rgba(255, 255, 255, 0.94)');
-  gInner.addColorStop(0.46, 'rgba(255, 255, 255, 0.60)');
-  gInner.addColorStop(0.54, 'rgba(18, 28, 44, 0.56)');
-  gInner.addColorStop(1.0, 'rgba(12, 20, 34, 0.84)');
-  ctx.strokeStyle = gInner;
-  ctx.lineWidth = axisW;
-  ctx.beginPath();
-  ctx.arc(cx, cy, R_inner, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.restore();
-
-  // =========================================================================
-  // 4. EIXOS CREUATS ALTERNATS (BLANC/FOSC HORITZONTAL I VERTICAL)
-  // =========================================================================
-  ctx.save();
   ctx.lineWidth = axisW;
 
-  // Horitzontal esquerra (blanc)
-  const gHL = ctx.createLinearGradient(cx - R_outer * 1.25, cy, cx, cy);
+  // Horitzontal esquerra (blanc nítid)
+  const gHL = ctx.createLinearGradient(cx - R_outer * 1.28, cy, cx, cy);
   gHL.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
-  gHL.addColorStop(0.18, 'rgba(255, 255, 255, 0.92)');
-  gHL.addColorStop(1, 'rgba(255, 255, 255, 0.95)');
+  gHL.addColorStop(0.10, 'rgba(255, 255, 255, 0.95)');
+  gHL.addColorStop(1, 'rgba(255, 255, 255, 0.98)');
   ctx.strokeStyle = gHL;
   ctx.beginPath();
-  ctx.moveTo(cx - R_outer * 1.25, cy);
+  ctx.moveTo(cx - R_outer * 1.28, cy);
   ctx.lineTo(cx, cy);
   ctx.stroke();
 
-  // Horitzontal dreta (fosc fins a la vora dreta)
-  ctx.strokeStyle = 'rgba(16, 24, 36, 0.88)';
+  // Horitzontal dreta (negre nítid fins passat l'anell)
+  const gHR = ctx.createLinearGradient(cx, cy, cx + R_outer * 1.38, cy);
+  gHR.addColorStop(0, 'rgba(10, 14, 22, 0.95)');
+  gHR.addColorStop(0.88, 'rgba(10, 14, 22, 0.90)');
+  gHR.addColorStop(1, 'rgba(10, 14, 22, 0.0)');
+  ctx.strokeStyle = gHR;
   ctx.beginPath();
   ctx.moveTo(cx, cy);
-  ctx.lineTo(w, cy);
+  ctx.lineTo(cx + R_outer * 1.38, cy);
   ctx.stroke();
 
-  // Vertical superior (fosc)
-  const gVT = ctx.createLinearGradient(cx, cy - R_outer * 1.18, cx, cy);
-  gVT.addColorStop(0, 'rgba(16, 24, 36, 0.0)');
-  gVT.addColorStop(0.15, 'rgba(16, 24, 36, 0.78)');
-  gVT.addColorStop(1, 'rgba(16, 24, 36, 0.86)');
+  // Vertical superior (negre nítid)
+  const gVT = ctx.createLinearGradient(cx, cy - R_outer * 1.15, cx, cy);
+  gVT.addColorStop(0, 'rgba(10, 14, 22, 0.0)');
+  gVT.addColorStop(0.10, 'rgba(10, 14, 22, 0.88)');
+  gVT.addColorStop(1, 'rgba(10, 14, 22, 0.94)');
   ctx.strokeStyle = gVT;
   ctx.beginPath();
-  ctx.moveTo(cx, cy - R_outer * 1.18);
+  ctx.moveTo(cx, cy - R_outer * 1.15);
   ctx.lineTo(cx, cy);
   ctx.stroke();
 
-  // Vertical inferior (blanc)
-  const gVB = ctx.createLinearGradient(cx, cy, cx, cy + R_outer * 1.18);
-  gVB.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
-  gVB.addColorStop(0.85, 'rgba(255, 255, 255, 0.85)');
+  // Vertical inferior (blanc nítid)
+  const gVB = ctx.createLinearGradient(cx, cy, cx, cy + R_outer * 1.24);
+  gVB.addColorStop(0, 'rgba(255, 255, 255, 0.96)');
+  gVB.addColorStop(0.88, 'rgba(255, 255, 255, 0.90)');
   gVB.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
   ctx.strokeStyle = gVB;
   ctx.beginPath();
   ctx.moveTo(cx, cy);
-  ctx.lineTo(cx, cy + R_outer * 1.18);
+  ctx.lineTo(cx, cy + R_outer * 1.24);
   ctx.stroke();
   ctx.restore();
 
   // =========================================================================
-  // 5. MARCADOR DE SEGONS (BLOC RECTANGULAR FOSC ORBITANT SOBRE EL CERCLE INTERIOR)
+  // 4. MARCADOR DE SEGONS (BLOC RECTANGULAR FOSC ORBITANT SOBRE EL CERCLE INTERIOR)
   // =========================================================================
   const secVal = now.getSeconds();
   const msVal = now.getMilliseconds();
@@ -13051,7 +13146,7 @@ function updateTN96Clock() {
   ctx.restore();
 
   // =========================================================================
-  // 6. BROQUES D'HORES I MINUTS (MINIMALISTES, FOSQUES, SENSE NÚMEROS)
+  // 5. BROQUES D'HORES I MINUTS (MINIMALISTES, FOSQUES, SENSE NÚMEROS)
   // =========================================================================
   const hrs = now.getHours() % 12;
   const mins = now.getMinutes();
@@ -13094,6 +13189,28 @@ function updateTN96Clock() {
   ctx.lineTo(-mTail, mW / 2);
   ctx.closePath();
   ctx.fill();
+  ctx.restore();
+
+  // =========================================================================
+  // 6. CERCLE CONCÈNTRIC INTERIOR (TRANSICIÓ MOLT SUAU BLANC→NEGRE, PER DAMUNT DEL SEGUNDER I MINUTER)
+  // =========================================================================
+  ctx.save();
+  ctx.lineWidth = axisW;
+  const gInnerSmooth = ctx.createLinearGradient(
+    cx - R_inner * 0.92, cy - R_inner * 0.92,
+    cx + R_inner * 0.92, cy + R_inner * 0.92
+  );
+  gInnerSmooth.addColorStop(0.00, 'rgba(255, 255, 255, 0.96)');
+  gInnerSmooth.addColorStop(0.28, 'rgba(255, 255, 255, 0.88)');
+  gInnerSmooth.addColorStop(0.42, 'rgba(215, 228, 240, 0.78)');
+  gInnerSmooth.addColorStop(0.50, 'rgba(145, 162, 178, 0.74)');
+  gInnerSmooth.addColorStop(0.58, 'rgba(72, 86, 102, 0.80)');
+  gInnerSmooth.addColorStop(0.72, 'rgba(24, 32, 44, 0.88)');
+  gInnerSmooth.addColorStop(1.00, 'rgba(12, 18, 26, 0.94)');
+  ctx.strokeStyle = gInnerSmooth;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R_inner, 0, Math.PI * 2);
+  ctx.stroke();
   ctx.restore();
 
   ctx.restore();
@@ -13144,6 +13261,8 @@ function updateTN96Clock() {
   bindNumRange('num-tn96-m-w', 'slider-tn96-m-w', 'minWidth');
   bindNumRange('num-tn96-s-w', 'slider-tn96-s-w', 'secWidth');
   bindNumRange('num-tn96-s-len', 'slider-tn96-s-len', 'secLen');
+  bindNumRange('num-tn96-prism-int', 'slider-tn96-prism-int', 'prismIntensity');
+  bindNumRange('num-tn96-prism-blur', 'slider-tn96-prism-blur', 'prismBlur');
   bindNumRange('num-tn96-anim', 'slider-tn96-anim', 'animSpeed');
   bindNumRange('num-tn96-soft', 'slider-tn96-soft', 'broadcastSoftness');
 
@@ -13160,17 +13279,20 @@ function updateTN96Clock() {
     });
   }
 
+function getTN96ConfigText() {
+  return [
+    `=== CONFIGURACIÓ RELLOTGE TN 1996 ===`,
+    `Esfera: Mida=${tn96Params.scale}% | Cercle Interior=${tn96Params.innerRatio}% | Anell Vidre=${tn96Params.bezelWidth}px (Blur=${tn96Params.bezelBlur}px, Llum=${tn96Params.bezelLightOp}%, Ombra=${tn96Params.bezelShadowOp}%)`,
+    `Eixos: Gruix=${tn96Params.axisThick}px | Ombra Horitzó=${tn96Params.horizonShadowOp}%`,
+    `Broques: Hora=${tn96Params.hourLen}%/${tn96Params.hourWidth}px | Minuts=${tn96Params.minLen}%/${tn96Params.minWidth}px | Segons=${tn96Params.secWidth}x${tn96Params.secLen}px (${tn96Params.secMode}) | Color=${tn96Params.handColor}`,
+    `Fons: TL=${tn96Params.bgTL} | TR=${tn96Params.bgTR} | BL=${tn96Params.bgBL} | BR=${tn96Params.bgBR} | Degradats=${tn96Params.prismIntensity}% (Blur=${tn96Params.prismBlur}px) | Velocitat=${tn96Params.animSpeed}% | Suavitat=${tn96Params.broadcastSoftness}px`
+  ].join('\n');
+}
+
   const btnCopy96 = document.getElementById('btn-copy-tn96');
   if (btnCopy96) {
     btnCopy96.addEventListener('click', () => {
-      const txt = [
-        `=== CONFIGURACIÓ RELLOTGE TN 1996 ===`,
-        `Esfera: Mida=${tn96Params.scale}% | Cercle Interior=${tn96Params.innerRatio}% | Anell Vidre=${tn96Params.bezelWidth}px (Blur=${tn96Params.bezelBlur}px, Llum=${tn96Params.bezelLightOp}%, Ombra=${tn96Params.bezelShadowOp}%)`,
-        `Eixos: Gruix=${tn96Params.axisThick}px | Ombra Horitzó=${tn96Params.horizonShadowOp}%`,
-        `Broques: Hora=${tn96Params.hourLen}%/${tn96Params.hourWidth}px | Minuts=${tn96Params.minLen}%/${tn96Params.minWidth}px | Segons=${tn96Params.secWidth}x${tn96Params.secLen}px (${tn96Params.secMode}) | Color=${tn96Params.handColor}`,
-        `Fons: TL=${tn96Params.bgTL} | TR=${tn96Params.bgTR} | BL=${tn96Params.bgBL} | BR=${tn96Params.bgBR} | Velocitat=${tn96Params.animSpeed}% | Suavitat=${tn96Params.broadcastSoftness}px`
-      ].join('\n');
-      navigator.clipboard.writeText(txt).then(() => {
+      navigator.clipboard.writeText(getTN96ConfigText()).then(() => {
         const orig = btnCopy96.textContent;
         btnCopy96.textContent = '✓ Copiat!';
         setTimeout(() => { btnCopy96.textContent = orig; }, 1600);
@@ -13197,6 +13319,8 @@ function updateTN96Clock() {
         ['num-tn96-m-w', 'slider-tn96-m-w', tn96Params.minWidth],
         ['num-tn96-s-w', 'slider-tn96-s-w', tn96Params.secWidth],
         ['num-tn96-s-len', 'slider-tn96-s-len', tn96Params.secLen],
+        ['num-tn96-prism-int', 'slider-tn96-prism-int', tn96Params.prismIntensity],
+        ['num-tn96-prism-blur', 'slider-tn96-prism-blur', tn96Params.prismBlur],
         ['num-tn96-anim', 'slider-tn96-anim', tn96Params.animSpeed],
         ['num-tn96-soft', 'slider-tn96-soft', tn96Params.broadcastSoftness]
       ];
