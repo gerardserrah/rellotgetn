@@ -4153,17 +4153,19 @@ html.hide-config #master-editor-panel {
       <div class="patro-modal-title" id="patro-modal-title">Patrocina'm</div>
       <label class="patro-modal-label" for="patro-text-input">Missatge</label>
       <input type="text" id="patro-text-input" class="patro-modal-input" maxlength="60" placeholder="Escriu el teu text..." autocomplete="off" required>
-      <div class="patro-modal-label">Color</div>
-      <div class="patro-color-grid" id="patro-color-grid">
-        <button type="button" class="patro-color-swatch selected" data-color="#F56115" style="background:#F56115;" title="Taronja" aria-label="Taronja"></button>
-        <button type="button" class="patro-color-swatch" data-color="#E53935" style="background:#E53935;" title="Vermell" aria-label="Vermell"></button>
-        <button type="button" class="patro-color-swatch" data-color="#FDD835" style="background:#FDD835;" title="Groc" aria-label="Groc"></button>
-        <button type="button" class="patro-color-swatch" data-color="#43A047" style="background:#43A047;" title="Verd" aria-label="Verd"></button>
-        <button type="button" class="patro-color-swatch" data-color="#1E88E5" style="background:#1E88E5;" title="Blau" aria-label="Blau"></button>
-        <button type="button" class="patro-color-swatch" data-color="#8E24AA" style="background:#8E24AA;" title="Lila" aria-label="Lila"></button>
-        <button type="button" class="patro-color-swatch" data-color="#EC407A" style="background:#EC407A;" title="Rosa" aria-label="Rosa"></button>
-        <button type="button" class="patro-color-swatch" data-color="#1E293B" style="background:#1E293B;" title="Negre" aria-label="Negre"></button>
-        <button type="button" class="patro-color-swatch" data-color="#FFFFFF" style="background:#FFFFFF;" title="Blanc" aria-label="Blanc"></button>
+      <div id="patro-color-section">
+        <div class="patro-modal-label">Color</div>
+        <div class="patro-color-grid" id="patro-color-grid">
+          <button type="button" class="patro-color-swatch selected" data-color="#F56115" style="background:#F56115;" title="Taronja" aria-label="Taronja"></button>
+          <button type="button" class="patro-color-swatch" data-color="#E53935" style="background:#E53935;" title="Vermell" aria-label="Vermell"></button>
+          <button type="button" class="patro-color-swatch" data-color="#FDD835" style="background:#FDD835;" title="Groc" aria-label="Groc"></button>
+          <button type="button" class="patro-color-swatch" data-color="#43A047" style="background:#43A047;" title="Verd" aria-label="Verd"></button>
+          <button type="button" class="patro-color-swatch" data-color="#1E88E5" style="background:#1E88E5;" title="Blau" aria-label="Blau"></button>
+          <button type="button" class="patro-color-swatch" data-color="#8E24AA" style="background:#8E24AA;" title="Lila" aria-label="Lila"></button>
+          <button type="button" class="patro-color-swatch" data-color="#EC407A" style="background:#EC407A;" title="Rosa" aria-label="Rosa"></button>
+          <button type="button" class="patro-color-swatch" data-color="#1E293B" style="background:#1E293B;" title="Negre" aria-label="Negre"></button>
+          <button type="button" class="patro-color-swatch" data-color="#FFFFFF" style="background:#FFFFFF;" title="Blanc" aria-label="Blanc"></button>
+        </div>
       </div>
       <div class="patro-modal-actions">
         <button type="button" class="patro-btn patro-btn-cancel" id="patro-btn-cancel">Cancel·lar</button>
@@ -12330,6 +12332,10 @@ function startPatroWebcam() {
 function openPatroModal() {
   const overlay = document.getElementById('patro-modal-overlay');
   const input = document.getElementById('patro-text-input');
+  const colorSection = document.getElementById('patro-color-section');
+  if (colorSection) {
+    colorSection.style.display = (patroState.mode === '2025') ? 'none' : '';
+  }
   if (!overlay) return;
   overlay.classList.add('open');
   if (input) {
@@ -12609,7 +12615,7 @@ function updatePatroAnimation(nowMs) {
         const stripEl = document.getElementById('tn25-patro-strip');
         const textEl = document.getElementById('tn25-patro-text');
         if (stripEl) {
-          stripEl.style.background = patroDarkenHex(patroState.chosenColor, 0.72);
+          stripEl.style.background = '#2A2A2A';
         }
         if (textEl) {
           textEl.textContent = patroState.chosenText;
