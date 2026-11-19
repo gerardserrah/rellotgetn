@@ -2109,7 +2109,7 @@ html.hide-config #master-editor-panel {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .patro-modal-title {
-  font-family: 'Akkurat Pro', 'AkkuratPro-Bold', '3Cat', -apple-system, sans-serif;
+  font-family: '3Cat', -apple-system, sans-serif;
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 14px;
@@ -11739,20 +11739,22 @@ function createPatroTextTexture(text, bgHex) {
   const isLight = patroIsLightColor(bgHex);
   const fgColor = isLight ? '#1e293b' : '#ffffff';
 
-  // Text més gran, alineat a dalt a l'esquerra amb més marge, tipografia Akkurat Pro Bold i sense marc
+  // Text adaptat a la llargada màxima de la paraula més llarga, alineat a dalt a l'esquerra amb més marge
   const cleanText = (text || 'Patrocinat').trim();
   const padLeft = 56;
   const padTop = 58;
   const maxWidth = 512 - padLeft * 2;
-  let fontSize = cleanText.length <= 10 ? 92 : (cleanText.length <= 20 ? 74 : 58);
+  const maxHeight = 512 - padTop * 2;
+  const wordsList = cleanText.split(/\s+/).filter(Boolean);
+  const longestWord = wordsList.reduce((a, b) => (b.length > a.length ? b : a), '');
+  let fontSize = 112;
   let lines = [];
 
   const computeLines = (sz) => {
     ctx.font = `700 ${sz}px "Akkurat Pro", "AkkuratPro-Bold", "Montserrat", sans-serif`;
-    const words = cleanText.split(/\s+/);
     const out = [];
     let cur = '';
-    for (const w of words) {
+    for (const w of wordsList) {
       const test = cur ? (cur + ' ' + w) : w;
       if (ctx.measureText(test).width <= maxWidth) {
         cur = test;
@@ -11778,11 +11780,16 @@ function createPatroTextTexture(text, bgHex) {
     return out;
   };
 
-  while (fontSize >= 32) {
+  // Ajusta la mida perquè la paraula més llarga càpiga sencera en una línia i tot el bloc càpiga verticalment
+  while (fontSize > 24) {
+    ctx.font = `700 ${fontSize}px "Akkurat Pro", "AkkuratPro-Bold", "Montserrat", sans-serif`;
+    const longestFits = ctx.measureText(longestWord).width <= maxWidth;
     lines = computeLines(fontSize);
-    if (lines.length * (fontSize * 1.14) <= (512 - padTop * 2)) break;
-    fontSize -= 4;
+    const heightFits = lines.length * (fontSize * 1.14) <= maxHeight;
+    if (longestFits && heightFits) break;
+    fontSize -= 2;
   }
+  lines = computeLines(fontSize);
 
   ctx.fillStyle = fgColor;
   ctx.textAlign = 'left';
@@ -12021,7 +12028,7 @@ function updatePatroAnimation(nowMs) {
     }
   } else if (patroState.phase === 'hold') {
     updatePatroWebcamCanvas();
-    if (elapsed >= 7000) {
+    if (elapsed >= 5000) {
       patroState.phase = 'sponsor_sink';
       patroState.phaseStart = nowMs;
     }
