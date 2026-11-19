@@ -2309,6 +2309,18 @@ html.hide-config #master-editor-panel {
   transform: scale(1.14);
   box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5px #0f172a;
 }
+@media (max-width: 460px) {
+  .patro-modal-card {
+    padding: 20px 18px 18px;
+  }
+  .patro-color-grid {
+    gap: 5px;
+  }
+  .patro-color-swatch {
+    width: 26px;
+    height: 26px;
+  }
+}
 .patro-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -12626,6 +12638,53 @@ function updatePatroAnimation(nowMs) {
       }
     }
   });
+
+  // Activació en mòbils: 5 taps seguits a la pantalla (tant al TN 2014 com al TN 2025)
+  let patroTapCount = 0;
+  let patroLastTapMs = 0;
+  let patroTouchStartX = 0;
+  let patroTouchStartY = 0;
+  let patroTouchMoved = false;
+
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) {
+      patroTouchMoved = true;
+      return;
+    }
+    patroTouchStartX = e.touches[0].clientX;
+    patroTouchStartY = e.touches[0].clientY;
+    patroTouchMoved = false;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (patroTouchMoved || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - patroTouchStartX;
+    const dy = e.touches[0].clientY - patroTouchStartY;
+    if (Math.hypot(dx, dy) > 24) {
+      patroTouchMoved = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', (e) => {
+    if (patroTouchMoved || e.changedTouches.length !== 1) return;
+    if ((currentAppMode !== '2014' && currentAppMode !== '2025') || patroState.phase !== 'idle') return;
+    const tgt = e.target;
+    if (tgt && tgt.closest && tgt.closest('.minimal-controls, #master-editor-panel, #patro-modal-overlay, #sync-popover, button, select, input, textarea, a')) {
+      return;
+    }
+    const now = performance.now();
+    if (now - patroLastTapMs <= 650) {
+      patroTapCount++;
+    } else {
+      patroTapCount = 1;
+    }
+    patroLastTapMs = now;
+    if (patroTapCount >= 5) {
+      patroTapCount = 0;
+      patroLastTapMs = 0;
+      triggerPatroEasterEgg();
+    }
+  }, { passive: true });
 })();
 
 // =========================================================================
