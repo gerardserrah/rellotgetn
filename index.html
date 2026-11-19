@@ -2336,7 +2336,7 @@ html.hide-config #master-editor-panel {
 <!-- TN 2002 BROADCAST VIEW (Fons Vídeo i Rellotge Superposat) -->
 <div id="view-tn-2002" style="display: none;">
   <div id="tn02-stage" class="tn02-stage">
-    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" autoplay loop muted playsinline webkit-playsinline="true" disableRemotePlayback preload="auto"></video>
+    <video id="tn02-bg-video" class="tn02-video" src="video/fons_2002.mp4" loop muted playsinline webkit-playsinline="true" disablePictureInPicture disableRemotePlayback x-webkit-airplay="deny" controlsList="nodownload nofullscreen noremoteplayback" preload="metadata"></video>
     <div id="tn02-clock-back" class="tn02-clock-back">
       <span id="tn02-clock-back-text">20:29</span>
     </div>
@@ -9351,9 +9351,11 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       video02.muted = true;
       video02.loop = true;
       video02.playsInline = true;
+      video02.disablePictureInPicture = true;
       video02.setAttribute('muted', '');
       video02.setAttribute('playsinline', '');
       video02.setAttribute('webkit-playsinline', 'true');
+      video02.setAttribute('disablepictureinpicture', '');
 
       const tryPlayTN02 = () => {
         if (currentAppMode !== '2002' || !video02) return;
@@ -9370,6 +9372,11 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
 
       if (!video02._tn02ListenersBound) {
         video02._tn02ListenersBound = true;
+        video02.addEventListener('enterpictureinpicture', () => {
+          if (document.exitPictureInPicture) {
+            document.exitPictureInPicture().catch(() => {});
+          }
+        });
         video02.addEventListener('ended', () => {
           video02.currentTime = 0;
           tryPlayTN02();
