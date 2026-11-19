@@ -11695,9 +11695,20 @@ function patroEaseOutCubic(t) {
   t = Math.max(0, Math.min(1, t));
   return 1 - Math.pow(1 - t, 3);
 }
-function patroEaseInOutQuint(t) {
+function patroEaseSlowBrake(t) {
   t = Math.max(0, Math.min(1, t));
-  return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+  return Math.pow(1 - Math.pow(1 - t, 2.8), 1.3);
+}
+
+function patroDarkenHex(hex, factor = 0.72) {
+  const c = (hex || '#F56115').replace('#', '');
+  let r = parseInt(c.substring(0, 2), 16) || 0;
+  let g = parseInt(c.substring(2, 4), 16) || 0;
+  let b = parseInt(c.substring(4, 6), 16) || 0;
+  r = Math.max(0, Math.min(255, Math.round(r * factor)));
+  g = Math.max(0, Math.min(255, Math.round(g * factor)));
+  b = Math.max(0, Math.min(255, Math.round(b * factor)));
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
 function patroIsLightColor(hex) {
@@ -11728,12 +11739,12 @@ function createPatroTextTexture(text, bgHex) {
   const isLight = patroIsLightColor(bgHex);
   const fgColor = isLight ? '#1e293b' : '#ffffff';
 
-  // Text alineat a baix a l'esquerra amb la tipografia de les temperatures (Akkurat Pro Bold), sense marc
+  // Text més gran, alineat a dalt a l'esquerra amb més marge, tipografia Akkurat Pro Bold i sense marc
   const cleanText = (text || 'Patrocinat').trim();
-  const padLeft = 36;
-  const padBottom = 38;
+  const padLeft = 56;
+  const padTop = 58;
   const maxWidth = 512 - padLeft * 2;
-  let fontSize = cleanText.length <= 12 ? 68 : (cleanText.length <= 24 ? 54 : 42);
+  let fontSize = cleanText.length <= 10 ? 92 : (cleanText.length <= 20 ? 74 : 58);
   let lines = [];
 
   const computeLines = (sz) => {
@@ -11767,24 +11778,22 @@ function createPatroTextTexture(text, bgHex) {
     return out;
   };
 
-  while (fontSize >= 24) {
+  while (fontSize >= 32) {
     lines = computeLines(fontSize);
-    if (lines.length * (fontSize * 1.15) <= 410) break;
+    if (lines.length * (fontSize * 1.14) <= (512 - padTop * 2)) break;
     fontSize -= 4;
   }
 
   ctx.fillStyle = fgColor;
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
+  ctx.textBaseline = 'top';
   ctx.shadowColor = isLight ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.22)';
   ctx.shadowBlur = 8;
   ctx.shadowOffsetY = 2;
 
-  const lineH = fontSize * 1.15;
-  const baseBottomY = 512 - padBottom;
+  const lineH = fontSize * 1.14;
   lines.forEach((ln, idx) => {
-    const y = baseBottomY - (lines.length - 1 - idx) * lineH;
-    ctx.fillText(ln, padLeft, y);
+    ctx.fillText(ln, padLeft, padTop + idx * lineH);
   });
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -11794,31 +11803,15 @@ function createPatroTextTexture(text, bgHex) {
 }
 
 function drawPatroWebcamFallback(ctx, bgHex) {
-  ctx.fillStyle = bgHex;
+  // Si no hi ha càmera, la cara queda buida en un to més fosc del color escollit
+  const darker = patroDarkenHex(bgHex, 0.72);
+  ctx.fillStyle = darker;
   ctx.fillRect(0, 0, 512, 512);
-  const grad = ctx.createRadialGradient(256, 256, 40, 256, 256, 360);
-  grad.addColorStop(0, 'rgba(255,255,255,0.18)');
-  grad.addColorStop(1, 'rgba(0,0,0,0.22)');
+  const grad = ctx.createLinearGradient(0, 0, 512, 512);
+  grad.addColorStop(0, 'rgba(255,255,255,0.08)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.14)');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, 512, 512);
-
-  const isLight = patroIsLightColor(bgHex);
-  const fg = isLight ? '#1e293b' : '#ffffff';
-  ctx.strokeStyle = fg;
-  ctx.lineWidth = 14;
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-  // Icona càmera senzilla
-  ctx.beginPath();
-  ctx.roundRect ? ctx.roundRect(140, 186, 176, 140, 22) : ctx.rect(140, 186, 176, 140);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(316, 230);
-  ctx.lineTo(374, 196);
-  ctx.lineTo(374, 316);
-  ctx.lineTo(316, 282);
-  ctx.closePath();
-  ctx.stroke();
 }
 
 function updatePatroWebcamCanvas() {
@@ -11995,7 +11988,7 @@ function updatePatroAnimation(nowMs) {
     }
   } else if (patroState.phase === 'camera_warmup') {
     updatePatroWebcamCanvas();
-    if (elapsed >= 1000) {
+    if (elapsed >= 1500) {
       rightCube.position.y = patroState.hiddenY;
       rightCube.rotation.y = 0;
       rightCube.visible = true;
@@ -12016,9 +12009,9 @@ function updatePatroAnimation(nowMs) {
     }
   } else if (patroState.phase === 'rotate_45') {
     updatePatroWebcamCanvas();
-    const dur = 3000;
+    const dur = 4000;
     const t = Math.min(1, elapsed / dur);
-    const e = patroEaseInOutQuint(t);
+    const e = patroEaseSlowBrake(t);
     // Gira 45° en direcció de les broques del rellotge (eix Y negatiu vist des de dalt)
     rightCube.rotation.y = THREE.MathUtils.lerp(0, -Math.PI / 4, e);
     if (t >= 1) {
