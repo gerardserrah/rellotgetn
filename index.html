@@ -221,6 +221,7 @@
       font-family: 'Akkurat Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
+    html[data-mode="1996"], html[data-mode="1996"] body { background: #3b96dc; }
     html[data-mode="1999"], html[data-mode="1999"] body,
     html[data-mode="2001"], html[data-mode="2001"] body { background: #E5ECE4; }
     html[data-mode="2002"], html[data-mode="2002"] body { background: #000000; }
@@ -451,6 +452,7 @@
 
     .editor-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 3px;
       background: #f1f5f9;
       padding: 3px;
@@ -836,6 +838,31 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
+[data-mode="1996"] .tn-ver-select {
+  color: #1665c1;
+  border-color: rgba(22, 101, 193, 0.4);
+}
+[data-mode="1996"] .tn-select-chevron {
+  color: #1665c1;
+}
+[data-mode="1996"] .tn-ver-select:hover,
+[data-mode="1996"] .tn-ver-select:focus {
+  color: #1665c1;
+  border-color: #1665c1;
+  box-shadow: 0 4px 14px rgba(22, 101, 193, 0.25);
+}
+[data-mode="1996"] .editor-tab-btn[data-tab="tab-tn1996"].active {
+  color: #1665c1 !important;
+}
+#tab-tn1996 .btn-editor-action.primary {
+  background: #1665c1 !important;
+  border-color: #1665c1 !important;
+  color: #ffffff !important;
+}
+#tab-tn1996 input[type="range"] {
+  accent-color: #1665c1 !important;
+}
+
 [data-mode="1999"] .tn-ver-select,
 [data-mode="2001"] .tn-ver-select {
   color: #CC181E;
@@ -1009,19 +1036,20 @@ html.screensaver-mode .tn-timeline-scrim {
 
 .tn-tl-tick {
   position: absolute;
-  top: 5px;
+  top: -10px;
   transform: translateX(-50%);
-  width: 12px;
-  height: 18px;
+  width: calc(100% / 42);
+  min-width: 14px;
+  height: 100px;
   cursor: default;
   display: flex;
   justify-content: center;
-  z-index: 1;
+  z-index: 2;
 }
 
 .tn-tl-tick.origin {
   width: 40px;
-  height: 90px;
+  height: 100px;
   z-index: 4;
 }
 
@@ -1030,7 +1058,7 @@ html.screensaver-mode .tn-timeline-scrim {
   display: block;
   width: 1.5px;
   height: 5px;
-  margin-top: 5.5px;
+  margin-top: 20.5px;
   background: rgba(255, 255, 255, 0.36);
   border-radius: 1.5px;
   transform-origin: center;
@@ -1039,14 +1067,14 @@ html.screensaver-mode .tn-timeline-scrim {
 
 .tn-tl-tick.decade::before {
   height: 7px;
-  margin-top: 4.5px;
+  margin-top: 19.5px;
   background: rgba(255, 255, 255, 0.58);
 }
 
 .tn-tl-tick.origin::before {
   width: 2px;
   height: 8px;
-  margin-top: 4px;
+  margin-top: 19px;
   background: rgba(255, 255, 255, 0.78);
 }
 
@@ -1057,7 +1085,7 @@ html.screensaver-mode .tn-timeline-scrim {
 
 .tn-tl-tick-label {
   position: absolute;
-  top: 16px;
+  top: 31px;
   left: 50%;
   transform: translateX(-50%);
   transform-origin: top center;
@@ -1156,7 +1184,7 @@ html.screensaver-mode .tn-timeline-scrim {
 
 .tn-tl-tooltip {
   position: absolute;
-  top: 39px;
+  top: 54px;
   left: 50%;
   transform: translateX(-50%) translateY(-4px) scale(0.92);
   background: rgba(15, 23, 42, 0.9);
@@ -1309,6 +1337,29 @@ html.is-mobile-device .tn-timeline-scrim {
 }
 .tn-ver-btn {
   display: none;
+}
+
+/* ==========================================================================
+   TN 1996 - Rellotge TN TV3 (1996) - Vidre, Prismes Blaus, Eixos i Broques
+   ========================================================================== */
+#view-tn-1996 {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  display: none;
+  overflow: hidden;
+  background: #3b96dc;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#tn96-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* ==========================================================================
@@ -1890,6 +1941,96 @@ html.is-mobile-device .tn-timeline-scrim {
   overflow: hidden;
   user-select: none;
   pointer-events: none;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#view-tn-2025.patro-ticker-hidden .tn25-ticker-bar {
+  clip-path: inset(0 0 0 100%);
+}
+
+/* Easter Egg 2025: Nova tira patrocinador enganxada directament als segons dins .tn25-container */
+.tn25-patro-strip {
+  position: relative;
+  height: 100%;
+  width: 0px;
+  flex-shrink: 0;
+  background: #232323;
+  border-left: 0px solid var(--tn25-white, #FFFFFF);
+  z-index: 16;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tn25-patro-strip.open {
+  border-left-width: calc(var(--tn25-divider-w, 3px) * var(--tn25-stage-scale, 1));
+}
+
+.tn25-patro-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.tn25-patro-video.ready {
+  opacity: 1;
+}
+
+.tn25-patro-scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.30) 48%,
+    rgba(0, 0, 0, 0.0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.65s ease;
+}
+
+.tn25-patro-strip.text-visible .tn25-patro-scrim {
+  opacity: 1;
+}
+
+.tn25-patro-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(28px * var(--tn25-base-scale, var(--tn25-stage-scale, 1)))
+           calc(26px * var(--tn25-base-scale, var(--tn25-stage-scale, 1)))
+           calc(34px * var(--tn25-base-scale, var(--tn25-stage-scale, 1)));
+  font-family: '3Cat', 'Akkurat Pro', sans-serif;
+  font-weight: 700;
+  font-size: calc(40px * var(--tn25-base-scale, var(--tn25-stage-scale, 1)));
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.36);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  z-index: 3;
+  opacity: 0;
+  transform: translateX(-28%);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 1, 1), opacity 0.4s ease;
+}
+
+.tn25-patro-strip.text-visible .tn25-patro-text {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease;
 }
 
 .tn25-ticker-track {
@@ -2216,22 +2357,23 @@ html.hide-config #master-editor-panel {
         if (params.has('screensaver') || params.get('screensaver') === '1' || params.has('saver')) {
           document.documentElement.classList.add('screensaver-mode');
         }
-        var pathMatch = window.location.pathname.match(/^\/(1999|2001|2002|2005|2014|2025)\/?$/);
+        var pathMatch = window.location.pathname.match(/^\/(1996|1999|2001|2002|2005|2014|2025)\/?$/);
         var rawM = pathMatch ? pathMatch[1] : (window.__SCREENSAVER_YEAR__ || params.get('any') || params.get('mode') || params.get('year') || '');
         if (!rawM) {
           var rawS = window.location.search.replace(/^\?/, '');
-          if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawS)) rawM = rawS;
+          if (/^(1996|1999|2001|2002|2005|2014|2025)$/.test(rawS)) rawM = rawS;
         }
         if (!rawM) {
           try {
             var storedMode = localStorage.getItem('tn_last_mode');
-            if (/^(1999|2001|2002|2005|2014|2025)$/.test(storedMode)) rawM = storedMode;
+            if (/^(1996|1999|2001|2002|2005|2014|2025)$/.test(storedMode)) rawM = storedMode;
           } catch (e) {}
         }
         if (rawM === '2001') rawM = '1999';
-        var initMode = /^(1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
+        var initMode = /^(1996|1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
         try { localStorage.setItem('tn_last_mode', initMode); } catch (e) {}
         var modeBgColors = {
+          '1996': '#3b96dc',
           '1999': '#E5ECE4',
           '2001': '#E5ECE4',
           '2002': '#000000',
@@ -2326,6 +2468,11 @@ html.hide-config #master-editor-panel {
 
   <!-- WebGL Canvas Container -->
   <div id="webgl-container"></div>
+
+<!-- TN 1996 BROADCAST VIEW (Rellotge Vidre, Prismes Blaus, Eixos i Broques) -->
+<div id="view-tn-1996" style="display: none;">
+  <canvas id="tn96-canvas"></canvas>
+</div>
 
 <!-- TN 1999 BROADCAST VIEW (Rellotge de Broques, Bola 3D, Triangle TV3 i Mapamundi) -->
 <div id="view-tn-1999" style="display: none;">
@@ -2428,6 +2575,13 @@ html.hide-config #master-editor-panel {
       </div>
     </div>
 
+    <!-- Col 5b: Easter Egg 2025 - Tira patrocinador enganxada als segons -->
+    <div class="tn25-patro-strip" id="tn25-patro-strip" aria-hidden="true">
+      <video id="tn25-patro-video" class="tn25-patro-video" autoplay muted playsinline webkit-playsinline="true" disablePictureInPicture></video>
+      <div class="tn25-patro-scrim" id="tn25-patro-scrim"></div>
+      <div class="tn25-patro-text" id="tn25-patro-text"></div>
+    </div>
+
     <!-- Col 6: Right Orange Margin -->
     <div class="tn25-col-right"></div>
   </div>
@@ -2444,6 +2598,7 @@ html.hide-config #master-editor-panel {
   <div class="minimal-controls" id="controls-container">
   <div class="tn-version-dropdown-wrap" id="tn-version-dropdown-wrap">
     <select id="select-tn-version" class="tn-ver-select" aria-label="Selecciona la versió del rellotge TN">
+      <option value="1996">1996</option>
       <option value="1999">1999</option>
       <option value="2002">2002</option>
       <option value="2005">2005</option>
@@ -2453,6 +2608,7 @@ html.hide-config #master-editor-panel {
     <svg class="tn-select-chevron" width="9" height="5" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 1l4 4 4-4"/>
     </svg>
+    <button type="button" class="tn-ver-btn" id="btn-ver-1996" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-1999" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2001" style="display:none;"></button>
     <button type="button" class="tn-ver-btn" id="btn-ver-2002" style="display:none;"></button>
@@ -2540,6 +2696,7 @@ html.hide-config #master-editor-panel {
       <button class="editor-tab-btn" data-tab="tab-clock">Rellotge</button>
       <button class="editor-tab-btn" data-tab="tab-cubs">Cubs</button>
       <button class="editor-tab-btn" data-tab="tab-temps">Temps</button>
+      <button class="editor-tab-btn" data-tab="tab-tn1996">1996</button>
       <button class="editor-tab-btn" data-tab="tab-tn1999">1999</button>
       <button class="editor-tab-btn" data-tab="tab-tn2002">2002</button>
       <button class="editor-tab-btn" data-tab="tab-tn2005">2005</button>
@@ -3163,6 +3320,134 @@ html.hide-config #master-editor-panel {
 
   <div class="tab-actions" style="margin-top: 14px;">
     <button type="button" class="btn-editor-action" id="btn-reset-tn25">Restableix 2025</button>
+  </div>
+</div>
+
+<!-- TAB 6a: TN 1996 (RELLOTGE DE VIDRE, PRISMES BLAUS I EIXOS) -->
+<div id="tab-tn1996" class="tab-content">
+  <div class="panel-section-title">Esfera & Anells 1996</div>
+  <div class="coord-row">
+    <label>Mida esfera (%)</label>
+    <input type="number" id="num-tn96-scale" min="25" max="48" step="0.5" value="40">
+    <input type="range" id="slider-tn96-scale" min="25" max="48" step="0.5" value="40">
+  </div>
+  <div class="coord-row">
+    <label>Radi cercle interior (%)</label>
+    <input type="number" id="num-tn96-inner" min="65" max="95" step="0.5" value="84">
+    <input type="range" id="slider-tn96-inner" min="65" max="95" step="0.5" value="84">
+  </div>
+  <div class="coord-row">
+    <label>Gruix anell vidre (px)</label>
+    <input type="number" id="num-tn96-bezel-w" min="4" max="40" step="1" value="18">
+    <input type="range" id="slider-tn96-bezel-w" min="4" max="40" step="1" value="18">
+  </div>
+  <div class="coord-row">
+    <label>Desenfoc anell (px)</label>
+    <input type="number" id="num-tn96-bezel-blur" min="0" max="20" step="0.5" value="6">
+    <input type="range" id="slider-tn96-bezel-blur" min="0" max="20" step="0.5" value="6">
+  </div>
+  <div class="coord-row">
+    <label>Llum anell (%)</label>
+    <input type="number" id="num-tn96-bezel-light" min="0" max="100" step="1" value="80">
+    <input type="range" id="slider-tn96-bezel-light" min="0" max="100" step="1" value="80">
+  </div>
+  <div class="coord-row">
+    <label>Ombra anell (%)</label>
+    <input type="number" id="num-tn96-bezel-shadow" min="0" max="100" step="1" value="62">
+    <input type="range" id="slider-tn96-bezel-shadow" min="0" max="100" step="1" value="62">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 12px;">Eixos & Horitzó</div>
+  <div class="coord-row">
+    <label>Gruix eixos (px)</label>
+    <input type="number" id="num-tn96-axis-w" min="0.5" max="6" step="0.1" value="1.8">
+    <input type="range" id="slider-tn96-axis-w" min="0.5" max="6" step="0.1" value="1.8">
+  </div>
+  <div class="coord-row">
+    <label>Ombra horitzó (%)</label>
+    <input type="number" id="num-tn96-horizon-sh" min="0" max="80" step="1" value="38">
+    <input type="range" id="slider-tn96-horizon-sh" min="0" max="80" step="1" value="38">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 12px;">Broques & Marcador Segons</div>
+  <div class="coord-row">
+    <label>Llargada hora (%)</label>
+    <input type="number" id="num-tn96-h-len" min="35" max="90" step="1" value="64">
+    <input type="range" id="slider-tn96-h-len" min="35" max="90" step="1" value="64">
+  </div>
+  <div class="coord-row">
+    <label>Gruix hora (px)</label>
+    <input type="number" id="num-tn96-h-w" min="6" max="36" step="1" value="18">
+    <input type="range" id="slider-tn96-h-w" min="6" max="36" step="1" value="18">
+  </div>
+  <div class="coord-row">
+    <label>Llargada minuts (%)</label>
+    <input type="number" id="num-tn96-m-len" min="60" max="110" step="1" value="99">
+    <input type="range" id="slider-tn96-m-len" min="60" max="110" step="1" value="99">
+  </div>
+  <div class="coord-row">
+    <label>Gruix minuts (px)</label>
+    <input type="number" id="num-tn96-m-w" min="3" max="20" step="0.5" value="8">
+    <input type="range" id="slider-tn96-m-w" min="3" max="20" step="0.5" value="8">
+  </div>
+  <div class="coord-row">
+    <label>Amplada bloc segons</label>
+    <input type="number" id="num-tn96-s-w" min="6" max="30" step="1" value="15">
+    <input type="range" id="slider-tn96-s-w" min="6" max="30" step="1" value="15">
+  </div>
+  <div class="coord-row">
+    <label>Llargada bloc segons</label>
+    <input type="number" id="num-tn96-s-len" min="8" max="44" step="1" value="24">
+    <input type="range" id="slider-tn96-s-len" min="8" max="44" step="1" value="24">
+  </div>
+  <div class="coord-row">
+    <label>Moviment segons</label>
+    <select id="select-tn96-sec-mode" style="flex:1; padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11.5px;">
+      <option value="smooth" selected>Continu (Suau)</option>
+      <option value="step">Salt per segon</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Color broques</label>
+    <input type="color" id="color-tn96-hand" value="#19212c">
+    <input type="text" id="hex-tn96-hand" value="#19212C" style="width: 72px; font-family: monospace; font-size: 11px;">
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 12px;">Fons Prismes & Animació</div>
+  <div class="coord-row">
+    <label>Dalt Esquerra</label>
+    <input type="color" id="color-tn96-tl" value="#9ec4e2">
+    <input type="text" id="hex-tn96-tl" value="#9EC4E2" style="width: 72px; font-family: monospace; font-size: 11px;">
+  </div>
+  <div class="coord-row">
+    <label>Dalt Dreta</label>
+    <input type="color" id="color-tn96-tr" value="#2ec0f5">
+    <input type="text" id="hex-tn96-tr" value="#2EC0F5" style="width: 72px; font-family: monospace; font-size: 11px;">
+  </div>
+  <div class="coord-row">
+    <label>Baix Esquerra</label>
+    <input type="color" id="color-tn96-bl" value="#2359d9">
+    <input type="text" id="hex-tn96-bl" value="#2359D9" style="width: 72px; font-family: monospace; font-size: 11px;">
+  </div>
+  <div class="coord-row">
+    <label>Baix Dreta</label>
+    <input type="color" id="color-tn96-br" value="#97b4cf">
+    <input type="text" id="hex-tn96-br" value="#97B4CF" style="width: 72px; font-family: monospace; font-size: 11px;">
+  </div>
+  <div class="coord-row">
+    <label>Velocitat llums (%)</label>
+    <input type="number" id="num-tn96-anim" min="0" max="300" step="5" value="100">
+    <input type="range" id="slider-tn96-anim" min="0" max="300" step="5" value="100">
+  </div>
+  <div class="coord-row">
+    <label>Suavitat TV (px)</label>
+    <input type="number" id="num-tn96-soft" min="0" max="4" step="0.1" value="1.0">
+    <input type="range" id="slider-tn96-soft" min="0" max="4" step="0.1" value="1.0">
+  </div>
+
+  <div class="tab-actions" style="margin-top: 14px; display: flex; gap: 6px;">
+    <button type="button" class="btn-editor-action primary" id="btn-copy-tn96" style="flex:1;">📋 Copia 1996</button>
+    <button type="button" class="btn-editor-action" id="btn-reset-tn96">Restableix 1996</button>
   </div>
 </div>
 
@@ -5818,6 +6103,10 @@ rightMat = new THREE.MeshStandardMaterial({
     function animate() {
       requestAnimationFrame(animate);
 
+      if (currentAppMode === '1996') {
+        updateTN96Clock();
+        return;
+      }
       if (currentAppMode === '1999' || currentAppMode === '2001') {
         updateTN99Clock();
         return;
@@ -5834,6 +6123,9 @@ rightMat = new THREE.MeshStandardMaterial({
       if (currentAppMode === '2025') {
         updateTN25Clock();
         updateTN25Ticker();
+        if (typeof updateTN25PatroAnimation === 'function') {
+          updateTN25PatroAnimation(performance.now());
+        }
         return; // Stop Three.js render loop when in 2D TN 2025 mode to save CPU/GPU!
       }
 
@@ -6806,11 +7098,18 @@ const tn25State = {
   }
 };
 
+let tn25PatroProgress = 0; // 0 = normal, 1 = rellotge reduït i desplaçat a l'esquerra per la tira patro
+
 function updateTN25Scale() {
   const baseW = 1415;
   const baseH = 820;
   const { w: curW, h: curH } = getFullViewportDims();
-  const scale = Math.min(curW / baseW, curH / baseH);
+  const baseScale = Math.min(curW / baseW, curH / baseH);
+  document.documentElement.style.setProperty('--tn25-base-scale', baseScale.toString());
+
+  // Durant l'easter egg "patro", el rellotge es fa més petit i es desplaça cap a l'esquerra
+  const patroScaleMult = 1 - 0.28 * tn25PatroProgress; // 1.0 -> 0.72
+  const scale = baseScale * patroScaleMult;
   document.documentElement.style.setProperty('--tn25-stage-scale', scale.toString());
 
   // Ajusta l'amplada de la columna d'hores segons el text real (p. ex. números amples com '20.', '22.', '23.')
@@ -6825,9 +7124,17 @@ function updateTN25Scale() {
     hoursCol.style.width = finalW + 'px';
   }
 
+  // Ajusta l'amplada de la tira patrocinador enganxada als segons (més ampla que les 2 columnes de segons)
+  const patroStripEl = document.getElementById('tn25-patro-strip');
+  if (patroStripEl) {
+    const stripW = Math.round(475 * scale * tn25PatroProgress);
+    patroStripEl.style.width = stripW + 'px';
+    patroStripEl.classList.toggle('open', tn25PatroProgress > 0.01);
+  }
+
   const stageEl = document.getElementById('tn25-stage') || document.body;
 
-  // Centra sempre l'hora visible (HH.MM.SS) horitzontalment a la pantalla
+  // Centra sempre el conjunt visible (hora + tira patrocinador si és activa) horitzontalment a la pantalla
   const contEl = document.querySelector('.tn25-container');
   const sec2El = document.querySelector('.tn25-col-sec2');
   if (contEl && hEl && sec2El) {
@@ -6835,10 +7142,12 @@ function updateTN25Scale() {
     contEl.style.transform = 'translate(0px, var(--tn25-pack-y, 0px))';
     const hR = hEl.getBoundingClientRect();
     const sR = sec2El.getBoundingClientRect();
+    const pR = (patroStripEl && tn25PatroProgress > 0.001) ? patroStripEl.getBoundingClientRect() : null;
+    const rightEdge = (pR && pR.width > 0) ? pR.right : sR.right;
     const stR = stageEl.getBoundingClientRect();
     let autoX = 0;
-    if (hR.width > 0 && sR.width > 0 && stR.width > 0) {
-      autoX = (stR.left + stR.width / 2) - (hR.left + sR.right) / 2;
+    if (hR.width > 0 && rightEdge > hR.left && stR.width > 0) {
+      autoX = (stR.left + stR.width / 2) - (hR.left + rightEdge) / 2;
     }
     contEl.style.transform = `translate(calc(${autoX.toFixed(1)}px + var(--tn25-pack-x, 0px)), var(--tn25-pack-y, 0px))`;
     void contEl.offsetWidth;
@@ -8871,6 +9180,13 @@ function updateTN05Ticker(dt) {
 
 function switchAudioForMode(mode) {
   const audioEl = getBgAudioEl();
+  if (mode === '1996') {
+    if (audioEl) audioEl.pause();
+    stopTN99SeamlessAudio();
+    stopTN02SeamlessAudio();
+    stopTN05SeamlessAudio();
+    return;
+  }
   if (mode === '1999' || mode === '2001') {
     if (audioEl) {
       audioEl.pause();
@@ -9157,22 +9473,22 @@ function switchMode(mode) {
 
 function getModeFromUrl() {
   try {
-    const pathMatch = window.location.pathname.match(/^\/(1999|2001|2002|2005|2014|2025)\/?$/);
+    const pathMatch = window.location.pathname.match(/^\/(1996|1999|2001|2002|2005|2014|2025)\/?$/);
     if (pathMatch) return pathMatch[1] === '2001' ? '1999' : pathMatch[1];
     const urlParams = new URLSearchParams(window.location.search);
     let m = window.__SCREENSAVER_YEAR__ || urlParams.get('any') || urlParams.get('mode') || urlParams.get('year');
     if (!m) {
       const rawSearch = window.location.search.replace(/^\?/, '');
-      if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawSearch)) m = rawSearch;
+      if (/^(1996|1999|2001|2002|2005|2014|2025)$/.test(rawSearch)) m = rawSearch;
     }
     if (!m && window.location.hash) {
       const rawHash = window.location.hash.replace(/^#\/?/, '');
-      if (/^(1999|2001|2002|2005|2014|2025)$/.test(rawHash)) m = rawHash;
+      if (/^(1996|1999|2001|2002|2005|2014|2025)$/.test(rawHash)) m = rawHash;
     }
     if (!m) {
       try {
         const stored = localStorage.getItem('tn_last_mode');
-        if (stored && (stored === '1999' || stored === '2002' || stored === '2005' || stored === '2014' || stored === '2025')) {
+        if (stored && (stored === '1996' || stored === '1999' || stored === '2002' || stored === '2005' || stored === '2014' || stored === '2025')) {
           m = stored;
         }
       } catch (_) {}
@@ -9183,7 +9499,7 @@ function getModeFromUrl() {
       m = autoModes[day];
     }
     if (m === '2001') m = '1999';
-    if (m && (m === '1999' || m === '2002' || m === '2005' || m === '2014' || m === '2025')) {
+    if (m && (m === '1996' || m === '1999' || m === '2002' || m === '2005' || m === '2014' || m === '2025')) {
       return m;
     }
   } catch (e) {}
@@ -9195,7 +9511,7 @@ function updateUrlForMode(mode, replace = false) {
     const normMode = (mode === '2001') ? '1999' : mode;
     document.title = `Rellotge TN | ${normMode}`;
     const url = new URL(window.location.href);
-    if (/^\/(1999|2001|2002|2005|2014|2025)\/?$/.test(url.pathname)) {
+    if (/^\/(1996|1999|2001|2002|2005|2014|2025)\/?$/.test(url.pathname)) {
       url.pathname = '/';
     }
     url.searchParams.set('any', normMode);
@@ -9229,7 +9545,10 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   const selectVer = document.getElementById('select-tn-version');
   if (selectVer) {
     if (selectVer.value !== mode) selectVer.value = mode;
-    if (mode === '1999' || mode === '2001') {
+    if (mode === '1996') {
+      selectVer.style.color = '#1665c1';
+      selectVer.style.borderColor = 'rgba(22, 101, 193, 0.4)';
+    } else if (mode === '1999' || mode === '2001') {
       selectVer.style.color = '#CC181E';
       selectVer.style.borderColor = 'rgba(204, 24, 30, 0.4)';
     } else if (mode === '2002') {
@@ -9245,17 +9564,19 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   }
   const selectChevron = document.querySelector('.tn-select-chevron');
   if (selectChevron) {
-    selectChevron.style.color = (mode === '1999' || mode === '2001') ? '#CC181E' : ((mode === '2002') ? '#04336F' : (mode === '2005' ? '#F5820D' : ''));
+    selectChevron.style.color = (mode === '1996') ? '#1665c1' : ((mode === '1999' || mode === '2001') ? '#CC181E' : ((mode === '2002') ? '#04336F' : (mode === '2005' ? '#F5820D' : '')));
   }
   document.querySelectorAll('#tn-timeline-track .tn-tl-node').forEach(node => {
     node.classList.toggle('active', node.getAttribute('data-year') === mode);
   });
+  const btn1996 = document.getElementById('btn-ver-1996');
   const btn1999 = document.getElementById('btn-ver-1999');
   const btn2001 = document.getElementById('btn-ver-2001');
   const btn2002 = document.getElementById('btn-ver-2002');
   const btn2005 = document.getElementById('btn-ver-2005');
   const btn2014 = document.getElementById('btn-ver-2014');
   const btn2025 = document.getElementById('btn-ver-2025');
+  const view1996 = document.getElementById('view-tn-1996');
   const view1999 = document.getElementById('view-tn-1999');
   const view2002 = document.getElementById('view-tn-2002');
   const view2005 = document.getElementById('view-tn-2005');
@@ -9266,8 +9587,9 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   const btnResetView = document.getElementById('btn-reset-view');
   const btnSyncAudio = document.getElementById('btn-sync-audio');
 
-  // Accent color i color de fons arrel / theme-color per mode (#CC181E per a 1999, #04336F per a 2002!)
+  // Accent color i color de fons arrel / theme-color per mode
   const modeBgColors = {
+    '1996': '#3b96dc',
     '1999': '#E5ECE4',
     '2001': '#E5ECE4',
     '2002': '#000000',
@@ -9291,7 +9613,9 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
     requestAnimationFrame(() => syncTN14TopBarColor(true));
   }
 
-  if (mode === '1999' || mode === '2001') {
+  if (mode === '1996') {
+    document.documentElement.style.setProperty('--theme-accent', '#1665c1');
+  } else if (mode === '1999' || mode === '2001') {
     document.documentElement.style.setProperty('--theme-accent', '#CC181E');
   } else if (mode === '2002') {
     document.documentElement.style.setProperty('--theme-accent', '#04336F');
@@ -9304,7 +9628,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
   switchAudioForMode(mode);
 
   if (btnSyncAudio) {
-    btnSyncAudio.style.display = (mode === '1999' || mode === '2001' || mode === '2002' || mode === '2005') ? 'none' : '';
+    btnSyncAudio.style.display = (mode === '1996' || mode === '1999' || mode === '2001' || mode === '2002' || mode === '2005') ? 'none' : '';
   }
 
   const btnToggleAspect = document.getElementById('btn-toggle-tn02-aspect');
@@ -9312,6 +9636,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
     btnToggleAspect.style.display = 'none';
   }
 
+  if (btn1996) btn1996.classList.toggle('active', mode === '1996');
   if (btn1999) btn1999.classList.toggle('active', mode === '1999');
   if (btn2001) btn2001.classList.toggle('active', mode === '1999' || mode === '2001');
   if (btn2002) btn2002.classList.toggle('active', mode === '2002');
@@ -9321,7 +9646,7 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
 
   const tabBtns = document.querySelectorAll('.editor-tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
-  const targetTabId = (mode === '1999' || mode === '2001') ? 'tab-tn1999' : ((mode === '2002') ? 'tab-tn2002' : ((mode === '2005') ? 'tab-tn2005' : (mode === '2025' ? 'tab-tn2025' : 'tab-color')));
+  const targetTabId = (mode === '1996') ? 'tab-tn1996' : ((mode === '1999' || mode === '2001') ? 'tab-tn1999' : ((mode === '2002') ? 'tab-tn2002' : ((mode === '2005') ? 'tab-tn2005' : (mode === '2025' ? 'tab-tn2025' : 'tab-color'))));
   const activeTabBtn = document.querySelector(`.editor-tab-btn[data-tab="${targetTabId}"]`);
   const activeTabContent = document.getElementById(targetTabId);
   if (activeTabBtn && activeTabContent) {
@@ -9331,7 +9656,20 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
     activeTabContent.classList.add('active');
   }
 
-  if (mode === '1999' || mode === '2001') {
+  if (view1996) view1996.style.display = (mode === '1996') ? 'block' : 'none';
+
+  if (mode === '1996') {
+    if (view1999) view1999.style.display = 'none';
+    if (view2002) view2002.style.display = 'none';
+    if (video02) video02.pause();
+    if (view2005) view2005.style.display = 'none';
+    if (view2025) view2025.style.display = 'none';
+    if (webglCont) webglCont.style.display = 'none';
+    if (tempBanner) tempBanner.style.display = 'none';
+    if (btnResetView) btnResetView.style.display = 'none';
+    initTN96();
+    updateTN96Clock();
+  } else if (mode === '1999' || mode === '2001') {
     if (view1999) view1999.style.display = 'block';
     if (view2002) view2002.style.display = 'none';
     if (video02) video02.pause();
@@ -9485,6 +9823,12 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       }
       // 0. Timeline d'anys 1983–2025 (Desktop en local)
       const TIMELINE_SVG_LOGOS = {
+        '1996': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%" fill="none">
+  <circle cx="60" cy="60" r="46" stroke="#FFFFFF" stroke-width="5" stroke-opacity="0.85"/>
+  <circle cx="60" cy="60" r="37" stroke="#FFFFFF" stroke-width="1.6" stroke-opacity="0.7"/>
+  <line x1="60" y1="60" x2="40" y2="80" stroke="#FFFFFF" stroke-width="5" stroke-linecap="butt"/>
+  <line x1="60" y1="60" x2="64" y2="95" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="butt"/>
+</svg>`,
         '1999': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="56 60 400 278" width="100%" height="100%">
   <defs>
     <filter id="tlTrans99Shadow" x="-30%" y="-30%" width="160%" height="160%">
@@ -9534,8 +9878,15 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       };
 
       const timelineTrack = document.getElementById('tn-timeline-track');
+      const isProdHidden = document.documentElement.classList.contains('hide-config');
+      if (isProdHidden) {
+        const opt96 = document.querySelector('#select-tn-version option[value="1996"]');
+        if (opt96) opt96.remove();
+      }
       if (timelineTrack) {
-        const availableYears = new Set([1999, 2002, 2005, 2014, 2025]);
+        const availableYears = isProdHidden
+          ? new Set([1999, 2002, 2005, 2014, 2025])
+          : new Set([1996, 1999, 2002, 2005, 2014, 2025]);
         const startYear = 1983;
         const endYear = 2025;
         const span = endYear - startYear;
@@ -10402,12 +10753,14 @@ const selectTnVersion = document.getElementById('select-tn-version');
 if (selectTnVersion) {
   selectTnVersion.addEventListener('change', (e) => switchMode(e.target.value));
 }
+const btnVer1996 = document.getElementById('btn-ver-1996');
 const btnVer1999 = document.getElementById('btn-ver-1999');
 const btnVer2001 = document.getElementById('btn-ver-2001');
 const btnVer2002 = document.getElementById('btn-ver-2002');
 const btnVer2005 = document.getElementById('btn-ver-2005');
 const btnVer2014 = document.getElementById('btn-ver-2014');
 const btnVer2025 = document.getElementById('btn-ver-2025');
+if (btnVer1996) btnVer1996.addEventListener('click', () => switchMode('1996'));
 if (btnVer1999) btnVer1999.addEventListener('click', () => switchMode('1999'));
 if (btnVer2001) btnVer2001.addEventListener('click', () => switchMode('1999'));
 if (btnVer2002) btnVer2002.addEventListener('click', () => switchMode('2002'));
@@ -11657,6 +12010,7 @@ function syncViewportAllModes() {
   if (typeof resizeTN05Canvas === 'function') resizeTN05Canvas();
   if (typeof updateTN25Scale === 'function') updateTN25Scale();
   if (typeof resizeTN99Canvases === 'function') resizeTN99Canvases();
+  if (typeof resizeTN96Canvas === 'function') resizeTN96Canvas();
 }
 
 function handleIOSViewportRotation() {
@@ -11674,7 +12028,8 @@ if (window.visualViewport) {
 // EASTER EGG 2014: "patro" ("Patrocina'm" amb webcam i text al cub dret)
 // =========================================================================
 const patroState = {
-  phase: 'idle', // 'idle' | 'sink_out' | 'modal' | 'rise_in' | 'rotate_45' | 'hold' | 'sponsor_sink' | 'restore_rise'
+  mode: '2014', // '2014' | '2025'
+  phase: 'idle', // 'idle' | 'sink_out' | 'modal' | 'camera_warmup' | 'rise_in' | 'rotate_45' | 'hold' | 'sponsor_sink' | 'restore_rise' | 'tn25_warmup' | 'tn25_enter' | 'tn25_hold' | 'tn25_exit'
   phaseStart: 0,
   origMaterials: null,
   origY: 2.75 / 2,
@@ -11977,12 +12332,132 @@ function closePatroModal() {
 }
 
 function triggerPatroEasterEgg() {
-  if (currentAppMode !== '2014' || !rightCube || patroState.phase !== 'idle') return;
-  patroState.origY = rightCube.position.y;
-  patroState.origRotY = rightCube.rotation.y;
-  patroState.origMaterials = rightCube.material;
-  patroState.phase = 'sink_out';
-  patroState.phaseStart = performance.now();
+  if (patroState.phase !== 'idle') return;
+  if (currentAppMode === '2014') {
+    if (!rightCube) return;
+    patroState.mode = '2014';
+    patroState.origY = rightCube.position.y;
+    patroState.origRotY = rightCube.rotation.y;
+    patroState.origMaterials = rightCube.material;
+    patroState.phase = 'sink_out';
+    patroState.phaseStart = performance.now();
+  } else if (currentAppMode === '2025') {
+    patroState.mode = '2025';
+    patroState.phase = 'modal';
+    patroState.phaseStart = performance.now();
+    openPatroModal();
+  }
+}
+
+function startPatroWebcam2025() {
+  const vidEl = document.getElementById('tn25-patro-video');
+  if (vidEl) {
+    vidEl.classList.remove('ready');
+    vidEl.srcObject = null;
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } },
+    audio: false
+  }).then((stream) => {
+    if (patroState.phase === 'idle' || patroState.mode !== '2025') {
+      stream.getTracks().forEach(t => t.stop());
+      return;
+    }
+    patroState.webcamStream = stream;
+    if (vidEl) {
+      vidEl.srcObject = stream;
+      vidEl.muted = true;
+      vidEl.playsInline = true;
+      vidEl.play().then(() => {
+        vidEl.classList.add('ready');
+      }).catch(() => {});
+    }
+  }).catch(() => {
+    // Sense càmera: es manté el fons més fosc del color triat
+  });
+}
+
+function cleanupPatro2025() {
+  if (patroState.webcamStream) {
+    try {
+      patroState.webcamStream.getTracks().forEach(t => t.stop());
+    } catch (_) {}
+    patroState.webcamStream = null;
+  }
+  const vidEl = document.getElementById('tn25-patro-video');
+  if (vidEl) {
+    try {
+      vidEl.pause();
+      vidEl.srcObject = null;
+      vidEl.classList.remove('ready');
+    } catch (_) {}
+  }
+  const stripEl = document.getElementById('tn25-patro-strip');
+  if (stripEl) {
+    stripEl.classList.remove('text-visible');
+  }
+  const view25 = document.getElementById('view-tn-2025');
+  if (view25) {
+    view25.classList.remove('patro-strip-open', 'patro-ticker-hidden');
+  }
+  tn25PatroProgress = 0;
+  updateTN25Scale();
+}
+
+function updateTN25PatroAnimation(nowMs) {
+  if (patroState.mode !== '2025' || patroState.phase === 'idle' || patroState.phase === 'modal') return;
+  const elapsed = nowMs - patroState.phaseStart;
+  const view25 = document.getElementById('view-tn-2025');
+  const stripEl = document.getElementById('tn25-patro-strip');
+
+  if (patroState.phase === 'tn25_warmup') {
+    if (elapsed >= 1500) {
+      if (view25) {
+        view25.classList.add('patro-ticker-hidden', 'patro-strip-open');
+      }
+      if (stripEl) stripEl.classList.remove('text-visible');
+      patroState.phase = 'tn25_enter';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'tn25_enter') {
+    const dur = 900;
+    const t = Math.min(1, elapsed / dur);
+    tn25PatroProgress = patroEaseOutCubic(t);
+    updateTN25Scale();
+    if (t >= 1) {
+      tn25PatroProgress = 1;
+      updateTN25Scale();
+      // Un cop oberta la tira, el text entra suaument d'esquerra a dreta
+      if (stripEl) stripEl.classList.add('text-visible');
+      patroState.phase = 'tn25_hold';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'tn25_hold') {
+    if (elapsed >= 5000) {
+      // Primer desapareix el text abans de fer petita la finestra
+      if (stripEl) stripEl.classList.remove('text-visible');
+      patroState.phase = 'tn25_text_out';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'tn25_text_out') {
+    if (elapsed >= 520) {
+      if (view25) {
+        view25.classList.remove('patro-strip-open', 'patro-ticker-hidden');
+      }
+      patroState.phase = 'tn25_exit';
+      patroState.phaseStart = nowMs;
+    }
+  } else if (patroState.phase === 'tn25_exit') {
+    const dur = 850;
+    const t = Math.min(1, elapsed / dur);
+    tn25PatroProgress = 1 - patroEaseInOutCubic(t);
+    updateTN25Scale();
+    if (t >= 1) {
+      cleanupPatro2025();
+      patroState.phase = 'idle';
+    }
+  }
 }
 
 function updatePatroAnimation(nowMs) {
@@ -12089,12 +12564,16 @@ function updatePatroAnimation(nowMs) {
   if (btnCancel) {
     btnCancel.addEventListener('click', () => {
       closePatroModal();
-      if (patroState.phase === 'modal' && rightCube) {
-        rightCube.rotation.y = patroState.origRotY;
-        rightCube.visible = true;
-        rightCube.castShadow = true;
-        patroState.phase = 'restore_rise';
-        patroState.phaseStart = performance.now();
+      if (patroState.phase === 'modal') {
+        if (patroState.mode === '2014' && rightCube) {
+          rightCube.rotation.y = patroState.origRotY;
+          rightCube.visible = true;
+          rightCube.castShadow = true;
+          patroState.phase = 'restore_rise';
+          patroState.phaseStart = performance.now();
+        } else {
+          patroState.phase = 'idle';
+        }
       }
     });
   }
@@ -12102,22 +12581,40 @@ function updatePatroAnimation(nowMs) {
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (patroState.phase !== 'modal' || !rightCube) return;
+      if (patroState.phase !== 'modal') return;
       patroState.chosenText = (input && input.value.trim()) ? input.value.trim() : "Patrocina'm";
       closePatroModal();
-      applyPatroSponsorMaterials(patroState.chosenText, patroState.chosenColor);
-      startPatroWebcam();
-      rightCube.position.y = patroState.hiddenY;
-      rightCube.rotation.y = 0;
-      rightCube.visible = false;
-      rightCube.castShadow = false;
-      patroState.phase = 'camera_warmup';
-      patroState.phaseStart = performance.now();
+      if (patroState.mode === '2014' && rightCube) {
+        applyPatroSponsorMaterials(patroState.chosenText, patroState.chosenColor);
+        startPatroWebcam();
+        rightCube.position.y = patroState.hiddenY;
+        rightCube.rotation.y = 0;
+        rightCube.visible = false;
+        rightCube.castShadow = false;
+        patroState.phase = 'camera_warmup';
+        patroState.phaseStart = performance.now();
+      } else if (patroState.mode === '2025') {
+        const stripEl = document.getElementById('tn25-patro-strip');
+        const textEl = document.getElementById('tn25-patro-text');
+        if (stripEl) {
+          stripEl.style.background = patroDarkenHex(patroState.chosenColor, 0.72);
+        }
+        if (textEl) {
+          textEl.textContent = patroState.chosenText;
+          const words = patroState.chosenText.split(/\s+/).filter(Boolean);
+          const maxWLen = words.reduce((m, w) => Math.max(m, w.length), 0);
+          const sz = maxWLen <= 8 ? 50 : (maxWLen <= 13 ? 38 : (maxWLen <= 18 ? 30 : 24));
+          textEl.style.fontSize = `calc(${sz}px * var(--tn25-base-scale, var(--tn25-stage-scale, 1)))`;
+        }
+        startPatroWebcam2025();
+        patroState.phase = 'tn25_warmup';
+        patroState.phaseStart = performance.now();
+      }
     });
   }
 
   window.addEventListener('keydown', (e) => {
-    if (currentAppMode !== '2014' || patroState.phase !== 'idle') return;
+    if ((currentAppMode !== '2014' && currentAppMode !== '2025') || patroState.phase !== 'idle') return;
     const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -12129,6 +12626,539 @@ function updatePatroAnimation(nowMs) {
       }
     }
   });
+})();
+
+// =========================================================================
+// TN 1996 ENGINE (TN TV3 - 1996) - Prismes Blaus, Vidre, Eixos i Broques
+// =========================================================================
+const TN96_DEFAULTS = {
+  scale: 40,
+  innerRatio: 84,
+  bezelWidth: 18,
+  bezelBlur: 6,
+  bezelLightOp: 80,
+  bezelShadowOp: 62,
+  axisThick: 1.8,
+  horizonShadowOp: 38,
+  hourLen: 64,
+  hourWidth: 18,
+  minLen: 99,
+  minWidth: 8,
+  secWidth: 15,
+  secLen: 24,
+  secMode: 'smooth',
+  handColor: '#19212c',
+  bgTL: '#9ec4e2',
+  bgTR: '#2ec0f5',
+  bgBL: '#2359d9',
+  bgBR: '#97b4cf',
+  animSpeed: 100,
+  broadcastSoftness: 1.0
+};
+
+let tn96Params = { ...TN96_DEFAULTS };
+let tn96Canvas = null;
+let tn96Ctx = null;
+
+function tn96HexToRgba(hex, alpha) {
+  const c = (hex || '#000000').replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16) || 0;
+  const g = parseInt(c.substring(2, 4), 16) || 0;
+  const b = parseInt(c.substring(4, 6), 16) || 0;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function tn96ShadeHex(hex, factor) {
+  const c = (hex || '#000000').replace('#', '');
+  const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+  const r = clamp((parseInt(c.substring(0, 2), 16) || 0) * factor);
+  const g = clamp((parseInt(c.substring(2, 4), 16) || 0) * factor);
+  const b = clamp((parseInt(c.substring(4, 6), 16) || 0) * factor);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function resizeTN96Canvas() {
+  if (!tn96Canvas) return;
+  const { w, h } = getFullViewportDims();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  tn96Canvas.width = Math.max(1, Math.round(w * dpr));
+  tn96Canvas.height = Math.max(1, Math.round(h * dpr));
+  tn96Canvas.style.width = w + 'px';
+  tn96Canvas.style.height = h + 'px';
+}
+
+function initTN96() {
+  if (!tn96Canvas) {
+    tn96Canvas = document.getElementById('tn96-canvas');
+    if (tn96Canvas) tn96Ctx = tn96Canvas.getContext('2d');
+  }
+  resizeTN96Canvas();
+}
+
+function updateTN96Clock() {
+  if (currentAppMode !== '1996') return;
+  if (!tn96Canvas || !tn96Ctx) initTN96();
+  if (!tn96Canvas || !tn96Ctx) return;
+
+  const ctx = tn96Ctx;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = tn96Canvas.width / dpr;
+  const h = tn96Canvas.height / dpr;
+  if (w < 2 || h < 2) return;
+
+  const cx = w * 0.5;
+  const cy = h * 0.5;
+  const minDim = Math.min(w, h);
+  const s = minDim / 720; // Factor d'escala relatiu a 720p
+  const R_outer = minDim * (tn96Params.scale / 100);
+  const R_inner = R_outer * (tn96Params.innerRatio / 100);
+
+  const now = new Date();
+  const tSec = performance.now() * 0.001 * (tn96Params.animSpeed / 100);
+
+  ctx.save();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // =========================================================================
+  // 1. FONS 4 QUADRANTS + PRISMES DE LLUM EN MOVIMENT SUAU (ESTÈTICA 1996)
+  // =========================================================================
+  const drift1 = Math.sin(tSec * 0.22) * w * 0.018;
+  const drift2 = Math.cos(tSec * 0.17) * h * 0.016;
+
+  // Quadrant Dalt-Esquerra (gris-blau suau / gel lluminós)
+  const gTL = ctx.createLinearGradient(0, 0, cx, cy);
+  gTL.addColorStop(0, tn96Params.bgTL);
+  gTL.addColorStop(0.65, '#b8d7ec');
+  gTL.addColorStop(1, '#d2eefb');
+  ctx.fillStyle = gTL;
+  ctx.fillRect(0, 0, cx + 1, cy + 1);
+
+  // Quadrant Dalt-Dreta (cian-cel elèctric vibrant)
+  const gTR = ctx.createLinearGradient(cx, 0, w, cy);
+  gTR.addColorStop(0, '#44b4ec');
+  gTR.addColorStop(0.5, tn96Params.bgTR);
+  gTR.addColorStop(1, '#1d8ce4');
+  ctx.fillStyle = gTR;
+  ctx.fillRect(cx, 0, w - cx, cy + 1);
+
+  // Quadrant Baix-Esquerra (blau cobalt profund -> marí)
+  const gBL = ctx.createLinearGradient(0, cy, cx, h);
+  gBL.addColorStop(0, tn96Params.bgBL);
+  gBL.addColorStop(0.55, tn96ShadeHex(tn96Params.bgBL, 0.72));
+  gBL.addColorStop(1, tn96ShadeHex(tn96Params.bgBL, 0.42));
+  ctx.fillStyle = gBL;
+  ctx.fillRect(0, cy, cx + 1, h - cy);
+
+  // Quadrant Baix-Dreta (plata-blau metàl·lic fred)
+  const gBR = ctx.createLinearGradient(cx, cy, w, h);
+  gBR.addColorStop(0, tn96Params.bgBR);
+  gBR.addColorStop(0.55, '#a8c1d8');
+  gBR.addColorStop(1, tn96ShadeHex(tn96Params.bgBR, 0.85));
+  ctx.fillStyle = gBR;
+  ctx.fillRect(cx, cy, w - cx, h - cy);
+
+  // --- Prismes / Feixos diagonals de llum translúcida ---
+  // Feix diagonal brillant des de dalt-esquerra cap al centre
+  ctx.save();
+  const beamTL = ctx.createLinearGradient(w * 0.08 + drift1, 0, cx + R_outer * 0.5, cy + R_outer * 0.4);
+  beamTL.addColorStop(0, 'rgba(235, 250, 255, 0.58)');
+  beamTL.addColorStop(0.55, 'rgba(215, 245, 255, 0.30)');
+  beamTL.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+  ctx.fillStyle = beamTL;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.04 + drift1, 0);
+  ctx.lineTo(w * 0.44 + drift1, 0);
+  ctx.lineTo(cx + R_outer * 0.55 + drift2, cy + R_outer * 0.35);
+  ctx.lineTo(cx - R_outer * 0.75 + drift1, cy + R_outer * 0.12);
+  ctx.closePath();
+  ctx.fill();
+
+  // Tascó blau profund a la cantonada superior dreta (efecte prisma)
+  const wedgeTR = ctx.createLinearGradient(w * 0.72, 0, w, cy * 0.85);
+  wedgeTR.addColorStop(0, 'rgba(26, 76, 178, 0.48)');
+  wedgeTR.addColorStop(0.5, 'rgba(46, 192, 245, 0.16)');
+  wedgeTR.addColorStop(1, 'rgba(30, 120, 220, 0.0)');
+  ctx.fillStyle = wedgeTR;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.68 - drift1, 0);
+  ctx.lineTo(w, 0);
+  ctx.lineTo(w, cy * 0.7);
+  ctx.lineTo(cx + R_outer * 0.18, cy * 0.65);
+  ctx.closePath();
+  ctx.fill();
+
+  // Feix diagonal brillant cian al quadrant superior dret cap al centre
+  const beamTR = ctx.createLinearGradient(w * 0.92 - drift2, 0, cx - R_outer * 0.2, cy + R_outer * 0.5);
+  beamTR.addColorStop(0, 'rgba(130, 232, 255, 0.42)');
+  beamTR.addColorStop(0.5, 'rgba(180, 242, 255, 0.25)');
+  beamTR.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+  ctx.fillStyle = beamTR;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.76 - drift1, 0);
+  ctx.lineTo(w, 0);
+  ctx.lineTo(cx + R_outer * 0.85, cy);
+  ctx.lineTo(cx - R_outer * 0.15, cy);
+  ctx.closePath();
+  ctx.fill();
+
+  // Feix lluminós diagonal al quadrant inferior esquerre
+  const beamBL = ctx.createLinearGradient(0, cy + h * 0.15, cx, h);
+  beamBL.addColorStop(0, 'rgba(120, 178, 255, 0.36)');
+  beamBL.addColorStop(0.6, 'rgba(38, 102, 224, 0.18)');
+  beamBL.addColorStop(1, 'rgba(14, 30, 90, 0.0)');
+  ctx.fillStyle = beamBL;
+  ctx.beginPath();
+  ctx.moveTo(0, cy + h * 0.04 + drift2);
+  ctx.lineTo(cx * 0.72, cy);
+  ctx.lineTo(cx * 0.95 + drift1, h);
+  ctx.lineTo(0, h * 0.78);
+  ctx.closePath();
+  ctx.fill();
+
+  // Ombra prismàtica diagonal suau al quadrant inferior dret (dins i fora l'esfera)
+  const prismBR = ctx.createLinearGradient(cx - R_outer * 0.3, cy, cx + R_outer * 0.8, h);
+  prismBR.addColorStop(0, 'rgba(22, 52, 108, 0.22)');
+  prismBR.addColorStop(0.55, 'rgba(42, 82, 140, 0.12)');
+  prismBR.addColorStop(1, 'rgba(150, 180, 210, 0.0)');
+  ctx.fillStyle = prismBR;
+  ctx.beginPath();
+  ctx.moveTo(cx - R_outer * 0.2, cy);
+  ctx.lineTo(cx + R_outer * 0.65 + drift1, cy);
+  ctx.lineTo(w * 0.82, h);
+  ctx.lineTo(cx - R_outer * 0.6, h);
+  ctx.closePath();
+  ctx.fill();
+
+  // Brillantor interior translúcida de lupa/vidre a l'esfera (dalt-centre-esquerra)
+  const dialGlow = ctx.createRadialGradient(
+    cx - R_outer * 0.12, cy - R_outer * 0.18, R_outer * 0.06,
+    cx, cy, R_outer * 0.98
+  );
+  dialGlow.addColorStop(0, 'rgba(230, 250, 255, 0.44)');
+  dialGlow.addColorStop(0.55, 'rgba(195, 236, 255, 0.16)');
+  dialGlow.addColorStop(1, 'rgba(180, 220, 245, 0.0)');
+  ctx.fillStyle = dialGlow;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R_outer, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Ombra característica sota la línia de l'horitzó a la meitat dreta
+  const horShadowH = 26 * s;
+  const horOp = tn96Params.horizonShadowOp / 100;
+  if (horOp > 0) {
+    const gHorSh = ctx.createLinearGradient(0, cy, 0, cy + horShadowH);
+    gHorSh.addColorStop(0, `rgba(12, 24, 42, ${horOp.toFixed(3)})`);
+    gHorSh.addColorStop(0.35, `rgba(16, 32, 56, ${(horOp * 0.45).toFixed(3)})`);
+    gHorSh.addColorStop(1, 'rgba(16, 32, 56, 0)');
+    ctx.fillStyle = gHorSh;
+    ctx.fillRect(cx, cy, w - cx, horShadowH);
+  }
+  ctx.restore();
+
+  // =========================================================================
+  // 2. ANELL EXTERIOR DE VIDRE ESMERILAT (LLUM DALT-ESQ / OMBRA BAIX-DRETA)
+  // =========================================================================
+  const bezelW = tn96Params.bezelWidth * s;
+  const bezelBlur = tn96Params.bezelBlur * s;
+  const lightOp = tn96Params.bezelLightOp / 100;
+  const shadowOp = tn96Params.bezelShadowOp / 100;
+
+  ctx.save();
+  // Passada d'ombra (costat inferior dret)
+  ctx.shadowColor = `rgba(10, 22, 40, ${(shadowOp * 0.75).toFixed(3)})`;
+  ctx.shadowBlur = bezelBlur * 1.6;
+  ctx.shadowOffsetX = 3 * s;
+  ctx.shadowOffsetY = 3 * s;
+  const gBezelSh = ctx.createLinearGradient(cx - R_outer, cy - R_outer, cx + R_outer, cy + R_outer);
+  gBezelSh.addColorStop(0.0, 'rgba(255, 255, 255, 0)');
+  gBezelSh.addColorStop(0.45, 'rgba(18, 32, 54, 0.08)');
+  gBezelSh.addColorStop(0.75, `rgba(14, 28, 48, ${(shadowOp * 0.78).toFixed(3)})`);
+  gBezelSh.addColorStop(1.0, `rgba(10, 20, 36, ${shadowOp.toFixed(3)})`);
+  ctx.strokeStyle = gBezelSh;
+  ctx.lineWidth = bezelW;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R_outer, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Passada de llum (costat superior esquerre)
+  ctx.shadowColor = `rgba(235, 250, 255, ${(lightOp * 0.7).toFixed(3)})`;
+  ctx.shadowBlur = bezelBlur * 1.4;
+  ctx.shadowOffsetX = -2 * s;
+  ctx.shadowOffsetY = -2 * s;
+  const gBezelLt = ctx.createLinearGradient(cx - R_outer, cy - R_outer, cx + R_outer, cy + R_outer);
+  gBezelLt.addColorStop(0.0, `rgba(255, 255, 255, ${lightOp.toFixed(3)})`);
+  gBezelLt.addColorStop(0.38, `rgba(235, 248, 255, ${(lightOp * 0.62).toFixed(3)})`);
+  gBezelLt.addColorStop(0.62, 'rgba(255, 255, 255, 0.05)');
+  gBezelLt.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+  ctx.strokeStyle = gBezelLt;
+  ctx.lineWidth = bezelW * 0.92;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R_outer, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+
+  // =========================================================================
+  // 3. CERCLE INTERIOR FINÍSSIM (BLANC DALT-ESQ / FOSC BAIX-DRETA)
+  // =========================================================================
+  const axisW = Math.max(0.8, tn96Params.axisThick * s);
+  ctx.save();
+  const gInner = ctx.createLinearGradient(cx - R_inner, cy - R_inner, cx + R_inner, cy + R_inner);
+  gInner.addColorStop(0.0, 'rgba(255, 255, 255, 0.94)');
+  gInner.addColorStop(0.46, 'rgba(255, 255, 255, 0.60)');
+  gInner.addColorStop(0.54, 'rgba(18, 28, 44, 0.56)');
+  gInner.addColorStop(1.0, 'rgba(12, 20, 34, 0.84)');
+  ctx.strokeStyle = gInner;
+  ctx.lineWidth = axisW;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R_inner, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+
+  // =========================================================================
+  // 4. EIXOS CREUATS ALTERNATS (BLANC/FOSC HORITZONTAL I VERTICAL)
+  // =========================================================================
+  ctx.save();
+  ctx.lineWidth = axisW;
+
+  // Horitzontal esquerra (blanc)
+  const gHL = ctx.createLinearGradient(cx - R_outer * 1.25, cy, cx, cy);
+  gHL.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
+  gHL.addColorStop(0.18, 'rgba(255, 255, 255, 0.92)');
+  gHL.addColorStop(1, 'rgba(255, 255, 255, 0.95)');
+  ctx.strokeStyle = gHL;
+  ctx.beginPath();
+  ctx.moveTo(cx - R_outer * 1.25, cy);
+  ctx.lineTo(cx, cy);
+  ctx.stroke();
+
+  // Horitzontal dreta (fosc fins a la vora dreta)
+  ctx.strokeStyle = 'rgba(16, 24, 36, 0.88)';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(w, cy);
+  ctx.stroke();
+
+  // Vertical superior (fosc)
+  const gVT = ctx.createLinearGradient(cx, cy - R_outer * 1.18, cx, cy);
+  gVT.addColorStop(0, 'rgba(16, 24, 36, 0.0)');
+  gVT.addColorStop(0.15, 'rgba(16, 24, 36, 0.78)');
+  gVT.addColorStop(1, 'rgba(16, 24, 36, 0.86)');
+  ctx.strokeStyle = gVT;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - R_outer * 1.18);
+  ctx.lineTo(cx, cy);
+  ctx.stroke();
+
+  // Vertical inferior (blanc)
+  const gVB = ctx.createLinearGradient(cx, cy, cx, cy + R_outer * 1.18);
+  gVB.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
+  gVB.addColorStop(0.85, 'rgba(255, 255, 255, 0.85)');
+  gVB.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+  ctx.strokeStyle = gVB;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx, cy + R_outer * 1.18);
+  ctx.stroke();
+  ctx.restore();
+
+  // =========================================================================
+  // 5. MARCADOR DE SEGONS (BLOC RECTANGULAR FOSC ORBITANT SOBRE EL CERCLE INTERIOR)
+  // =========================================================================
+  const secVal = now.getSeconds();
+  const msVal = now.getMilliseconds();
+  const secFloat = (tn96Params.secMode === 'smooth') ? (secVal + msVal / 1000) : secVal;
+  const secAngle = (secFloat / 60) * Math.PI * 2 - Math.PI / 2;
+
+  const secW = tn96Params.secWidth * s;
+  const secL = tn96Params.secLen * s;
+  const softBlur = tn96Params.broadcastSoftness * s;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(secAngle);
+  ctx.fillStyle = tn96Params.handColor;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.30)';
+  ctx.shadowBlur = Math.max(1.5, softBlur * 2.4);
+  ctx.shadowOffsetX = 1 * s;
+  ctx.shadowOffsetY = 1.5 * s;
+  // El bloc descansa sobre la vora exterior del cercle interior, apuntant radialment
+  ctx.fillRect(R_inner - 1 * s, -secW / 2, secL, secW);
+  ctx.restore();
+
+  // =========================================================================
+  // 6. BROQUES D'HORES I MINUTS (MINIMALISTES, FOSQUES, SENSE NÚMEROS)
+  // =========================================================================
+  const hrs = now.getHours() % 12;
+  const mins = now.getMinutes();
+  const minAngle = ((mins + secFloat / 60) / 60) * Math.PI * 2 - Math.PI / 2;
+  const hourAngle = ((hrs + mins / 60 + secFloat / 3600) / 12) * Math.PI * 2 - Math.PI / 2;
+
+  const hLen = R_inner * (tn96Params.hourLen / 100);
+  const hW = tn96Params.hourWidth * s;
+  const mLen = R_inner * (tn96Params.minLen / 100);
+  const mW = tn96Params.minWidth * s;
+
+  // Broca d'hores (barra recta gruixuda)
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(hourAngle);
+  ctx.fillStyle = tn96Params.handColor;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.32)';
+  ctx.shadowBlur = Math.max(2, softBlur * 3);
+  ctx.shadowOffsetX = 1.5 * s;
+  ctx.shadowOffsetY = 2 * s;
+  const hTail = R_inner * 0.085;
+  ctx.fillRect(-hTail, -hW / 2, hLen + hTail, hW);
+  ctx.restore();
+
+  // Broca de minuts (llarga, fina i lleugerament afilada fins al cercle interior)
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(minAngle);
+  ctx.fillStyle = tn96Params.handColor;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.28)';
+  ctx.shadowBlur = Math.max(1.5, softBlur * 2.5);
+  ctx.shadowOffsetX = 1.2 * s;
+  ctx.shadowOffsetY = 1.8 * s;
+  const mTail = R_inner * 0.06;
+  const mTipW = mW * 0.62;
+  ctx.beginPath();
+  ctx.moveTo(-mTail, -mW / 2);
+  ctx.lineTo(mLen, -mTipW / 2);
+  ctx.lineTo(mLen, mTipW / 2);
+  ctx.lineTo(-mTail, mW / 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// Configuració dels controls del panell localhost per al TN 1996
+(function setupTN96Controls() {
+  function bindNumRange(numId, rangeId, key) {
+    const num = document.getElementById(numId);
+    const rng = document.getElementById(rangeId);
+    if (!num || !rng) return;
+    num.addEventListener('input', () => {
+      const v = parseFloat(num.value);
+      if (!isNaN(v)) { rng.value = v; tn96Params[key] = v; }
+    });
+    rng.addEventListener('input', () => {
+      const v = parseFloat(rng.value);
+      if (!isNaN(v)) { num.value = v; tn96Params[key] = v; }
+    });
+  }
+  function bindColor(pickId, hexId, key) {
+    const p = document.getElementById(pickId);
+    const h = document.getElementById(hexId);
+    if (!p || !h) return;
+    p.addEventListener('input', () => {
+      h.value = p.value.toUpperCase();
+      tn96Params[key] = p.value;
+    });
+    h.addEventListener('input', () => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(h.value)) {
+        p.value = h.value;
+        tn96Params[key] = h.value;
+      }
+    });
+  }
+
+  bindNumRange('num-tn96-scale', 'slider-tn96-scale', 'scale');
+  bindNumRange('num-tn96-inner', 'slider-tn96-inner', 'innerRatio');
+  bindNumRange('num-tn96-bezel-w', 'slider-tn96-bezel-w', 'bezelWidth');
+  bindNumRange('num-tn96-bezel-blur', 'slider-tn96-bezel-blur', 'bezelBlur');
+  bindNumRange('num-tn96-bezel-light', 'slider-tn96-bezel-light', 'bezelLightOp');
+  bindNumRange('num-tn96-bezel-shadow', 'slider-tn96-bezel-shadow', 'bezelShadowOp');
+  bindNumRange('num-tn96-axis-w', 'slider-tn96-axis-w', 'axisThick');
+  bindNumRange('num-tn96-horizon-sh', 'slider-tn96-horizon-sh', 'horizonShadowOp');
+  bindNumRange('num-tn96-h-len', 'slider-tn96-h-len', 'hourLen');
+  bindNumRange('num-tn96-h-w', 'slider-tn96-h-w', 'hourWidth');
+  bindNumRange('num-tn96-m-len', 'slider-tn96-m-len', 'minLen');
+  bindNumRange('num-tn96-m-w', 'slider-tn96-m-w', 'minWidth');
+  bindNumRange('num-tn96-s-w', 'slider-tn96-s-w', 'secWidth');
+  bindNumRange('num-tn96-s-len', 'slider-tn96-s-len', 'secLen');
+  bindNumRange('num-tn96-anim', 'slider-tn96-anim', 'animSpeed');
+  bindNumRange('num-tn96-soft', 'slider-tn96-soft', 'broadcastSoftness');
+
+  bindColor('color-tn96-hand', 'hex-tn96-hand', 'handColor');
+  bindColor('color-tn96-tl', 'hex-tn96-tl', 'bgTL');
+  bindColor('color-tn96-tr', 'hex-tn96-tr', 'bgTR');
+  bindColor('color-tn96-bl', 'hex-tn96-bl', 'bgBL');
+  bindColor('color-tn96-br', 'hex-tn96-br', 'bgBR');
+
+  const secModeSel = document.getElementById('select-tn96-sec-mode');
+  if (secModeSel) {
+    secModeSel.addEventListener('change', () => {
+      tn96Params.secMode = secModeSel.value;
+    });
+  }
+
+  const btnCopy96 = document.getElementById('btn-copy-tn96');
+  if (btnCopy96) {
+    btnCopy96.addEventListener('click', () => {
+      const txt = [
+        `=== CONFIGURACIÓ RELLOTGE TN 1996 ===`,
+        `Esfera: Mida=${tn96Params.scale}% | Cercle Interior=${tn96Params.innerRatio}% | Anell Vidre=${tn96Params.bezelWidth}px (Blur=${tn96Params.bezelBlur}px, Llum=${tn96Params.bezelLightOp}%, Ombra=${tn96Params.bezelShadowOp}%)`,
+        `Eixos: Gruix=${tn96Params.axisThick}px | Ombra Horitzó=${tn96Params.horizonShadowOp}%`,
+        `Broques: Hora=${tn96Params.hourLen}%/${tn96Params.hourWidth}px | Minuts=${tn96Params.minLen}%/${tn96Params.minWidth}px | Segons=${tn96Params.secWidth}x${tn96Params.secLen}px (${tn96Params.secMode}) | Color=${tn96Params.handColor}`,
+        `Fons: TL=${tn96Params.bgTL} | TR=${tn96Params.bgTR} | BL=${tn96Params.bgBL} | BR=${tn96Params.bgBR} | Velocitat=${tn96Params.animSpeed}% | Suavitat=${tn96Params.broadcastSoftness}px`
+      ].join('\n');
+      navigator.clipboard.writeText(txt).then(() => {
+        const orig = btnCopy96.textContent;
+        btnCopy96.textContent = '✓ Copiat!';
+        setTimeout(() => { btnCopy96.textContent = orig; }, 1600);
+      }).catch(() => {});
+    });
+  }
+
+  const btnReset96 = document.getElementById('btn-reset-tn96');
+  if (btnReset96) {
+    btnReset96.addEventListener('click', () => {
+      tn96Params = { ...TN96_DEFAULTS };
+      const pairs = [
+        ['num-tn96-scale', 'slider-tn96-scale', tn96Params.scale],
+        ['num-tn96-inner', 'slider-tn96-inner', tn96Params.innerRatio],
+        ['num-tn96-bezel-w', 'slider-tn96-bezel-w', tn96Params.bezelWidth],
+        ['num-tn96-bezel-blur', 'slider-tn96-bezel-blur', tn96Params.bezelBlur],
+        ['num-tn96-bezel-light', 'slider-tn96-bezel-light', tn96Params.bezelLightOp],
+        ['num-tn96-bezel-shadow', 'slider-tn96-bezel-shadow', tn96Params.bezelShadowOp],
+        ['num-tn96-axis-w', 'slider-tn96-axis-w', tn96Params.axisThick],
+        ['num-tn96-horizon-sh', 'slider-tn96-horizon-sh', tn96Params.horizonShadowOp],
+        ['num-tn96-h-len', 'slider-tn96-h-len', tn96Params.hourLen],
+        ['num-tn96-h-w', 'slider-tn96-h-w', tn96Params.hourWidth],
+        ['num-tn96-m-len', 'slider-tn96-m-len', tn96Params.minLen],
+        ['num-tn96-m-w', 'slider-tn96-m-w', tn96Params.minWidth],
+        ['num-tn96-s-w', 'slider-tn96-s-w', tn96Params.secWidth],
+        ['num-tn96-s-len', 'slider-tn96-s-len', tn96Params.secLen],
+        ['num-tn96-anim', 'slider-tn96-anim', tn96Params.animSpeed],
+        ['num-tn96-soft', 'slider-tn96-soft', tn96Params.broadcastSoftness]
+      ];
+      pairs.forEach(([nId, rId, val]) => {
+        const n = document.getElementById(nId);
+        const r = document.getElementById(rId);
+        if (n) n.value = val;
+        if (r) r.value = val;
+      });
+      const colors = [
+        ['color-tn96-hand', 'hex-tn96-hand', tn96Params.handColor],
+        ['color-tn96-tl', 'hex-tn96-tl', tn96Params.bgTL],
+        ['color-tn96-tr', 'hex-tn96-tr', tn96Params.bgTR],
+        ['color-tn96-bl', 'hex-tn96-bl', tn96Params.bgBL],
+        ['color-tn96-br', 'hex-tn96-br', tn96Params.bgBR]
+      ];
+      colors.forEach(([pId, hId, val]) => {
+        const p = document.getElementById(pId);
+        const h = document.getElementById(hId);
+        if (p) p.value = val;
+        if (h) h.value = val.toUpperCase();
+      });
+      if (secModeSel) secModeSel.value = tn96Params.secMode;
+    });
+  }
+
+  window.addEventListener('resize', resizeTN96Canvas);
 })();
 
 window.addEventListener('DOMContentLoaded', init);
