@@ -1,34 +1,38 @@
 {
   "version": 2,
   "name": "rellotgetn",
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/1999", "destination": "/index.html" },
-    { "source": "/2001", "destination": "/index.html" },
-    { "source": "/2002", "destination": "/index.html" },
-    { "source": "/2005", "destination": "/index.html" },
-    { "source": "/2014", "destination": "/index.html" },
-    { "source": "/2025", "destination": "/index.html" }
-  ],
-  "headers": [
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "index.html"
+    }
+  },
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
+      "src": "^/fonts/(.*)$",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "continue": true
     },
     {
-      "source": "/fonts/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
+      "src": "^/audio/(.*)$",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "continue": true
     },
     {
-      "source": "/audio/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
+      "src": "^/$",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "^/(1999|2001|2002|2005|2014|2025)/?$",
+      "dest": "/api/index.js?any=$1"
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 }
