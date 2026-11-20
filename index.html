@@ -12015,7 +12015,10 @@ if (selectTn25Easing) {
     if (bloomEl) bloomEl.setAttribute('stdDeviation', `${(6.5 * t).toFixed(2)} ${(3.0 * t).toFixed(2)}`);
     if (bloomA) bloomA.setAttribute('slope', (0.28 * t).toFixed(3));
     if (wrap) {
-      wrap.style.filter = `url(#tn99-pal-filter) contrast(${(1 + 0.06 * t).toFixed(3)}) saturate(${(1 + 0.10 * t).toFixed(3)})`;
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      wrap.style.filter = isIOS
+        ? `blur(${(1.15 * t).toFixed(2)}px) contrast(${(1 + 0.06 * t).toFixed(3)}) saturate(${(1 + 0.10 * t).toFixed(3)})`
+        : `url(#tn99-pal-filter) contrast(${(1 + 0.06 * t).toFixed(3)}) saturate(${(1 + 0.10 * t).toFixed(3)})`;
     }
     if (scan) scan.style.opacity = (0.14 * t).toFixed(3);
   }
@@ -13617,6 +13620,66 @@ const TN96_DEFAULTS = {
 let tn96Params = { ...TN96_DEFAULTS };
 let tn96Canvas = null;
 let tn96Ctx = null;
+let tn96PrismCache = null;
+let tn96PrismCacheKey = '';
+
+// Desenfoc gaussià real (2 passades box-blur separables) compatible 100% amb iOS Safari (on ctx.filter falla!)
+function tn96BoxBlurRGBA(data, w, h, radius) {
+  const r = Math.max(1, Math.round(radius));
+  const tmp = new Uint8ClampedArray(data.length);
+  const div = r * 2 + 1;
+
+  // Horizontal pass
+  for (let y = 0; y < h; y++) {
+    const rowOff = y * w * 4;
+    let sr = 0, sg = 0, sb = 0, sa = 0;
+    for (let k = -r; k <= r; k++) {
+      const cx = Math.max(0, Math.min(w - 1, k));
+      const idx = rowOff + cx * 4;
+      sr += data[idx]; sg += data[idx + 1]; sb += data[idx + 2]; sa += data[idx + 3];
+    }
+    for (let x = 0; x < w; x++) {
+      const oIdx = rowOff + x * 4;
+      tmp[oIdx] = (sr / div) | 0;
+      tmp[oIdx + 1] = (sg / div) | 0;
+      tmp[oIdx + 2] = (sb / div) | 0;
+      tmp[oIdx + 3] = (sa / div) | 0;
+      const xOut = Math.max(0, x - r);
+      const xIn = Math.min(w - 1, x + r + 1);
+      const iOut = rowOff + xOut * 4;
+      const iIn = rowOff + xIn * 4;
+      sr += data[iIn] - data[iOut];
+      sg += data[iIn + 1] - data[iOut + 1];
+      sb += data[iIn + 2] - data[iOut + 2];
+      sa += data[iIn + 3] - data[iOut + 3];
+    }
+  }
+
+  // Vertical pass
+  for (let x = 0; x < w; x++) {
+    let sr = 0, sg = 0, sb = 0, sa = 0;
+    for (let k = -r; k <= r; k++) {
+      const cy = Math.max(0, Math.min(h - 1, k));
+      const idx = (cy * w + x) * 4;
+      sr += tmp[idx]; sg += tmp[idx + 1]; sb += tmp[idx + 2]; sa += tmp[idx + 3];
+    }
+    for (let y = 0; y < h; y++) {
+      const oIdx = (y * w + x) * 4;
+      data[oIdx] = (sr / div) | 0;
+      data[oIdx + 1] = (sg / div) | 0;
+      data[oIdx + 2] = (sb / div) | 0;
+      data[oIdx + 3] = (sa / div) | 0;
+      const yOut = Math.max(0, y - r);
+      const yIn = Math.min(h - 1, y + r + 1);
+      const iOut = (yOut * w + x) * 4;
+      const iIn = (yIn * w + x) * 4;
+      sr += tmp[iIn] - tmp[iOut];
+      sg += tmp[iIn + 1] - tmp[iOut + 1];
+      sb += tmp[iIn + 2] - tmp[iOut + 2];
+      sa += tmp[iIn + 3] - tmp[iOut + 3];
+    }
+  }
+}
 
 function tn96HexToRgba(hex, alpha) {
   const c = (hex || '#000000').replace('#', '');
@@ -13759,98 +13822,128 @@ function updateTN96Clock() {
   ctx.fillStyle = gBR;
   ctx.fillRect(cx, cy, w - cx, h - cy);
 
-  // --- Prismes / Feixos diagonals de llum translúcida ---
+  // --- Prismes / Feixos diagonals de llum translúcida (compatible 100% amb mòbils i iOS Safari) ---
   const pInt = Math.max(0, tn96Params.prismIntensity / 100);
   const pBlur = Math.max(0, tn96Params.prismBlur * s);
   const pAlpha = (a) => Math.min(1, a * pInt).toFixed(3);
 
+  const cacheKey = (tn96Params.animSpeed > 0)
+    ? ''
+    : `${Math.round(w)}x${Math.round(h)}_${tn96Params.scale}_${tn96Params.prismIntensity}_${tn96Params.prismBlur}`;
+
+  if (!tn96PrismCache || tn96PrismCacheKey !== cacheKey || !cacheKey) {
+    const scaleDown = pBlur > 0.5 ? 0.5 : 1.0;
+    const pw = Math.max(2, Math.round(w * scaleDown));
+    const ph = Math.max(2, Math.round(h * scaleDown));
+    if (!tn96PrismCache) tn96PrismCache = document.createElement('canvas');
+    if (tn96PrismCache.width !== pw || tn96PrismCache.height !== ph) {
+      tn96PrismCache.width = pw;
+      tn96PrismCache.height = ph;
+    }
+    const pctx = tn96PrismCache.getContext('2d');
+    pctx.save();
+    pctx.clearRect(0, 0, pw, ph);
+    pctx.scale(scaleDown, scaleDown);
+
+    // 1. Con de llum cian-gel des de dalt-esquerra cap al centre de l'esfera
+    const beamTL = pctx.createLinearGradient(w * 0.14 + drift1, 0, cx + R_outer * 0.25, cy + R_outer * 0.15);
+    beamTL.addColorStop(0, `rgba(218, 246, 255, ${pAlpha(0.62)})`);
+    beamTL.addColorStop(0.55, `rgba(195, 238, 252, ${pAlpha(0.36)})`);
+    beamTL.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+    pctx.fillStyle = beamTL;
+    pctx.beginPath();
+    pctx.moveTo(w * 0.06 + drift1, 0);
+    pctx.lineTo(w * 0.30 + drift1, 0);
+    pctx.lineTo(cx + R_outer * 0.38, cy + R_outer * 0.05);
+    pctx.lineTo(cx - R_outer * 0.62, cy + R_outer * 0.02);
+    pctx.closePath();
+    pctx.fill();
+
+    // 2. Triangle lluminós blanc-cian a l'interior superior de l'esfera (a l'esquerra de la diagonal)
+    const coneCenter = pctx.createLinearGradient(cx, cy - R_outer * 0.85, cx, cy + R_outer * 0.2);
+    coneCenter.addColorStop(0, `rgba(215, 248, 255, ${pAlpha(0.55)})`);
+    coneCenter.addColorStop(0.65, `rgba(185, 236, 252, ${pAlpha(0.30)})`);
+    coneCenter.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+    pctx.fillStyle = coneCenter;
+    pctx.beginPath();
+    pctx.moveTo(cx - R_outer * 0.25, cy - R_outer * 0.95);
+    pctx.lineTo(diagTopX, 0);
+    pctx.lineTo(cx, cy);
+    pctx.lineTo(cx - R_outer * 0.85, cy);
+    pctx.closePath();
+    pctx.fill();
+
+    // 3. Tascó blau profund a la cantonada superior dreta (darrere el feix cian)
+    const wedgeTR = pctx.createLinearGradient(diagTopX, 0, w, cy * 0.55);
+    wedgeTR.addColorStop(0, `rgba(18, 62, 165, ${pAlpha(0.56)})`);
+    wedgeTR.addColorStop(0.45, `rgba(28, 128, 224, ${pAlpha(0.20)})`);
+    wedgeTR.addColorStop(1, 'rgba(30, 120, 220, 0.0)');
+    pctx.fillStyle = wedgeTR;
+    pctx.beginPath();
+    pctx.moveTo(diagTopX, 0);
+    pctx.lineTo(w * 0.92, 0);
+    pctx.lineTo(diagTopX - R_outer * 0.15, cy * 0.35);
+    pctx.closePath();
+    pctx.fill();
+
+    // 4. Feix diagonal lluminós blau-cel al quadrant inferior esquerre
+    const beamBL = pctx.createLinearGradient(0, cy + h * 0.06, cx * 0.7, h * 0.82);
+    beamBL.addColorStop(0, `rgba(105, 168, 255, ${pAlpha(0.48)})`);
+    beamBL.addColorStop(0.55, `rgba(42, 108, 236, ${pAlpha(0.24)})`);
+    beamBL.addColorStop(1, 'rgba(12, 26, 86, 0.0)');
+    pctx.fillStyle = beamBL;
+    pctx.beginPath();
+    pctx.moveTo(0, cy + h * 0.03 + drift2);
+    pctx.lineTo(cx * 0.65, cy);
+    pctx.lineTo(diagBotX * 1.15, h);
+    pctx.lineTo(0, h * 0.86);
+    pctx.closePath();
+    pctx.fill();
+
+    // 5. Bandes metàl·liques diagonals al quadrant inferior dret (reflexes de vidre)
+    const bandBR1 = pctx.createLinearGradient(cx, cy + h * 0.25, w, cy + h * 0.05);
+    bandBR1.addColorStop(0, `rgba(225, 240, 252, ${pAlpha(0.32)})`);
+    bandBR1.addColorStop(0.5, `rgba(195, 218, 238, ${pAlpha(0.22)})`);
+    bandBR1.addColorStop(1, 'rgba(160, 185, 210, 0.0)');
+    pctx.fillStyle = bandBR1;
+    pctx.beginPath();
+    pctx.moveTo(cx, cy + R_outer * 0.72);
+    pctx.lineTo(w, cy + R_outer * 0.05 + drift2);
+    pctx.lineTo(w, cy + R_outer * 0.45 + drift2);
+    pctx.lineTo(cx, h);
+    pctx.closePath();
+    pctx.fill();
+
+    // Ombra diagonal suau sota la banda metàl·lica cap a baix-dreta
+    const bandBR2 = pctx.createLinearGradient(cx, cy + R_outer * 0.55, w, h);
+    bandBR2.addColorStop(0, `rgba(24, 42, 72, ${pAlpha(0.28)})`);
+    bandBR2.addColorStop(0.5, `rgba(38, 60, 92, ${pAlpha(0.14)})`);
+    bandBR2.addColorStop(1, 'rgba(100, 125, 155, 0.0)');
+    pctx.fillStyle = bandBR2;
+    pctx.beginPath();
+    pctx.moveTo(cx, cy + R_outer * 0.48);
+    pctx.lineTo(w, cy + R_outer * 0.02);
+    pctx.lineTo(w, cy + R_outer * 0.22);
+    pctx.lineTo(cx, cy + R_outer * 0.76);
+    pctx.closePath();
+    pctx.fill();
+    pctx.restore();
+
+    // Aplica desenfoc gaussià real (2 passades) independent de ctx.filter (funciona a iOS Safari!)
+    if (pBlur > 0.5) {
+      const imgData = pctx.getImageData(0, 0, pw, ph);
+      const blurR = Math.max(1, Math.round(pBlur * scaleDown * 0.95));
+      tn96BoxBlurRGBA(imgData.data, pw, ph, blurR);
+      tn96BoxBlurRGBA(imgData.data, pw, ph, blurR);
+      pctx.putImageData(imgData, 0, 0);
+    }
+    tn96PrismCacheKey = cacheKey;
+  }
+
   ctx.save();
-  if (pBlur > 0.2) ctx.filter = `blur(${pBlur.toFixed(1)}px)`;
-
-  // 1. Con de llum cian-gel des de dalt-esquerra cap al centre de l'esfera
-  const beamTL = ctx.createLinearGradient(w * 0.14 + drift1, 0, cx + R_outer * 0.25, cy + R_outer * 0.15);
-  beamTL.addColorStop(0, `rgba(218, 246, 255, ${pAlpha(0.62)})`);
-  beamTL.addColorStop(0.55, `rgba(195, 238, 252, ${pAlpha(0.36)})`);
-  beamTL.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
-  ctx.fillStyle = beamTL;
-  ctx.beginPath();
-  ctx.moveTo(w * 0.06 + drift1, 0);
-  ctx.lineTo(w * 0.30 + drift1, 0);
-  ctx.lineTo(cx + R_outer * 0.38, cy + R_outer * 0.05);
-  ctx.lineTo(cx - R_outer * 0.62, cy + R_outer * 0.02);
-  ctx.closePath();
-  ctx.fill();
-
-  // 2. Triangle lluminós blanc-cian a l'interior superior de l'esfera (a l'esquerra de la diagonal)
-  const coneCenter = ctx.createLinearGradient(cx, cy - R_outer * 0.85, cx, cy + R_outer * 0.2);
-  coneCenter.addColorStop(0, `rgba(215, 248, 255, ${pAlpha(0.55)})`);
-  coneCenter.addColorStop(0.65, `rgba(185, 236, 252, ${pAlpha(0.30)})`);
-  coneCenter.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
-  ctx.fillStyle = coneCenter;
-  ctx.beginPath();
-  ctx.moveTo(cx - R_outer * 0.25, cy - R_outer * 0.95);
-  ctx.lineTo(diagTopX, 0);
-  ctx.lineTo(cx, cy);
-  ctx.lineTo(cx - R_outer * 0.85, cy);
-  ctx.closePath();
-  ctx.fill();
-
-  // 3. Tascó blau profund a la cantonada superior dreta (darrere el feix cian)
-  const wedgeTR = ctx.createLinearGradient(diagTopX, 0, w, cy * 0.55);
-  wedgeTR.addColorStop(0, `rgba(18, 62, 165, ${pAlpha(0.56)})`);
-  wedgeTR.addColorStop(0.45, `rgba(28, 128, 224, ${pAlpha(0.20)})`);
-  wedgeTR.addColorStop(1, 'rgba(30, 120, 220, 0.0)');
-  ctx.fillStyle = wedgeTR;
-  ctx.beginPath();
-  ctx.moveTo(diagTopX, 0);
-  ctx.lineTo(w * 0.92, 0);
-  ctx.lineTo(diagTopX - R_outer * 0.15, cy * 0.35);
-  ctx.closePath();
-  ctx.fill();
-
-  // 4. Feix diagonal lluminós blau-cel al quadrant inferior esquerre
-  const beamBL = ctx.createLinearGradient(0, cy + h * 0.06, cx * 0.7, h * 0.82);
-  beamBL.addColorStop(0, `rgba(105, 168, 255, ${pAlpha(0.48)})`);
-  beamBL.addColorStop(0.55, `rgba(42, 108, 236, ${pAlpha(0.24)})`);
-  beamBL.addColorStop(1, 'rgba(12, 26, 86, 0.0)');
-  ctx.fillStyle = beamBL;
-  ctx.beginPath();
-  ctx.moveTo(0, cy + h * 0.03 + drift2);
-  ctx.lineTo(cx * 0.65, cy);
-  ctx.lineTo(diagBotX * 1.15, h);
-  ctx.lineTo(0, h * 0.86);
-  ctx.closePath();
-  ctx.fill();
-
-  // 5. Bandes metàl·liques diagonals al quadrant inferior dret (reflexes de vidre)
-  const bandBR1 = ctx.createLinearGradient(cx, cy + h * 0.25, w, cy + h * 0.05);
-  bandBR1.addColorStop(0, `rgba(225, 240, 252, ${pAlpha(0.32)})`);
-  bandBR1.addColorStop(0.5, `rgba(195, 218, 238, ${pAlpha(0.22)})`);
-  bandBR1.addColorStop(1, 'rgba(160, 185, 210, 0.0)');
-  ctx.fillStyle = bandBR1;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy + R_outer * 0.72);
-  ctx.lineTo(w, cy + R_outer * 0.05 + drift2);
-  ctx.lineTo(w, cy + R_outer * 0.45 + drift2);
-  ctx.lineTo(cx, h);
-  ctx.closePath();
-  ctx.fill();
-
-  // Ombra diagonal suau sota la banda metàl·lica cap a baix-dreta
-  const bandBR2 = ctx.createLinearGradient(cx, cy + R_outer * 0.55, w, h);
-  bandBR2.addColorStop(0, `rgba(24, 42, 72, ${pAlpha(0.28)})`);
-  bandBR2.addColorStop(0.5, `rgba(38, 60, 92, ${pAlpha(0.14)})`);
-  bandBR2.addColorStop(1, 'rgba(100, 125, 155, 0.0)');
-  ctx.fillStyle = bandBR2;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy + R_outer * 0.48);
-  ctx.lineTo(w, cy + R_outer * 0.02);
-  ctx.lineTo(w, cy + R_outer * 0.22);
-  ctx.lineTo(cx, cy + R_outer * 0.76);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.filter = 'none';
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(tn96PrismCache, 0, 0, w, h);
 
   // Ombra característica sota la línia de l'horitzó a la meitat dreta
   const horShadowH = 22 * s;
@@ -14146,7 +14239,10 @@ function updateTN96Clock() {
     if (canvas) {
       const contrast = (1 + 0.06 * t).toFixed(3);
       const sat = (1 + 0.10 * t).toFixed(3);
-      canvas.style.filter = `url(#tn96-pal-filter) contrast(${contrast}) saturate(${sat})`;
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      canvas.style.filter = isIOS
+        ? `blur(${(1.15 * t).toFixed(2)}px) contrast(${contrast}) saturate(${sat})`
+        : `url(#tn96-pal-filter) contrast(${contrast}) saturate(${sat})`;
     }
     if (scan) scan.style.opacity = (0.14 * t).toFixed(3);
   }
