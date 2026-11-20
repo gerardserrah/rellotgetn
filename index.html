@@ -2383,7 +2383,6 @@ html.hide-config #master-editor-panel {
           } catch (e) {}
         }
         if (rawM === '2001') rawM = '1999';
-        if (forceHide && rawM === '1996') rawM = '2014';
         var initMode = /^(1996|1999|2002|2005|2014|2025)$/.test(rawM) ? rawM : '2014';
         try { localStorage.setItem('tn_last_mode', initMode); } catch (e) {}
         var modeBgColors = {
@@ -6330,6 +6329,7 @@ rightMat = new THREE.MeshStandardMaterial({
     let syncIntervalId = null;
 
     const TN_MODE_AUDIO_SRC = {
+      '1996': 'audio/music_1996.m4a',
       '1999': 'audio/music_1999.m4a',
       '2001': 'audio/music_1999.m4a',
       '2002': 'audio/music_2002.m4a',
@@ -6367,7 +6367,19 @@ rightMat = new THREE.MeshStandardMaterial({
         if (isAudioMuted) return;
         const m = currentAppMode || '2014';
         const el = getBgAudioEl();
-        if (m === '1999' || m === '2001') {
+        if (m === '1996') {
+          if (tn96AudioCtx && tn96AudioCtx.state === 'suspended') {
+            await tn96AudioCtx.resume().catch(() => {});
+          }
+          updateTN96AudioVolume();
+          if (tn96AudioCtx && tn96AudioCtx.state === 'running') {
+            if (!tn96AudioSource || !isTN96AudioActive) await playTN96SeamlessAudio();
+            if (el && !el.paused) el.pause();
+            unlockEvents.forEach(ev => window.removeEventListener(ev, tryUnlock));
+          } else {
+            playFallbackBgAudio('audio/music_1996.m4a');
+          }
+        } else if (m === '1999' || m === '2001') {
           if (tn99AudioCtx && tn99AudioCtx.state === 'suspended') {
             await tn99AudioCtx.resume().catch(() => {});
           }
@@ -6421,6 +6433,113 @@ rightMat = new THREE.MeshStandardMaterial({
         updateAudioUI();
       };
       unlockEvents.forEach(ev => window.addEventListener(ev, tryUnlock, { passive: true }));
+    }
+
+    // --- Web Audio API Seamless Gapless Looper for TN 1996 ---
+    let tn96AudioCtx = null;
+    let tn96AudioBuffer = null;
+    let tn96AudioSource = null;
+    let tn96GainNode = null;
+    let isTN96AudioActive = false;
+
+    async function loadTN96AudioBuffer() {
+      if (tn96AudioBuffer) return tn96AudioBuffer;
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtxClass) return null;
+      if (!tn96AudioCtx) {
+        tn96AudioCtx = new AudioCtxClass();
+      }
+      try {
+        let resp;
+        try {
+          resp = await fetch('audio/music_1996.wav');
+        } catch (e) {
+          resp = await fetch('audio/music_1996.m4a');
+        }
+        if (!resp || !resp.ok) {
+          resp = await fetch('audio/music_1996.m4a');
+        }
+        const ab = await resp.arrayBuffer();
+        const decoded = await tn96AudioCtx.decodeAudioData(ab);
+
+        const fade = Math.min(256, Math.floor(decoded.length * 0.005));
+        for (let ch = 0; ch < decoded.numberOfChannels; ch++) {
+          const chData = decoded.getChannelData(ch);
+          const len = chData.length;
+          for (let i = 0; i < fade; i++) {
+            const factor = i / fade;
+            chData[i] = (1 - factor) * chData[len - fade + i] + factor * chData[i];
+          }
+        }
+        tn96AudioBuffer = decoded;
+        return decoded;
+      } catch (err) {
+        console.warn("Could not load seamless TN 1996 audio:", err);
+        return null;
+      }
+    }
+
+    async function playTN96SeamlessAudio() {
+      isTN96AudioActive = true;
+      const el = getBgAudioEl();
+      const buf = await loadTN96AudioBuffer();
+      if (!isTN96AudioActive) return;
+
+      if (tn96AudioCtx && tn96AudioCtx.state === 'suspended') {
+        await tn96AudioCtx.resume().catch(() => {});
+      }
+
+      if (!buf || !tn96AudioCtx || tn96AudioCtx.state !== 'running') {
+        playFallbackBgAudio('audio/music_1996.m4a');
+        if (tn96AudioCtx && !tn96AudioCtx._stateBound) {
+          tn96AudioCtx._stateBound = true;
+          tn96AudioCtx.addEventListener('statechange', () => {
+            if (tn96AudioCtx.state === 'running' && isTN96AudioActive && (!tn96AudioSource)) {
+              playTN96SeamlessAudio();
+            }
+          });
+        }
+        return;
+      }
+
+      if (el && !el.paused) el.pause();
+
+      if (tn96AudioSource) {
+        try { tn96AudioSource.stop(); } catch (e) {}
+        tn96AudioSource.disconnect();
+        tn96AudioSource = null;
+      }
+
+      if (!tn96GainNode) {
+        tn96GainNode = tn96AudioCtx.createGain();
+        tn96GainNode.connect(tn96AudioCtx.destination);
+      }
+      const shouldMute = isAudioMuted || (el && el.muted);
+      tn96GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn96AudioCtx.currentTime);
+
+      tn96AudioSource = tn96AudioCtx.createBufferSource();
+      tn96AudioSource.buffer = buf;
+      tn96AudioSource.loop = true;
+      tn96AudioSource.loopStart = 0;
+      tn96AudioSource.loopEnd = buf.duration;
+      tn96AudioSource.connect(tn96GainNode);
+      tn96AudioSource.start(0);
+    }
+
+    function stopTN96SeamlessAudio() {
+      isTN96AudioActive = false;
+      if (tn96AudioSource) {
+        try { tn96AudioSource.stop(); } catch (e) {}
+        tn96AudioSource.disconnect();
+        tn96AudioSource = null;
+      }
+    }
+
+    function updateTN96AudioVolume() {
+      if (tn96GainNode && tn96AudioCtx) {
+        const shouldMute = isAudioMuted || (bgAudio && bgAudio.muted);
+        tn96GainNode.gain.setValueAtTime(shouldMute ? 0 : 0.85, tn96AudioCtx.currentTime);
+      }
     }
 
     // --- Web Audio API Seamless Gapless Looper for TN 1999 ---
@@ -6753,6 +6872,11 @@ rightMat = new THREE.MeshStandardMaterial({
 
       installGlobalAudioUnlock();
 
+      if (currentAppMode === '1996') {
+        playTN96SeamlessAudio();
+        updateAudioUI();
+        return;
+      }
       if (currentAppMode === '1999' || currentAppMode === '2001') {
         playTN99SeamlessAudio();
         updateAudioUI();
@@ -6793,6 +6917,14 @@ rightMat = new THREE.MeshStandardMaterial({
       if (!bgAudio) return;
       isAudioMuted = !isAudioMuted;
       bgAudio.muted = isAudioMuted;
+      if (currentAppMode === '1996') {
+        updateTN96AudioVolume();
+        updateAudioUI();
+        if (!isAudioMuted && (!tn96AudioSource || !isTN96AudioActive)) {
+          playTN96SeamlessAudio();
+        }
+        return;
+      }
       if (currentAppMode === '1999' || currentAppMode === '2001') {
         updateTN99AudioVolume();
         updateAudioUI();
@@ -9212,12 +9344,14 @@ function switchAudioForMode(mode) {
     stopTN99SeamlessAudio();
     stopTN02SeamlessAudio();
     stopTN05SeamlessAudio();
+    playTN96SeamlessAudio();
     return;
   }
   if (mode === '1999' || mode === '2001') {
     if (audioEl) {
       audioEl.pause();
     }
+    stopTN96SeamlessAudio();
     stopTN02SeamlessAudio();
     stopTN05SeamlessAudio();
     playTN99SeamlessAudio();
@@ -9228,6 +9362,7 @@ function switchAudioForMode(mode) {
     if (audioEl) {
       audioEl.pause();
     }
+    stopTN96SeamlessAudio();
     stopTN99SeamlessAudio();
     stopTN05SeamlessAudio();
     playTN02SeamlessAudio();
@@ -9238,13 +9373,15 @@ function switchAudioForMode(mode) {
     if (audioEl) {
       audioEl.pause();
     }
+    stopTN96SeamlessAudio();
     stopTN99SeamlessAudio();
     stopTN02SeamlessAudio();
     playTN05SeamlessAudio();
     return;
   }
 
-  // Si sortim dels modes 1999, 2002 o 2005, atura els bucles Web Audio seamless
+  // Si sortim dels modes 1996, 1999, 2002 o 2005, atura els bucles Web Audio seamless
+  stopTN96SeamlessAudio();
   stopTN99SeamlessAudio();
   stopTN02SeamlessAudio();
   stopTN05SeamlessAudio();
@@ -9516,11 +9653,7 @@ function switchMode(mode) {
 function getModeFromUrl() {
   try {
     const pathMatch = window.location.pathname.match(/^\/(1996|1999|2001|2002|2005|2014|2025)\/?$/);
-    if (pathMatch) {
-      const pm = pathMatch[1] === '2001' ? '1999' : pathMatch[1];
-      if (pm === '1996' && document.documentElement.classList.contains('hide-config')) return '2014';
-      return pm;
-    }
+    if (pathMatch) return pathMatch[1] === '2001' ? '1999' : pathMatch[1];
     const urlParams = new URLSearchParams(window.location.search);
     let m = window.__SCREENSAVER_YEAR__ || urlParams.get('any') || urlParams.get('mode') || urlParams.get('year');
     if (!m) {
@@ -9545,9 +9678,6 @@ function getModeFromUrl() {
       m = autoModes[day];
     }
     if (m === '2001') m = '1999';
-    if (m === '1996' && document.documentElement.classList.contains('hide-config')) {
-      return '2014';
-    }
     if (m && (m === '1996' || m === '1999' || m === '2002' || m === '2005' || m === '2014' || m === '2025')) {
       return m;
     }
@@ -9929,15 +10059,8 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       };
 
       const timelineTrack = document.getElementById('tn-timeline-track');
-      const isProdHidden = document.documentElement.classList.contains('hide-config');
-      if (isProdHidden) {
-        const opt96 = document.querySelector('#select-tn-version option[value="1996"]');
-        if (opt96) opt96.remove();
-      }
       if (timelineTrack) {
-        const availableYears = isProdHidden
-          ? new Set([1999, 2002, 2005, 2014, 2025])
-          : new Set([1996, 1999, 2002, 2005, 2014, 2025]);
+        const availableYears = new Set([1996, 1999, 2002, 2005, 2014, 2025]);
         const startYear = 1983;
         const endYear = 2025;
         const span = endYear - startYear;

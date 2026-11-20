@@ -10,7 +10,7 @@ function getBaseHtml() {
   return cachedHtml;
 }
 
-const VALID_YEARS = new Set(['1999', '2002', '2005', '2014', '2025']);
+const VALID_YEARS = new Set(['1996', '1999', '2002', '2005', '2014', '2025']);
 
 const MODE_BG_COLORS = {
   '1996': '#3b96dc',
