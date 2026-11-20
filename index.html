@@ -13623,60 +13623,87 @@ let tn96Ctx = null;
 let tn96PrismCache = null;
 let tn96PrismCacheKey = '';
 
-// Desenfoc gaussià real (2 passades box-blur separables) compatible 100% amb iOS Safari (on ctx.filter falla!)
-function tn96BoxBlurRGBA(data, w, h, radius) {
+// Desenfoc gaussià real amb alpha premultiplicat (zero halos foscos! Compatible 100% amb iOS Safari)
+function tn96BoxBlurPremul(data, w, h, radius, passes) {
   const r = Math.max(1, Math.round(radius));
-  const tmp = new Uint8ClampedArray(data.length);
-  const div = r * 2 + 1;
+  const len = data.length;
+  const bufA = new Float32Array(len);
+  const bufB = new Float32Array(len);
 
-  // Horizontal pass
-  for (let y = 0; y < h; y++) {
-    const rowOff = y * w * 4;
-    let sr = 0, sg = 0, sb = 0, sa = 0;
-    for (let k = -r; k <= r; k++) {
-      const cx = Math.max(0, Math.min(w - 1, k));
-      const idx = rowOff + cx * 4;
-      sr += data[idx]; sg += data[idx + 1]; sb += data[idx + 2]; sa += data[idx + 3];
+  // 1. Premultiplica RGB per alpha abans de difuminar (evita el fringing/ombres fosques amb pixels (0,0,0,0))
+  for (let i = 0; i < len; i += 4) {
+    const a = data[i + 3] / 255;
+    bufA[i]     = data[i] * a;
+    bufA[i + 1] = data[i + 1] * a;
+    bufA[i + 2] = data[i + 2] * a;
+    bufA[i + 3] = data[i + 3];
+  }
+
+  const div = r * 2 + 1;
+  for (let p = 0; p < passes; p++) {
+    // Passada horitzontal: bufA -> bufB
+    for (let y = 0; y < h; y++) {
+      const rowOff = y * w * 4;
+      let sr = 0, sg = 0, sb = 0, sa = 0;
+      for (let k = -r; k <= r; k++) {
+        const cx = Math.max(0, Math.min(w - 1, k));
+        const idx = rowOff + cx * 4;
+        sr += bufA[idx]; sg += bufA[idx + 1]; sb += bufA[idx + 2]; sa += bufA[idx + 3];
+      }
+      for (let x = 0; x < w; x++) {
+        const oIdx = rowOff + x * 4;
+        bufB[oIdx]     = sr / div;
+        bufB[oIdx + 1] = sg / div;
+        bufB[oIdx + 2] = sb / div;
+        bufB[oIdx + 3] = sa / div;
+        const xOut = Math.max(0, x - r);
+        const xIn = Math.min(w - 1, x + r + 1);
+        const iOut = rowOff + xOut * 4;
+        const iIn = rowOff + xIn * 4;
+        sr += bufA[iIn] - bufA[iOut];
+        sg += bufA[iIn + 1] - bufA[iOut + 1];
+        sb += bufA[iIn + 2] - bufA[iOut + 2];
+        sa += bufA[iIn + 3] - bufA[iOut + 3];
+      }
     }
+
+    // Passada vertical: bufB -> bufA
     for (let x = 0; x < w; x++) {
-      const oIdx = rowOff + x * 4;
-      tmp[oIdx] = (sr / div) | 0;
-      tmp[oIdx + 1] = (sg / div) | 0;
-      tmp[oIdx + 2] = (sb / div) | 0;
-      tmp[oIdx + 3] = (sa / div) | 0;
-      const xOut = Math.max(0, x - r);
-      const xIn = Math.min(w - 1, x + r + 1);
-      const iOut = rowOff + xOut * 4;
-      const iIn = rowOff + xIn * 4;
-      sr += data[iIn] - data[iOut];
-      sg += data[iIn + 1] - data[iOut + 1];
-      sb += data[iIn + 2] - data[iOut + 2];
-      sa += data[iIn + 3] - data[iOut + 3];
+      let sr = 0, sg = 0, sb = 0, sa = 0;
+      for (let k = -r; k <= r; k++) {
+        const cy = Math.max(0, Math.min(h - 1, k));
+        const idx = (cy * w + x) * 4;
+        sr += bufB[idx]; sg += bufB[idx + 1]; sb += bufB[idx + 2]; sa += bufB[idx + 3];
+      }
+      for (let y = 0; y < h; y++) {
+        const oIdx = (y * w + x) * 4;
+        bufA[oIdx]     = sr / div;
+        bufA[oIdx + 1] = sg / div;
+        bufA[oIdx + 2] = sb / div;
+        bufA[oIdx + 3] = sa / div;
+        const yOut = Math.max(0, y - r);
+        const yIn = Math.min(h - 1, y + r + 1);
+        const iOut = (yOut * w + x) * 4;
+        const iIn = (yIn * w + x) * 4;
+        sr += bufB[iIn] - bufB[iOut];
+        sg += bufB[iIn + 1] - bufB[iOut + 1];
+        sb += bufB[iIn + 2] - bufB[iOut + 2];
+        sa += bufB[iIn + 3] - bufB[iOut + 3];
+      }
     }
   }
 
-  // Vertical pass
-  for (let x = 0; x < w; x++) {
-    let sr = 0, sg = 0, sb = 0, sa = 0;
-    for (let k = -r; k <= r; k++) {
-      const cy = Math.max(0, Math.min(h - 1, k));
-      const idx = (cy * w + x) * 4;
-      sr += tmp[idx]; sg += tmp[idx + 1]; sb += tmp[idx + 2]; sa += tmp[idx + 3];
-    }
-    for (let y = 0; y < h; y++) {
-      const oIdx = (y * w + x) * 4;
-      data[oIdx] = (sr / div) | 0;
-      data[oIdx + 1] = (sg / div) | 0;
-      data[oIdx + 2] = (sb / div) | 0;
-      data[oIdx + 3] = (sa / div) | 0;
-      const yOut = Math.max(0, y - r);
-      const yIn = Math.min(h - 1, y + r + 1);
-      const iOut = (yOut * w + x) * 4;
-      const iIn = (yIn * w + x) * 4;
-      sr += tmp[iIn] - tmp[iOut];
-      sg += tmp[iIn + 1] - tmp[iOut + 1];
-      sb += tmp[iIn + 2] - tmp[iOut + 2];
-      sa += tmp[iIn + 3] - tmp[iOut + 3];
+  // 2. Despremultiplica RGB per alpha per recuperar colors purs sense halos grisos
+  for (let i = 0; i < len; i += 4) {
+    const a = bufA[i + 3];
+    if (a > 0.5) {
+      const invA = 255 / a;
+      data[i]     = Math.min(255, Math.round(bufA[i] * invA));
+      data[i + 1] = Math.min(255, Math.round(bufA[i + 1] * invA));
+      data[i + 2] = Math.min(255, Math.round(bufA[i + 2] * invA));
+      data[i + 3] = Math.min(255, Math.round(a));
+    } else {
+      data[i] = data[i + 1] = data[i + 2] = data[i + 3] = 0;
     }
   }
 }
@@ -13929,12 +13956,11 @@ function updateTN96Clock() {
     pctx.fill();
     pctx.restore();
 
-    // Aplica desenfoc gaussià real (2 passades) independent de ctx.filter (funciona a iOS Safari!)
+    // Aplica desenfoc gaussià real premultiplicat (2 passades) independent de ctx.filter (funciona a iOS Safari!)
     if (pBlur > 0.5) {
       const imgData = pctx.getImageData(0, 0, pw, ph);
       const blurR = Math.max(1, Math.round(pBlur * scaleDown * 0.95));
-      tn96BoxBlurRGBA(imgData.data, pw, ph, blurR);
-      tn96BoxBlurRGBA(imgData.data, pw, ph, blurR);
+      tn96BoxBlurPremul(imgData.data, pw, ph, blurR, 2);
       pctx.putImageData(imgData, 0, 0);
     }
     tn96PrismCacheKey = cacheKey;
