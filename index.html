@@ -2535,8 +2535,30 @@ html.hide-config #master-editor-panel {
 
 <!-- TN 1999 BROADCAST VIEW (Rellotge de Broques, Bola 3D, Triangle TV3 i Mapamundi) -->
 <div id="view-tn-1999" style="display: none;">
-  <canvas id="tn99-bg-canvas"></canvas>
-  <canvas id="tn99-clock-canvas"></canvas>
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
+    <defs>
+      <filter id="tn99-pal-filter" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+        <feGaussianBlur id="tn99-pal-blur" in="SourceGraphic" stdDeviation="1.33 0.41" result="palSoft"/>
+        <feColorMatrix in="palSoft" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palR"/>
+        <feOffset id="tn99-pal-r-off" in="palR" dx="0.82" dy="0" result="palRShift"/>
+        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palG"/>
+        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="palB"/>
+        <feOffset id="tn99-pal-b-off" in="palB" dx="-0.70" dy="0" result="palBShift"/>
+        <feComposite in="palRShift" in2="palG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRG"/>
+        <feComposite in="palRG" in2="palBShift" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRGB"/>
+        <feGaussianBlur id="tn99-pal-bloom" in="palRGB" stdDeviation="2.54 1.17" result="palGlow"/>
+        <feComponentTransfer in="palGlow" result="palGlowDim">
+          <feFuncA id="tn99-pal-bloom-a" type="linear" slope="0.109"/>
+        </feComponentTransfer>
+        <feBlend in="palRGB" in2="palGlowDim" mode="screen"/>
+      </filter>
+    </defs>
+  </svg>
+  <div id="tn99-pal-wrap" style="position:absolute;inset:0;width:100%;height:100%;">
+    <canvas id="tn99-bg-canvas"></canvas>
+    <canvas id="tn99-clock-canvas"></canvas>
+  </div>
+  <div id="tn99-pal-scanlines" style="position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0.055;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.42) 3px, rgba(0,0,0,0) 4px);"></div>
 </div>
 
 <!-- TN 2002 BROADCAST VIEW (Fons Vídeo i Rellotge Superposat) -->
@@ -3518,13 +3540,13 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Suavitat TV (px)</label>
-    <input type="number" id="num-tn96-soft" min="0" max="4" step="0.1" value="2.8">
-    <input type="range" id="slider-tn96-soft" min="0" max="4" step="0.1" value="2.8">
+    <input type="number" id="num-tn96-soft" min="0" max="4" step="0.1" value="4">
+    <input type="range" id="slider-tn96-soft" min="0" max="4" step="0.1" value="4">
   </div>
   <div class="coord-row">
     <label>Desenfoc TV Analògica (%)</label>
-    <input type="number" id="num-tn96-pal-tv" min="0" max="100" step="1" value="35">
-    <input type="range" id="slider-tn96-pal-tv" min="0" max="100" step="1" value="35">
+    <input type="number" id="num-tn96-pal-tv" min="0" max="100" step="1" value="39">
+    <input type="range" id="slider-tn96-pal-tv" min="0" max="100" step="1" value="39">
   </div>
 
   <div class="tab-actions" style="margin-top: 14px; display: flex; gap: 6px;">
@@ -3757,6 +3779,11 @@ html.hide-config #master-editor-panel {
   <div class="coord-row">
     <label>Mostra màscara</label>
     <input type="checkbox" id="chk-tn99-map-blur-showmask" style="justify-self: start;">
+  </div>
+  <div class="coord-row">
+    <label>Desenfoc TV Analògica (%)</label>
+    <input type="number" id="num-tn99-pal-tv" min="0" max="100" step="1" value="39">
+    <input type="range" id="slider-tn99-pal-tv" min="0" max="100" step="1" value="39">
   </div>
 
   <div class="tab-actions" style="margin-top: 14px;">
@@ -7789,7 +7816,8 @@ let tn99Params = {
   mapBlurIrreg: 43,    // % irregularitat orgànica
   mapBlurSeed: 7,      // llavor del patró irregular
   mapBlurInvert: false,// inverteix (centre desenfocat, vores nítides)
-  mapBlurShowMask: false // eina: visualitza la zona de desenfoc
+  mapBlurShowMask: false, // eina: visualitza la zona de desenfoc
+  palTvBlur: 39        // % efecte desenfoc TV analògica PAL
 };
 
 const TN99_DEFAULTS = JSON.parse(JSON.stringify(tn99Params));
@@ -11929,7 +11957,8 @@ if (selectTn25Easing) {
       ['tri-size', p.triSize], ['h-len', p.hLen], ['m-len', p.mLen],
       ['h-width', p.hWidth], ['m-width', p.mWidth],
       ['map-op', p.mapOpacity], ['map-scale', p.mapScale], ['grain-op', p.grainOpacity],
-      ['bg-subtlety', p.bgGradSubtlety]
+      ['bg-subtlety', p.bgGradSubtlety],
+      ['pal-tv', p.palTvBlur]
     ].concat(TN99_MAP_BLUR_SLIDERS.map(([id, key]) => [id, p[key]]));
     pairs.forEach(([id, val]) => {
       const n = document.getElementById('num-tn99-' + id);
@@ -11957,11 +11986,43 @@ if (selectTn25Easing) {
     if (chk99ShowMask) chk99ShowMask.checked = !!p.mapBlurShowMask;
   }
 
+  function applyTN99PalTvFilter() {
+    const wrap = document.getElementById('tn99-pal-wrap');
+    const scan = document.getElementById('tn99-pal-scanlines');
+    const t = Math.max(0, Math.min(100, tn99Params.palTvBlur || 0)) / 100;
+    if (t <= 0.001) {
+      if (wrap) wrap.style.filter = 'none';
+      if (scan) scan.style.opacity = '0';
+      return;
+    }
+    const blurEl = document.getElementById('tn99-pal-blur');
+    const rOff = document.getElementById('tn99-pal-r-off');
+    const bOff = document.getElementById('tn99-pal-b-off');
+    const bloomEl = document.getElementById('tn99-pal-bloom');
+    const bloomA = document.getElementById('tn99-pal-bloom-a');
+
+    if (blurEl) blurEl.setAttribute('stdDeviation', `${(3.4 * t).toFixed(2)} ${(1.05 * t).toFixed(2)}`);
+    if (rOff) rOff.setAttribute('dx', (2.1 * t).toFixed(2));
+    if (bOff) bOff.setAttribute('dx', (-1.8 * t).toFixed(2));
+    if (bloomEl) bloomEl.setAttribute('stdDeviation', `${(6.5 * t).toFixed(2)} ${(3.0 * t).toFixed(2)}`);
+    if (bloomA) bloomA.setAttribute('slope', (0.28 * t).toFixed(3));
+    if (wrap) {
+      wrap.style.filter = `url(#tn99-pal-filter) contrast(${(1 + 0.06 * t).toFixed(3)}) saturate(${(1 + 0.10 * t).toFixed(3)})`;
+    }
+    if (scan) scan.style.opacity = (0.14 * t).toFixed(3);
+  }
+  syncNumberSlider(document.getElementById('num-tn99-pal-tv'), document.getElementById('slider-tn99-pal-tv'), (val) => {
+    tn99Params.palTvBlur = val;
+    applyTN99PalTvFilter();
+  });
+  applyTN99PalTvFilter();
+
   const btnResetTn99 = document.getElementById('btn-reset-tn99');
   if (btnResetTn99) {
     btnResetTn99.addEventListener('click', () => {
       Object.assign(tn99Params, JSON.parse(JSON.stringify(TN99_DEFAULTS)));
       syncTN99UI();
+      applyTN99PalTvFilter();
       drawTN99Background();
       updateTN99Clock(true);
     });
@@ -11971,7 +12032,7 @@ if (selectTn25Easing) {
     const p = tn99Params;
     return [
       `=== CONFIGURACIÓ RELLOTGE TN 1999 ===`,
-      `Esfera: Mida=${p.size}% | PosX=${p.posX}px | PosY=${p.posY}px | AspectRatio=${p.aspectRatio} | Desenfoc=${p.blur}px`,
+      `Esfera: Mida=${p.size}% | PosX=${p.posX}px | PosY=${p.posY}px | AspectRatio=${p.aspectRatio} | Desenfoc=${p.blur}px | TVAnalògica=${p.palTvBlur}%`,
       `Segunder Bola 3D: Mida=${p.ballSize}% | Distància=${p.ballDist}% | Moviment=${p.ballMotion} | Ombra=${p.ballShadow} | OmbraInterna=${p.ballInnerShadow}%`,
       `Triangle TV3 (a les 3): Mida=${p.triSize}% | Color=${p.triColor}`,
       `Broques: Hores(Llarg=${p.hLen}%|Gruix=${p.hWidth}%) | Minuts(Llarg=${p.mLen}%|Gruix=${p.mWidth}%) | Color=${p.handColor}`,
@@ -13541,8 +13602,8 @@ const TN96_DEFAULTS = {
   prismIntensity: 115,
   prismBlur: 13,
   animSpeed: 0,
-  broadcastSoftness: 2.8,
-  palTvBlur: 35
+  broadcastSoftness: 4,
+  palTvBlur: 39
 };
 
 let tn96Params = { ...TN96_DEFAULTS };
