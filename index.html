@@ -9044,7 +9044,7 @@ function updateTN02Globe() {
     }
   }
 
-  const TN02_GLOBE_FRAME_MS = 1000 / 50; // 50 fps PAL (encaixa amb el vídeo de fons)
+  const TN02_GLOBE_FRAME_MS = 1000 / 25; // 25 fps PAL (encaixa amb el vídeo de fons)
   const now = performance.now();
   const rawDelta = now - tn02GlobeLastTime;
   if (!tn02GlobeNeedsRedraw && rawDelta < TN02_GLOBE_FRAME_MS) {
