@@ -1479,7 +1479,7 @@ html.is-mobile-device .tn-timeline-scrim {
   mix-blend-mode: normal;
   white-space: nowrap;
   letter-spacing: 0px;
-  filter: blur(1.5px);
+  filter: blur(0.8px);
   transform: scale(1.02, 0.91);
   transform-origin: left top;
   pointer-events: none;
@@ -1490,6 +1490,28 @@ html.is-mobile-device .tn-timeline-scrim {
 .tn02-char, .tn02-colon {
   display: inline-block;
   position: relative;
+}
+
+.tn02-globe-wrap {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 20;
+  transform: translate(-50%, -50%);
+  will-change: left, top;
+  display: none;
+}
+
+.tn02-globe-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
 }
 
 /* ==========================================================================
@@ -2485,7 +2507,30 @@ html.hide-config #master-editor-panel {
 
 <!-- TN 1996 BROADCAST VIEW (Rellotge Vidre, Prismes Blaus, Eixos i Broques) -->
 <div id="view-tn-1996" style="display: none;">
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
+    <defs>
+      <filter id="tn96-pal-filter" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+        <!-- 1. Anisotropic PAL horizontal bandwidth softness (H ~ 3x V) -->
+        <feGaussianBlur id="tn96-pal-blur" in="SourceGraphic" stdDeviation="1.15 0.38" result="palSoft"/>
+        <!-- 2. Subtle analog PAL chroma bleed / CRT convergence shift (R right, B left) -->
+        <feColorMatrix in="palSoft" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palR"/>
+        <feOffset id="tn96-pal-r-off" in="palR" dx="0.8" dy="0" result="palRShift"/>
+        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palG"/>
+        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="palB"/>
+        <feOffset id="tn96-pal-b-off" in="palB" dx="-0.7" dy="0" result="palBShift"/>
+        <feComposite in="palRShift" in2="palG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRG"/>
+        <feComposite in="palRG" in2="palBShift" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRGB"/>
+        <!-- 3. Soft CRT phosphor halation bloom -->
+        <feGaussianBlur id="tn96-pal-bloom" in="palRGB" stdDeviation="3.2 1.6" result="palGlow"/>
+        <feComponentTransfer in="palGlow" result="palGlowDim">
+          <feFuncA id="tn96-pal-bloom-a" type="linear" slope="0.16"/>
+        </feComponentTransfer>
+        <feBlend in="palRGB" in2="palGlowDim" mode="screen"/>
+      </filter>
+    </defs>
+  </svg>
   <canvas id="tn96-canvas"></canvas>
+  <div id="tn96-pal-scanlines" style="position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0.06;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.42) 3px, rgba(0,0,0,0) 4px);"></div>
 </div>
 
 <!-- TN 1999 BROADCAST VIEW (Rellotge de Broques, Bola 3D, Triangle TV3 i Mapamundi) -->
@@ -2503,6 +2548,9 @@ html.hide-config #master-editor-panel {
     </div>
     <div id="tn02-clock-front" class="tn02-clock-front">
       <span id="tn02-clock-front-text">20:29:58</span>
+    </div>
+    <div id="tn02-globe-wrap" class="tn02-globe-wrap">
+      <canvas id="tn02-globe-canvas" width="220" height="220"></canvas>
     </div>
   </div>
 </div>
@@ -3411,8 +3459,13 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Llargada bloc segons</label>
-    <input type="number" id="num-tn96-s-len" min="8" max="50" step="1" value="39">
-    <input type="range" id="slider-tn96-s-len" min="8" max="50" step="1" value="39">
+    <input type="number" id="num-tn96-s-len" min="8" max="60" step="1" value="36">
+    <input type="range" id="slider-tn96-s-len" min="8" max="60" step="1" value="36">
+  </div>
+  <div class="coord-row">
+    <label>Inici segunder (px)</label>
+    <input type="number" id="num-tn96-s-start" min="-60" max="60" step="0.5" value="0.5">
+    <input type="range" id="slider-tn96-s-start" min="-60" max="60" step="0.5" value="0.5">
   </div>
   <div class="coord-row">
     <label>Moviment segons</label>
@@ -3467,6 +3520,11 @@ html.hide-config #master-editor-panel {
     <label>Suavitat TV (px)</label>
     <input type="number" id="num-tn96-soft" min="0" max="4" step="0.1" value="2.8">
     <input type="range" id="slider-tn96-soft" min="0" max="4" step="0.1" value="2.8">
+  </div>
+  <div class="coord-row">
+    <label>Desenfoc TV Analògica (%)</label>
+    <input type="number" id="num-tn96-pal-tv" min="0" max="100" step="1" value="35">
+    <input type="range" id="slider-tn96-pal-tv" min="0" max="100" step="1" value="35">
   </div>
 
   <div class="tab-actions" style="margin-top: 14px; display: flex; gap: 6px;">
@@ -3769,8 +3827,8 @@ html.hide-config #master-editor-panel {
   </div>
   <div class="coord-row">
     <label>Desenfocament (px)</label>
-    <input type="number" id="num-tn02-front-blur" min="0" max="20" step="0.5" value="1.5">
-    <input type="range" id="slider-tn02-front-blur" min="0" max="20" step="0.5" value="1.5">
+    <input type="number" id="num-tn02-front-blur" min="0" max="20" step="0.1" value="0.8">
+    <input type="range" id="slider-tn02-front-blur" min="0" max="20" step="0.1" value="0.8">
   </div>
   <div class="coord-row">
     <label>Mode fusió</label>
@@ -3890,6 +3948,97 @@ html.hide-config #master-editor-panel {
       <input type="color" id="picker-tn02-back-color" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
       <input type="text" id="hex-tn02-back-color" value="#FFFFFF" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
     </div>
+  </div>
+
+  <div class="panel-section-title" style="margin-top: 14px;">Bola del Món (Cada 10s)</div>
+  <div class="coord-row" style="grid-template-columns: 1fr auto;">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" id="chk-tn02-globe-enabled" checked> Activar bola del món
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:#0284c7;font-weight:600;">
+      <input type="checkbox" id="chk-tn02-globe-freeze"> Aturada (config)
+    </label>
+  </div>
+  <div class="coord-row">
+    <label>Posició Y (%)</label>
+    <input type="number" id="num-tn02-globe-y" min="0" max="100" step="0.5" value="50.5">
+    <input type="range" id="slider-tn02-globe-y" min="0" max="100" step="0.5" value="50.5">
+  </div>
+  <div class="coord-row">
+    <label>Posició X config (%)</label>
+    <input type="number" id="num-tn02-globe-preview-x" min="5" max="95" step="1" value="50">
+    <input type="range" id="slider-tn02-globe-preview-x" min="5" max="95" step="1" value="50">
+  </div>
+  <div class="coord-row">
+    <label>Mida (%)</label>
+    <input type="number" id="num-tn02-globe-size" min="5" max="65" step="0.5" value="12.5">
+    <input type="range" id="slider-tn02-globe-size" min="5" max="65" step="0.5" value="12.5">
+  </div>
+  <div class="coord-row">
+    <label>Interval (s)</label>
+    <input type="number" id="num-tn02-globe-interval" min="2" max="30" step="0.5" value="10">
+    <input type="range" id="slider-tn02-globe-interval" min="2" max="30" step="0.5" value="10">
+  </div>
+  <div class="coord-row">
+    <label>Velocitat pas (s)</label>
+    <input type="number" id="num-tn02-globe-duration" min="1" max="14" step="0.1" value="2.8">
+    <input type="range" id="slider-tn02-globe-duration" min="1" max="14" step="0.1" value="2.8">
+  </div>
+  <div class="coord-row">
+    <label>Rotació eix (º/s)</label>
+    <input type="number" id="num-tn02-globe-spin" min="-360" max="360" step="5" value="-80">
+    <input type="range" id="slider-tn02-globe-spin" min="-360" max="360" step="5" value="-80">
+  </div>
+  <div class="coord-row">
+    <label>Direcció</label>
+    <select id="select-tn02-globe-dir" style="grid-column: 2 / -1; height: 26px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 6px; font-size: 11px; background: #fff; color: #1e293b;">
+      <option value="ltr" selected>Esquerra → Dreta</option>
+      <option value="rtl">Dreta → Esquerra</option>
+    </select>
+  </div>
+  <div class="coord-row">
+    <label>Transparència (%)</label>
+    <input type="number" id="num-tn02-globe-opacity" min="10" max="100" step="1" value="94">
+    <input type="range" id="slider-tn02-globe-opacity" min="10" max="100" step="1" value="94">
+  </div>
+  <div class="coord-row">
+    <label>Difuminat fons (px)</label>
+    <input type="number" id="num-tn02-globe-blur" min="0" max="30" step="0.5" value="30">
+    <input type="range" id="slider-tn02-globe-blur" min="0" max="30" step="0.5" value="30">
+  </div>
+  <div class="coord-row">
+    <label>Glow intensitat (%)</label>
+    <input type="number" id="num-tn02-globe-glow-int" min="0" max="150" step="1" value="71">
+    <input type="range" id="slider-tn02-globe-glow-int" min="0" max="150" step="1" value="71">
+  </div>
+  <div class="coord-row">
+    <label>Glow radi (px)</label>
+    <input type="number" id="num-tn02-globe-glow-rad" min="0" max="90" step="1" value="24">
+    <input type="range" id="slider-tn02-globe-glow-rad" min="0" max="90" step="1" value="24">
+  </div>
+  <div class="coord-row">
+    <label>Color oceà</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn02-globe-ocean" value="#dfe0e1" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn02-globe-ocean" value="#DFE0E1" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color continents</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn02-globe-land" value="#14c855" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn02-globe-land" value="#14C855" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="coord-row">
+    <label>Color glow</label>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 1; grid-column: 2 / -1;">
+      <input type="color" id="picker-tn02-globe-glow-col" value="#d4ffea" style="width: 28px; height: 24px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: none;">
+      <input type="text" id="hex-tn02-globe-glow-col" value="#D4FFEA" maxlength="7" style="width: 76px; font-family: monospace; font-size: 11px; text-transform: uppercase;">
+    </div>
+  </div>
+  <div class="tab-actions" style="margin-top: 8px;">
+    <button type="button" class="btn-editor-action primary" id="btn-tn02-globe-trigger" style="flex:1;">▶ Llança passada ara</button>
   </div>
 
   <div class="tab-actions" style="margin-top: 14px;">
@@ -6139,6 +6288,7 @@ rightMat = new THREE.MeshStandardMaterial({
       }
       if (currentAppMode === '2002') {
         updateTN02Clock();
+        updateTN02Globe();
         return; // Stop Three.js render loop when in 2D video TN 2002 mode to save CPU/GPU!
       }
       if (currentAppMode === '2005') {
@@ -6349,9 +6499,19 @@ rightMat = new THREE.MeshStandardMaterial({
       el.muted = false;
       el.loop = true;
       el.volume = 0.85;
+      const syncFallbackToBeat = () => {
+        if (src.indexOf('music_1999') !== -1 && el.duration && isFinite(el.duration)) {
+          const now = new Date();
+          const curSec = now.getSeconds() + (now.getMilliseconds() / 1000);
+          try { el.currentTime = curSec % el.duration; } catch (e) {}
+        }
+      };
       if (!el.src || !el.src.endsWith(src)) {
         el.src = src;
         el.load();
+        el.addEventListener('loadedmetadata', syncFallbackToBeat, { once: true });
+      } else {
+        syncFallbackToBeat();
       }
       if (el.paused) {
         el.play().catch(() => {});
@@ -6452,12 +6612,12 @@ rightMat = new THREE.MeshStandardMaterial({
       try {
         let resp;
         try {
-          resp = await fetch('audio/music_1996.wav');
+          resp = await fetch('audio/music_1996.wav?v=orig');
         } catch (e) {
-          resp = await fetch('audio/music_1996.m4a');
+          resp = await fetch('audio/music_1996.m4a?v=orig');
         }
         if (!resp || !resp.ok) {
-          resp = await fetch('audio/music_1996.m4a');
+          resp = await fetch('audio/music_1996.m4a?v=orig');
         }
         const ab = await resp.arrayBuffer();
         const decoded = await tn96AudioCtx.decodeAudioData(ab);
@@ -6559,12 +6719,12 @@ rightMat = new THREE.MeshStandardMaterial({
       try {
         let resp;
         try {
-          resp = await fetch('audio/music_1999.wav');
+          resp = await fetch('audio/music_1999.wav?v=sync120');
         } catch (e) {
-          resp = await fetch('audio/music_1999.m4a');
+          resp = await fetch('audio/music_1999.m4a?v=sync120');
         }
         if (!resp || !resp.ok) {
-          resp = await fetch('audio/music_1999.m4a');
+          resp = await fetch('audio/music_1999.m4a?v=sync120');
         }
         const ab = await resp.arrayBuffer();
         const decoded = await tn99AudioCtx.decodeAudioData(ab);
@@ -6633,10 +6793,11 @@ rightMat = new THREE.MeshStandardMaterial({
       tn99AudioSource.loopEnd = buf.duration;
       tn99AudioSource.connect(tn99GainNode);
 
-      // Sincronització de fase amb els segons del rellotge (120 BPM = 16.0s bucle exacte)
+      // Sincronització de fase amb els segons del rellotge (120 BPM = 16.0s bucle exacte + compensació de latència)
+      const latency99 = (tn99AudioCtx && (tn99AudioCtx.outputLatency || tn99AudioCtx.baseLatency)) || 0;
       const now = new Date();
-      const curSec = now.getSeconds() + (now.getMilliseconds() / 1000);
-      const startOffset = curSec % buf.duration;
+      const curSec = now.getSeconds() + (now.getMilliseconds() / 1000) + latency99;
+      const startOffset = ((curSec % buf.duration) + buf.duration) % buf.duration;
 
       tn99AudioSource.start(0, startOffset);
     }
@@ -8366,7 +8527,7 @@ let tn02Params = {
   frontFormat: 'HH:MM:SS',
   frontWeight: '600',
   frontSpacing: -2,
-  frontBlur: 1.5,
+  frontBlur: 0.8,
   frontShadow: true,
   frontColonGap: 5,
   frontColonX: 1,
@@ -8385,7 +8546,24 @@ let tn02Params = {
   backBlur: 1.5,
   backColonGap: 0,
   backColonX: 2,
-  backColonY: 0
+  backColonY: 0,
+
+  // Bola del Món (cada 10s creuant per damunt del rellotge)
+  globeEnabled: true,
+  globeY: 50.5,
+  globePreviewX: 50,
+  globeSize: 12.5,
+  globeInterval: 10,
+  globeDuration: 2.8,
+  globeSpin: -80,
+  globeDir: 'ltr',
+  globeOpacity: 94,
+  globeBlur: 30,
+  globeGlowInt: 71,
+  globeGlowRad: 24,
+  globeOceanColor: '#DFE0E1',
+  globeLandColor: '#14C855',
+  globeGlowColor: '#D4FFEA'
 };
 
 let lastTN02Second = -1;
@@ -8472,6 +8650,7 @@ function applyTN02Styles() {
   }
 
   updateTN02Scale();
+  applyTN02GlobeStyles();
   lastTN02Second = -1;
   updateTN02Clock(true);
 }
@@ -8530,6 +8709,347 @@ function updateTN02Clock(force) {
   if (backEl) {
     const bStr = (tn02Params.backFormat === 'HH:MM:SS') ? `${hStr}:${mStr}:${sStr}` : `${hStr}:${mStr}`;
     renderTN02FormattedTime(backEl, bStr, 'medext', tn02Params.backSpacing, tn02Params.backColonGap, tn02Params.backColonX, tn02Params.backColonY);
+  }
+}
+
+// --- TN 2002 FLOATING 3D GLASS WORLD GLOBE ---
+const TN02_GLOBE_RES = 220;
+const TN02_TEX_W = 512;
+const TN02_TEX_H = 256;
+let tn02GlobeLandMask = null;
+let tn02GlobeCloudMask = null;
+let tn02GlobeLUT = null;
+let tn02GlobeImgData = null;
+let tn02GlobeAngle = 0.65; // radians (starts facing Americas/Atlantic/Europe)
+let tn02GlobeLastTime = performance.now();
+let tn02GlobeCycleStart = performance.now() - 8500; // first pass appears ~1.5s after entering 2002
+let tn02GlobePinned = false;
+let tn02GlobeSpinPaused = false;
+let tn02GlobeLastRenderedAngle = -999;
+let tn02GlobeNeedsRedraw = true;
+
+function parseHexRgb(hex, fallback) {
+  const m = String(hex || '').trim().match(/^#?([0-9a-f]{6})$/i);
+  if (!m) return fallback;
+  const v = parseInt(m[1], 16);
+  return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+}
+
+function initTN02GlobeAssets() {
+  if (tn02GlobeLUT) return;
+
+  // 1. Procedural equirectangular world map (continents + subtle atmospheric texture)
+  const mapCanvas = document.createElement('canvas');
+  mapCanvas.width = TN02_TEX_W;
+  mapCanvas.height = TN02_TEX_H;
+  const mctx = mapCanvas.getContext('2d');
+  mctx.fillStyle = '#000';
+  mctx.fillRect(0, 0, TN02_TEX_W, TN02_TEX_H);
+
+  // Helper: draw polygon from [lon (-180..180), lat (90..-90)]
+  function drawPoly(pts) {
+    mctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const x = ((pts[i][0] + 180) / 360) * TN02_TEX_W;
+      const y = ((90 - pts[i][1]) / 180) * TN02_TEX_H;
+      if (i === 0) mctx.moveTo(x, y);
+      else mctx.lineTo(x, y);
+    }
+    mctx.closePath();
+    mctx.fill();
+  }
+
+  mctx.fillStyle = '#fff';
+  mctx.filter = 'blur(1.6px)';
+
+  // North America
+  drawPoly([
+    [-168,66],[-150,70],[-130,69],[-105,68],[-82,64],[-65,58],[-55,48],[-68,44],
+    [-75,35],[-81,25],[-88,21],[-97,20],[-105,19],[-90,14],[-83,10],[-78,8],
+    [-85,12],[-98,17],[-108,24],[-117,32],[-124,42],[-130,54],[-148,60],[-162,56]
+  ]);
+  // Greenland
+  drawPoly([[-52,60],[-42,65],[-22,72],[-18,80],[-42,82],[-60,76],[-55,68]]);
+  // South America
+  drawPoly([
+    [-79,9],[-70,11],[-60,8],[-48,0],[-35,-6],[-38,-15],[-42,-23],[-52,-32],
+    [-62,-40],[-67,-54],[-74,-52],[-73,-38],[-71,-20],[-80,-4],[-79,4]
+  ]);
+  // Europe
+  drawPoly([
+    [-9,37],[-9,43],[-2,48],[4,52],[10,56],[5,61],[14,68],[28,70],[40,66],
+    [42,56],[35,46],[25,40],[16,40],[12,44],[5,43],[-3,37]
+  ]);
+  // UK & Ireland
+  drawPoly([[-6,50],[2,51],[1,58],[-6,57]]);
+  // Africa
+  drawPoly([
+    [-17,15],[-12,28],[-5,35],[10,37],[25,31],[33,30],[43,12],[51,11],[42,-2],
+    [40,-16],[33,-26],[25,-34],[18,-34],[14,-22],[10,-4],[3,5],[-10,6]
+  ]);
+  // Madagascar
+  drawPoly([[44,-25],[48,-24],[50,-14],[46,-15]]);
+  // Asia
+  drawPoly([
+    [35,42],[42,56],[45,67],[70,72],[105,75],[140,70],[170,66],[162,56],[142,52],
+    [134,42],[122,38],[121,24],[109,18],[104,10],[100,2],[98,16],[90,22],
+    [80,10],[74,20],[66,25],[56,24],[48,30],[36,34]
+  ]);
+  // Arabian Peninsula
+  drawPoly([[35,30],[46,29],[58,22],[52,14],[43,13],[36,24]]);
+  // Japan
+  drawPoly([[130,32],[136,35],[142,41],[145,44],[140,42],[134,36]]);
+  // Indonesia / SE Islands
+  drawPoly([[96,4],[106,-6],[118,-8],[115,-2],[104,1]]);
+  drawPoly([[110,2],[118,4],[118,-3],[110,-3]]);
+  // Australia
+  drawPoly([
+    [114,-22],[124,-16],[136,-12],[143,-11],[153,-26],[148,-38],[138,-35],
+    [126,-33],[115,-34],[113,-27]
+  ]);
+  // Antarctica
+  drawPoly([[-180,-72],[-120,-74],[-60,-68],[0,-70],[60,-69],[120,-68],[180,-72],[180,-90],[-180,-90]]);
+
+  mctx.filter = 'none';
+  const mData = mctx.getImageData(0, 0, TN02_TEX_W, TN02_TEX_H).data;
+  tn02GlobeLandMask = new Uint8Array(TN02_TEX_W * TN02_TEX_H);
+  tn02GlobeCloudMask = new Uint8Array(TN02_TEX_W * TN02_TEX_H);
+  for (let y = 0; y < TN02_TEX_H; y++) {
+    for (let x = 0; x < TN02_TEX_W; x++) {
+      const idx = y * TN02_TEX_W + x;
+      tn02GlobeLandMask[idx] = mData[idx * 4];
+      // Soft procedural wispy atmosphere/marble streaks
+      const u = (x / TN02_TEX_W) * Math.PI * 2;
+      const v = (y / TN02_TEX_H) * Math.PI;
+      const w = 0.5 + 0.28 * Math.sin(u * 3 + Math.sin(v * 5) * 1.4) + 0.22 * Math.cos(u * 7 - v * 6);
+      tn02GlobeCloudMask[idx] = Math.max(0, Math.min(255, Math.round(w * 255)));
+    }
+  }
+
+  // 2. Precompute 3D Orthographic Sphere Lookup Table (with 18° axial tilt)
+  const S = TN02_GLOBE_RES;
+  const half = S * 0.5;
+  const rad = half;
+  const tilt = 18 * Math.PI / 180;
+  const cosT = Math.cos(tilt);
+  const sinT = Math.sin(tilt);
+  // Light from upper-right-front (matches reference specular)
+  const lx = 0.34, ly = -0.38, lz = 0.86;
+
+  tn02GlobeLUT = [];
+  for (let py = 0; py < S; py++) {
+    for (let px = 0; px < S; px++) {
+      const nx = (px - half + 0.5) / rad;
+      const ny = (py - half + 0.5) / rad;
+      const r2 = nx * nx + ny * ny;
+      if (r2 > 1.06) continue;
+      const r = Math.min(1.0, Math.sqrt(r2));
+      const scaleN = r2 > 1.0 ? (1.0 / Math.sqrt(r2)) : 1.0;
+      const cnx = nx * scaleN;
+      const cny = ny * scaleN;
+      const nz = Math.sqrt(Math.max(0, 1.0 - Math.min(1.0, r2)));
+
+      // Apply subtle axial tilt around X axis
+      const ty = cny * cosT - nz * sinT;
+      const tz = cny * sinT + nz * cosT;
+
+      const lat = Math.asin(Math.max(-1, Math.min(1, ty)));
+      const lon = Math.atan2(cnx, tz);
+      const uBase = Math.floor(((lon / (Math.PI * 2)) + 0.5) * TN02_TEX_W) & (TN02_TEX_W - 1);
+      const vRow = Math.max(0, Math.min(TN02_TEX_H - 1, Math.floor(((lat / Math.PI) + 0.5) * TN02_TEX_H))) * TN02_TEX_W;
+
+      const diff = Math.max(0, cnx * lx + cny * ly + nz * lz);
+      const edgeAA = 1.0;
+      const fresnel = Math.pow(1.0 - nz, 2.3);
+      tn02GlobeLUT.push((py * S + px) * 4, uBase, vRow, diff, fresnel, r, edgeAA);
+    }
+  }
+}
+
+function applyTN02GlobeStyles() {
+  const wrap = document.getElementById('tn02-globe-wrap');
+  if (!wrap) return;
+  const { baseH } = getTN02VideoMetrics();
+  const pxSize = Math.round((tn02Params.globeSize / 100) * baseH);
+  wrap.style.width = `${pxSize}px`;
+  wrap.style.height = `${pxSize}px`;
+  wrap.style.top = `${tn02Params.globeY}%`;
+  wrap.style.opacity = (tn02Params.globeOpacity / 100).toFixed(2);
+
+  const blurPx = Math.max(0, tn02Params.globeBlur);
+  const blurStr = blurPx > 0 ? `blur(${blurPx}px)` : 'none';
+  wrap.style.backdropFilter = blurStr;
+  wrap.style.webkitBackdropFilter = blurStr;
+
+  const glowInt = Math.max(0, tn02Params.globeGlowInt) / 100;
+  const glowRad = Math.max(0, tn02Params.globeGlowRad);
+  const [gr, gg, gb] = parseHexRgb(tn02Params.globeGlowColor, [212, 255, 234]);
+  if (glowInt > 0 && glowRad > 0) {
+    const a1 = Math.min(1, 0.72 * glowInt).toFixed(3);
+    const a2 = Math.min(1, 0.42 * glowInt).toFixed(3);
+    wrap.style.boxShadow = `0 0 ${Math.round(glowRad * 0.45)}px rgba(${gr},${gg},${gb},${a1}), 0 0 ${Math.round(glowRad * 1.25)}px rgba(${gr},${gg},${gb},${a2})`;
+  } else {
+    wrap.style.boxShadow = 'none';
+  }
+  tn02GlobeNeedsRedraw = true;
+}
+
+function renderTN02Globe(angleRad) {
+  const canvas = document.getElementById('tn02-globe-canvas');
+  if (!canvas) return;
+  initTN02GlobeAssets();
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const S = TN02_GLOBE_RES;
+  if (!tn02GlobeImgData) {
+    tn02GlobeImgData = ctx.createImageData(S, S);
+  }
+  const out = tn02GlobeImgData.data;
+  out.fill(0);
+
+  const [oR, oG, oB] = parseHexRgb(tn02Params.globeOceanColor, [20, 200, 85]);
+  const [lR, lG, lB] = parseHexRgb(tn02Params.globeLandColor, [200, 204, 210]);
+
+  const rotPx = ((Math.floor((angleRad / (Math.PI * 2)) * TN02_TEX_W) % TN02_TEX_W) + TN02_TEX_W) & (TN02_TEX_W - 1);
+  const lut = tn02GlobeLUT;
+  const landMask = tn02GlobeLandMask;
+  const cloudMask = tn02GlobeCloudMask;
+
+  for (let i = 0; i < lut.length; i += 7) {
+    const pIdx = lut[i];
+    const u = (lut[i + 1] + rotPx) & (TN02_TEX_W - 1);
+    const texIdx = lut[i + 2] + u;
+    const diff = lut[i + 3];
+    const fresnel = lut[i + 4];
+    const r = lut[i + 5];
+    const edgeAA = lut[i + 6];
+
+    const land = landMask[texIdx] / 255;
+    const cloud = cloudMask[texIdx] / 255;
+
+    // Base glass ocean + frosted silver-grey continents
+    let cr = oR * (1 - land) + lR * land;
+    let cg = oG * (1 - land) + lG * land;
+    let cb = oB * (1 - land) + lB * land;
+
+    // Subtle atmospheric shimmer
+    const wisp = (cloud - 0.5) * 22;
+    cr += wisp;
+    cg += wisp;
+    cb += wisp;
+
+    // 3D spherical lighting (smooth all the way to the edge, zero rim stroke)
+    const shade = 0.46 + 0.66 * diff;
+    cr *= shade;
+    cg *= shade;
+    cb *= shade;
+
+    // Translucent glass ocean + vibrant frosted continents
+    const baseAlpha = (0.58 + 0.30 * land) * edgeAA;
+
+    out[pIdx]     = Math.max(0, Math.min(255, cr));
+    out[pIdx + 1] = Math.max(0, Math.min(255, cg));
+    out[pIdx + 2] = Math.max(0, Math.min(255, cb));
+    out[pIdx + 3] = Math.max(0, Math.min(255, baseAlpha * 255));
+  }
+
+  ctx.putImageData(tn02GlobeImgData, 0, 0);
+
+  // Overlay glossy glass specular hotspot
+  const half = S * 0.5;
+  const rad = half;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(half, half, rad, 0, Math.PI * 2);
+  ctx.clip();
+
+  // 1. Upper-right bright glossy hotspot
+  const specX = half + rad * 0.24;
+  const specY = half - rad * 0.32;
+  const specGrad = ctx.createRadialGradient(specX, specY, 1, specX, specY, rad * 0.36);
+  specGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.96)');
+  specGrad.addColorStop(0.28, 'rgba(220, 255, 236, 0.62)');
+  specGrad.addColorStop(0.65, 'rgba(180, 255, 215, 0.16)');
+  specGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = specGrad;
+  ctx.fillRect(0, 0, S, S);
+
+  ctx.restore();
+  tn02GlobeLastRenderedAngle = angleRad;
+  tn02GlobeNeedsRedraw = false;
+}
+
+function setTN02GlobeFrozen(frozen, pauseSpin) {
+  tn02GlobePinned = !!frozen;
+  tn02GlobeSpinPaused = !!pauseSpin;
+  const chk = document.getElementById('chk-tn02-globe-freeze');
+  if (chk) chk.checked = tn02GlobePinned;
+  tn02GlobeNeedsRedraw = true;
+}
+
+function triggerTN02GlobePass() {
+  tn02GlobePinned = false;
+  tn02GlobeSpinPaused = false;
+  const chk = document.getElementById('chk-tn02-globe-freeze');
+  if (chk) chk.checked = false;
+  tn02GlobeCycleStart = performance.now();
+  tn02GlobeNeedsRedraw = true;
+}
+
+function updateTN02Globe() {
+  const wrap = document.getElementById('tn02-globe-wrap');
+  if (!wrap) return;
+  if (!tn02Params.globeEnabled) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  // Auto-unfreeze if config panel is hidden or user switched away from tab-tn2002
+  if (tn02GlobePinned) {
+    const cfgPanel = document.getElementById('master-editor-panel');
+    const tab02 = document.getElementById('tab-tn2002');
+    const panelVisible = cfgPanel && cfgPanel.classList.contains('open') && tab02 && tab02.classList.contains('active');
+    if (!panelVisible) {
+      setTN02GlobeFrozen(false, false);
+      tn02GlobeCycleStart = performance.now();
+    }
+  }
+
+  const now = performance.now();
+  const dt = Math.min(0.1, Math.max(0, (now - tn02GlobeLastTime) / 1000));
+  tn02GlobeLastTime = now;
+
+  if (tn02GlobePinned) {
+    wrap.style.display = 'block';
+    wrap.style.left = `${tn02Params.globePreviewX}%`;
+    if (!tn02GlobeSpinPaused) {
+      tn02GlobeAngle += (tn02Params.globeSpin * Math.PI / 180) * dt;
+    }
+    if (tn02GlobeNeedsRedraw || Math.abs(tn02GlobeAngle - tn02GlobeLastRenderedAngle) > 0.001) {
+      renderTN02Globe(tn02GlobeAngle);
+    }
+    return;
+  }
+
+  const durationMs = Math.max(800, tn02Params.globeDuration * 1000);
+  const intervalMs = Math.max(durationMs + 400, tn02Params.globeInterval * 1000);
+  const elapsed = ((now - tn02GlobeCycleStart) % intervalMs + intervalMs) % intervalMs;
+
+  if (elapsed <= durationMs) {
+    const p = elapsed / durationMs; // 0 -> 1 across screen
+    const margin = 18; // % outside edges so it enters & exits completely off-screen
+    const xPct = (tn02Params.globeDir === 'rtl')
+      ? (100 + margin) - p * (100 + margin * 2)
+      : -margin + p * (100 + margin * 2);
+
+    wrap.style.display = 'block';
+    wrap.style.left = `${xPct.toFixed(2)}%`;
+
+    tn02GlobeAngle += (tn02Params.globeSpin * Math.PI / 180) * dt;
+    renderTN02Globe(tn02GlobeAngle);
+  } else {
+    wrap.style.display = 'none';
   }
 }
 
@@ -11607,6 +12127,98 @@ if (selectTn25Easing) {
     applyTN02Styles();
   });
 
+  // Bola del Món TN 2002 (en configurar aparença/posició s'atura al centre; en tocar velocitat es mou!)
+  const chkTn02GlobeEnabled = document.getElementById('chk-tn02-globe-enabled');
+  if (chkTn02GlobeEnabled) {
+    chkTn02GlobeEnabled.addEventListener('change', (e) => {
+      tn02Params.globeEnabled = e.target.checked;
+      applyTN02GlobeStyles();
+    });
+  }
+  const chkTn02GlobeFreeze = document.getElementById('chk-tn02-globe-freeze');
+  if (chkTn02GlobeFreeze) {
+    chkTn02GlobeFreeze.addEventListener('change', (e) => {
+      setTN02GlobeFrozen(e.target.checked, e.target.checked);
+      if (!e.target.checked) triggerTN02GlobePass();
+    });
+  }
+  syncNumberSlider(document.getElementById('num-tn02-globe-y'), document.getElementById('slider-tn02-globe-y'), (val) => {
+    tn02Params.globeY = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-preview-x'), document.getElementById('slider-tn02-globe-preview-x'), (val) => {
+    tn02Params.globePreviewX = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-size'), document.getElementById('slider-tn02-globe-size'), (val) => {
+    tn02Params.globeSize = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-interval'), document.getElementById('slider-tn02-globe-interval'), (val) => {
+    tn02Params.globeInterval = val;
+    triggerTN02GlobePass();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-duration'), document.getElementById('slider-tn02-globe-duration'), (val) => {
+    tn02Params.globeDuration = val;
+    triggerTN02GlobePass();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-spin'), document.getElementById('slider-tn02-globe-spin'), (val) => {
+    tn02Params.globeSpin = val;
+    // Deixem girar la bola per veure la velocitat de rotació en viu!
+    tn02GlobeSpinPaused = false;
+  });
+  const selTn02GlobeDir = document.getElementById('select-tn02-globe-dir');
+  if (selTn02GlobeDir) {
+    selTn02GlobeDir.addEventListener('change', (e) => {
+      tn02Params.globeDir = e.target.value;
+      triggerTN02GlobePass();
+    });
+  }
+  syncNumberSlider(document.getElementById('num-tn02-globe-opacity'), document.getElementById('slider-tn02-globe-opacity'), (val) => {
+    tn02Params.globeOpacity = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-blur'), document.getElementById('slider-tn02-globe-blur'), (val) => {
+    tn02Params.globeBlur = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-glow-int'), document.getElementById('slider-tn02-globe-glow-int'), (val) => {
+    tn02Params.globeGlowInt = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncNumberSlider(document.getElementById('num-tn02-globe-glow-rad'), document.getElementById('slider-tn02-globe-glow-rad'), (val) => {
+    tn02Params.globeGlowRad = val;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncColorInput(document.getElementById('picker-tn02-globe-ocean'), document.getElementById('hex-tn02-globe-ocean'), (col) => {
+    tn02Params.globeOceanColor = col;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncColorInput(document.getElementById('picker-tn02-globe-land'), document.getElementById('hex-tn02-globe-land'), (col) => {
+    tn02Params.globeLandColor = col;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  syncColorInput(document.getElementById('picker-tn02-globe-glow-col'), document.getElementById('hex-tn02-globe-glow-col'), (col) => {
+    tn02Params.globeGlowColor = col;
+    setTN02GlobeFrozen(true, true);
+    applyTN02GlobeStyles();
+  });
+  const btnTn02GlobeTrigger = document.getElementById('btn-tn02-globe-trigger');
+  if (btnTn02GlobeTrigger) {
+    btnTn02GlobeTrigger.addEventListener('click', () => {
+      triggerTN02GlobePass();
+    });
+  }
+
   // Reset 2002 defaults
   const btnResetTn02 = document.getElementById('btn-reset-tn02');
   if (btnResetTn02) {
@@ -11623,7 +12235,7 @@ if (selectTn25Easing) {
       tn02Params.frontFormat = 'HH:MM:SS';
       tn02Params.frontWeight = '600';
       tn02Params.frontSpacing = -2;
-      tn02Params.frontBlur = 1.5;
+      tn02Params.frontBlur = 0.8;
       tn02Params.frontShadow = true;
       tn02Params.frontColonGap = 5;
       tn02Params.frontColonX = 1;
@@ -11655,7 +12267,7 @@ if (selectTn25Easing) {
         ['num-tn02-front-colon-gap', 'slider-tn02-front-colon-gap', 5],
         ['num-tn02-front-colon-x', 'slider-tn02-front-colon-x', 1],
         ['num-tn02-front-colon-y', 'slider-tn02-front-colon-y', -3],
-        ['num-tn02-front-blur', 'slider-tn02-front-blur', 1.5],
+        ['num-tn02-front-blur', 'slider-tn02-front-blur', 0.8],
         ['num-tn02-back-size', 'slider-tn02-back-size', 25.5],
         ['num-tn02-back-x', 'slider-tn02-back-x', 50],
         ['num-tn02-back-y', 'slider-tn02-back-y', 34.0],
@@ -11691,7 +12303,52 @@ if (selectTn25Easing) {
       const pB = document.getElementById('picker-tn02-back-color'), hB = document.getElementById('hex-tn02-back-color');
       if (pB && hB) { pB.value = '#ffffff'; hB.value = '#FFFFFF'; }
 
+      // Reset Bola del Món
+      tn02Params.globeEnabled = true;
+      tn02Params.globeY = 50.5;
+      tn02Params.globePreviewX = 50;
+      tn02Params.globeSize = 12.5;
+      tn02Params.globeInterval = 10;
+      tn02Params.globeDuration = 2.8;
+      tn02Params.globeSpin = -80;
+      tn02Params.globeDir = 'ltr';
+      tn02Params.globeOpacity = 94;
+      tn02Params.globeBlur = 30;
+      tn02Params.globeGlowInt = 71;
+      tn02Params.globeGlowRad = 24;
+      tn02Params.globeOceanColor = '#DFE0E1';
+      tn02Params.globeLandColor = '#14C855';
+      tn02Params.globeGlowColor = '#D4FFEA';
+      const chkGE = document.getElementById('chk-tn02-globe-enabled');
+      if (chkGE) chkGE.checked = true;
+      setTN02GlobeFrozen(false, false);
+      [
+        ['num-tn02-globe-y', 'slider-tn02-globe-y', 50.5],
+        ['num-tn02-globe-preview-x', 'slider-tn02-globe-preview-x', 50],
+        ['num-tn02-globe-size', 'slider-tn02-globe-size', 12.5],
+        ['num-tn02-globe-interval', 'slider-tn02-globe-interval', 10],
+        ['num-tn02-globe-duration', 'slider-tn02-globe-duration', 2.8],
+        ['num-tn02-globe-spin', 'slider-tn02-globe-spin', -80],
+        ['num-tn02-globe-opacity', 'slider-tn02-globe-opacity', 94],
+        ['num-tn02-globe-blur', 'slider-tn02-globe-blur', 30],
+        ['num-tn02-globe-glow-int', 'slider-tn02-globe-glow-int', 71],
+        ['num-tn02-globe-glow-rad', 'slider-tn02-globe-glow-rad', 24]
+      ].forEach(([nid, sid, val]) => {
+        const ne = document.getElementById(nid), se = document.getElementById(sid);
+        if (ne) ne.value = val;
+        if (se) se.value = val;
+      });
+      const selGDir = document.getElementById('select-tn02-globe-dir');
+      if (selGDir) selGDir.value = 'ltr';
+      const pGO = document.getElementById('picker-tn02-globe-ocean'), hGO = document.getElementById('hex-tn02-globe-ocean');
+      if (pGO && hGO) { pGO.value = '#dfe0e1'; hGO.value = '#DFE0E1'; }
+      const pGL = document.getElementById('picker-tn02-globe-land'), hGL = document.getElementById('hex-tn02-globe-land');
+      if (pGL && hGL) { pGL.value = '#14c855'; hGL.value = '#14C855'; }
+      const pGG = document.getElementById('picker-tn02-globe-glow-col'), hGG = document.getElementById('hex-tn02-globe-glow-col');
+      if (pGG && hGG) { pGG.value = '#d4ffea'; hGG.value = '#D4FFEA'; }
+
       applyTN02Styles();
+      triggerTN02GlobePass();
     });
   }
 
@@ -12014,7 +12671,8 @@ if (selectTn25Easing) {
       `=== CONFIGURACIÓ RELLOTGE TN 2002 ===`,
       `Vídeo Fons: RetallVertical=${tn02Params.videoAlignY}%`,
       `Rellotge Davant: Mida=${tn02Params.frontSize}vw | EscalaX=${tn02Params.frontScaleX}% | EscalaY=${tn02Params.frontScaleY}% | Pos X=${tn02Params.frontX}% | Pos Y=${tn02Params.frontY}% | Opacitat=${tn02Params.frontOpacity}% | Espaiat=${tn02Params.frontSpacing}px | DosPunts(Gap=${tn02Params.frontColonGap}px|X=${tn02Params.frontColonX}px|Y=${tn02Params.frontColonY}px) | Desenfoc=${tn02Params.frontBlur}px | Fusió=${tn02Params.frontBlend} | Format=${tn02Params.frontFormat} | Gruix=${tn02Params.frontWeight} | Color=${tn02Params.frontColor.toUpperCase()}`,
-      `Rellotge Fons: Mida=${tn02Params.backSize}vw | Pos X=Centrat | Pos Y=${tn02Params.backY}% | Opacitat=${tn02Params.backOpacity}% | Espaiat=${tn02Params.backSpacing}px | DosPunts(Gap=${tn02Params.backColonGap}px|X=${tn02Params.backColonX}px|Y=${tn02Params.backColonY}px) | Desenfoc=${tn02Params.backBlur}px | Fusió=${tn02Params.backBlend} | Format=${tn02Params.backFormat} | Gruix=${tn02Params.backWeight} | Color=${tn02Params.backColor.toUpperCase()}`
+      `Rellotge Fons: Mida=${tn02Params.backSize}vw | Pos X=Centrat | Pos Y=${tn02Params.backY}% | Opacitat=${tn02Params.backOpacity}% | Espaiat=${tn02Params.backSpacing}px | DosPunts(Gap=${tn02Params.backColonGap}px|X=${tn02Params.backColonX}px|Y=${tn02Params.backColonY}px) | Desenfoc=${tn02Params.backBlur}px | Fusió=${tn02Params.backBlend} | Format=${tn02Params.backFormat} | Gruix=${tn02Params.backWeight} | Color=${tn02Params.backColor.toUpperCase()}`,
+      `Bola del Món: Activa=${tn02Params.globeEnabled ? 'Sí' : 'No'} | Pos Y=${tn02Params.globeY}% | Mida=${tn02Params.globeSize}% | Interval=${tn02Params.globeInterval}s | Pas=${tn02Params.globeDuration}s | Rotació=${tn02Params.globeSpin}º/s | Dir=${tn02Params.globeDir} | Opacitat=${tn02Params.globeOpacity}% | Difuminat=${tn02Params.globeBlur}px | Glow=${tn02Params.globeGlowInt}%/${tn02Params.globeGlowRad}px | Oceà=${tn02Params.globeOceanColor.toUpperCase()} | Continents=${tn02Params.globeLandColor.toUpperCase()} | ColorGlow=${tn02Params.globeGlowColor.toUpperCase()}`
     ].join("\n");
   }
 
@@ -12872,7 +13530,8 @@ const TN96_DEFAULTS = {
   minLen: 99,
   minWidth: 8.5,
   secWidth: 15,
-  secLen: 39,
+  secLen: 36,
+  secStart: 0.5,
   secMode: 'step',
   handColor: '#0e131a',
   bgTL: '#89aec8',
@@ -12882,7 +13541,8 @@ const TN96_DEFAULTS = {
   prismIntensity: 115,
   prismBlur: 13,
   animSpeed: 0,
-  broadcastSoftness: 2.8
+  broadcastSoftness: 2.8,
+  palTvBlur: 35
 };
 
 let tn96Params = { ...TN96_DEFAULTS };
@@ -13264,8 +13924,8 @@ function updateTN96Clock() {
   ctx.shadowBlur = Math.max(1.5, softBlur * 2.4);
   ctx.shadowOffsetX = 1 * s;
   ctx.shadowOffsetY = 1.5 * s;
-  // El bloc descansa sobre la vora exterior del cercle interior, apuntant radialment
-  ctx.fillRect(R_inner - 1 * s, -secW / 2, secL, secW);
+  // El bloc descansa sobre la vora exterior del cercle interior, ajustable amb secStart
+  ctx.fillRect(R_inner + (tn96Params.secStart * s), -secW / 2, secL, secW);
   ctx.restore();
 
   // =========================================================================
@@ -13384,10 +14044,50 @@ function updateTN96Clock() {
   bindNumRange('num-tn96-m-w', 'slider-tn96-m-w', 'minWidth');
   bindNumRange('num-tn96-s-w', 'slider-tn96-s-w', 'secWidth');
   bindNumRange('num-tn96-s-len', 'slider-tn96-s-len', 'secLen');
+  bindNumRange('num-tn96-s-start', 'slider-tn96-s-start', 'secStart');
   bindNumRange('num-tn96-prism-int', 'slider-tn96-prism-int', 'prismIntensity');
   bindNumRange('num-tn96-prism-blur', 'slider-tn96-prism-blur', 'prismBlur');
   bindNumRange('num-tn96-anim', 'slider-tn96-anim', 'animSpeed');
   bindNumRange('num-tn96-soft', 'slider-tn96-soft', 'broadcastSoftness');
+  bindNumRange('num-tn96-pal-tv', 'slider-tn96-pal-tv', 'palTvBlur');
+
+  function applyTN96PalTvFilter() {
+    const canvas = document.getElementById('tn96-canvas');
+    const scan = document.getElementById('tn96-pal-scanlines');
+    const t = Math.max(0, Math.min(100, tn96Params.palTvBlur || 0)) / 100;
+    if (t <= 0.001) {
+      if (canvas) canvas.style.filter = 'none';
+      if (scan) scan.style.opacity = '0';
+      return;
+    }
+    const blurEl = document.getElementById('tn96-pal-blur');
+    const rOff = document.getElementById('tn96-pal-r-off');
+    const bOff = document.getElementById('tn96-pal-b-off');
+    const bloomEl = document.getElementById('tn96-pal-bloom');
+    const bloomA = document.getElementById('tn96-pal-bloom-a');
+
+    // PAL anisotropic horizontal softness + subtle RGB chroma bleed + phosphor bloom
+    const hx = (3.4 * t).toFixed(2);
+    const vy = (1.05 * t).toFixed(2);
+    if (blurEl) blurEl.setAttribute('stdDeviation', `${hx} ${vy}`);
+    if (rOff) rOff.setAttribute('dx', (2.1 * t).toFixed(2));
+    if (bOff) bOff.setAttribute('dx', (-1.8 * t).toFixed(2));
+    if (bloomEl) bloomEl.setAttribute('stdDeviation', `${(6.5 * t).toFixed(2)} ${(3.0 * t).toFixed(2)}`);
+    if (bloomA) bloomA.setAttribute('slope', (0.28 * t).toFixed(3));
+    if (canvas) {
+      const contrast = (1 + 0.06 * t).toFixed(3);
+      const sat = (1 + 0.10 * t).toFixed(3);
+      canvas.style.filter = `url(#tn96-pal-filter) contrast(${contrast}) saturate(${sat})`;
+    }
+    if (scan) scan.style.opacity = (0.14 * t).toFixed(3);
+  }
+  window.applyTN96PalTvFilter = applyTN96PalTvFilter;
+
+  const numPalTv = document.getElementById('num-tn96-pal-tv');
+  const rngPalTv = document.getElementById('slider-tn96-pal-tv');
+  if (numPalTv) numPalTv.addEventListener('input', applyTN96PalTvFilter);
+  if (rngPalTv) rngPalTv.addEventListener('input', applyTN96PalTvFilter);
+  applyTN96PalTvFilter();
 
   bindColor('color-tn96-hand', 'hex-tn96-hand', 'handColor');
   bindColor('color-tn96-tl', 'hex-tn96-tl', 'bgTL');
@@ -13402,24 +14102,27 @@ function updateTN96Clock() {
     });
   }
 
-function getTN96ConfigText() {
+window.getTN96ConfigText = function getTN96ConfigText() {
   return [
     `=== CONFIGURACIÓ RELLOTGE TN 1996 ===`,
     `Esfera: Mida=${tn96Params.scale}% | Cercle Interior=${tn96Params.innerRatio}% | Anell Vidre=${tn96Params.bezelWidth}px (Blur=${tn96Params.bezelBlur}px, Llum=${tn96Params.bezelLightOp}%, Ombra=${tn96Params.bezelShadowOp}%)`,
     `Eixos: Gruix=${tn96Params.axisThick}px | Ombra Horitzó=${tn96Params.horizonShadowOp}%`,
-    `Broques: Hora=${tn96Params.hourLen}%/${tn96Params.hourWidth}px | Minuts=${tn96Params.minLen}%/${tn96Params.minWidth}px | Segons=${tn96Params.secWidth}x${tn96Params.secLen}px (${tn96Params.secMode}) | Color=${tn96Params.handColor}`,
-    `Fons: TL=${tn96Params.bgTL} | TR=${tn96Params.bgTR} | BL=${tn96Params.bgBL} | BR=${tn96Params.bgBR} | Degradats=${tn96Params.prismIntensity}% (Blur=${tn96Params.prismBlur}px) | Velocitat=${tn96Params.animSpeed}% | Suavitat=${tn96Params.broadcastSoftness}px`
+    `Broques: Hora=${tn96Params.hourLen}%/${tn96Params.hourWidth}px | Minuts=${tn96Params.minLen}%/${tn96Params.minWidth}px | Segons=${tn96Params.secWidth}x${tn96Params.secLen}px (Inici=${tn96Params.secStart}px, ${tn96Params.secMode}) | Color=${tn96Params.handColor}`,
+    `Fons: TL=${tn96Params.bgTL} | TR=${tn96Params.bgTR} | BL=${tn96Params.bgBL} | BR=${tn96Params.bgBR} | Degradats=${tn96Params.prismIntensity}% (Blur=${tn96Params.prismBlur}px) | Velocitat=${tn96Params.animSpeed}% | Suavitat=${tn96Params.broadcastSoftness}px | TVAnalògica=${tn96Params.palTvBlur}%`
   ].join('\n');
-}
+};
 
   const btnCopy96 = document.getElementById('btn-copy-tn96');
   if (btnCopy96) {
     btnCopy96.addEventListener('click', () => {
-      navigator.clipboard.writeText(getTN96ConfigText()).then(() => {
-        const orig = btnCopy96.textContent;
-        btnCopy96.textContent = '✓ Copiat!';
-        setTimeout(() => { btnCopy96.textContent = orig; }, 1600);
-      }).catch(() => {});
+      if (typeof copyConfigToClipboard === 'function') {
+        copyConfigToClipboard(window.getTN96ConfigText(), "Configuració de TN 1996 copiada al porta-retalls!");
+      } else {
+        navigator.clipboard.writeText(window.getTN96ConfigText()).catch(() => {});
+      }
+      const orig = btnCopy96.textContent;
+      btnCopy96.textContent = '✓ Copiat!';
+      setTimeout(() => { btnCopy96.textContent = orig; }, 1600);
     });
   }
 
@@ -13442,10 +14145,12 @@ function getTN96ConfigText() {
         ['num-tn96-m-w', 'slider-tn96-m-w', tn96Params.minWidth],
         ['num-tn96-s-w', 'slider-tn96-s-w', tn96Params.secWidth],
         ['num-tn96-s-len', 'slider-tn96-s-len', tn96Params.secLen],
+        ['num-tn96-s-start', 'slider-tn96-s-start', tn96Params.secStart],
         ['num-tn96-prism-int', 'slider-tn96-prism-int', tn96Params.prismIntensity],
         ['num-tn96-prism-blur', 'slider-tn96-prism-blur', tn96Params.prismBlur],
         ['num-tn96-anim', 'slider-tn96-anim', tn96Params.animSpeed],
-        ['num-tn96-soft', 'slider-tn96-soft', tn96Params.broadcastSoftness]
+        ['num-tn96-soft', 'slider-tn96-soft', tn96Params.broadcastSoftness],
+        ['num-tn96-pal-tv', 'slider-tn96-pal-tv', tn96Params.palTvBlur]
       ];
       pairs.forEach(([nId, rId, val]) => {
         const n = document.getElementById(nId);
@@ -13453,6 +14158,7 @@ function getTN96ConfigText() {
         if (n) n.value = val;
         if (r) r.value = val;
       });
+      if (typeof applyTN96PalTvFilter === 'function') applyTN96PalTvFilter();
       const colors = [
         ['color-tn96-hand', 'hex-tn96-hand', tn96Params.handColor],
         ['color-tn96-tl', 'hex-tn96-tl', tn96Params.bgTL],
