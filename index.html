@@ -4428,18 +4428,91 @@ let flankCubesParams = {
     const DIES_SETMANA = ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte'];
     const MESOS = ['gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre'];
 
-    // --- Weather Data from ICGC / MeteoTV3 ---
+    // --- Weather Data from ICGC / MeteoTV3 + Open-Meteo Fallback (43 capitals de comarca) ---
     const API_GEOJSON_URL = "https://meteotv3.icgc.cat/api/80f4ef80-bb56-4e26-98be-7eab0f7475f0_dynamic_0_.geojson";
+    const COMARQUES_CONFIG = [
+      { comarca: "Alt Camp", capital: "Valls", match: ["valls"], lat: 41.2856, lon: 1.2499 },
+      { comarca: "Alt Empordà", capital: "Figueres", match: ["figueres"], lat: 42.2667, lon: 2.9617 },
+      { comarca: "Alt Penedès", capital: "Vilafranca del Penedès", match: ["vilafranca"], lat: 41.3461, lon: 1.6971 },
+      { comarca: "Alt Urgell", capital: "La Seu d'Urgell", match: ["la seu d'urgell", "seu"], lat: 42.3588, lon: 1.4614 },
+      { comarca: "Alta Ribagorça", capital: "El Pont de Suert", match: ["pont de suert"], lat: 42.4083, lon: 0.7408 },
+      { comarca: "Anoia", capital: "Igualada", match: ["igualada", "òdena", "vallbona d'anoia"], lat: 41.5809, lon: 1.6172 },
+      { comarca: "Bages", capital: "Manresa", match: ["manresa"], lat: 41.7282, lon: 1.8240 },
+      { comarca: "Baix Camp", capital: "Reus", match: ["reus"], lat: 41.1561, lon: 1.1069 },
+      { comarca: "Baix Ebre", capital: "Tortosa", match: ["tortosa"], lat: 40.8125, lon: 0.5216 },
+      { comarca: "Baix Empordà", capital: "La Bisbal d'Empordà", match: ["bisbal"], lat: 41.9592, lon: 3.0378 },
+      { comarca: "Baix Llobregat", capital: "Sant Feliu de Llobregat", match: ["sant joan despí - tv3", "sant feliu"], lat: 41.3833, lon: 2.0439 },
+      { comarca: "Baix Penedès", capital: "El Vendrell", match: ["vendrell"], lat: 41.2200, lon: 1.5356 },
+      { comarca: "Barcelonès", capital: "Barcelona", match: ["barcelona - dexeus", "barcelona"], lat: 41.3851, lon: 2.1734 },
+      { comarca: "Berguedà", capital: "Berga", match: ["berga"], lat: 42.1044, lon: 1.8464 },
+      { comarca: "Cerdanya", capital: "Puigcerdà", match: ["puigcerdà", "la molina"], lat: 42.4317, lon: 1.9278 },
+      { comarca: "Conca de Barberà", capital: "Montblanc", match: ["montblanc"], lat: 41.3764, lon: 1.1617 },
+      { comarca: "Garraf", capital: "Vilanova i la Geltrú", match: ["sitges", "vilanova i la geltrú"], lat: 41.2239, lon: 1.7251 },
+      { comarca: "Garrigues", capital: "Les Borges Blanques", match: ["borges blanques"], lat: 41.5194, lon: 0.8692 },
+      { comarca: "Garrotxa", capital: "Olot", match: ["olot"], lat: 42.1810, lon: 2.4901 },
+      { comarca: "Gironès", capital: "Girona", match: ["girona 76m", "girona"], lat: 41.9794, lon: 2.8214 },
+      { comarca: "Lluçanès", capital: "Prats de Lluçanès", match: ["prats de lluçanès", "lluçanès", "vic"], lat: 42.0089, lon: 2.0297 },
+      { comarca: "Maresme", capital: "Mataró", match: ["mataró", "vilassar"], lat: 41.5381, lon: 2.4447 },
+      { comarca: "Moianès", capital: "Moià", match: ["moià"], lat: 41.8122, lon: 2.0964 },
+      { comarca: "Montsià", capital: "Amposta", match: ["amposta"], lat: 40.7128, lon: 0.5806 },
+      { comarca: "Noguera", capital: "Balaguer", match: ["balaguer"], lat: 41.7903, lon: 0.8056 },
+      { comarca: "Osona", capital: "Vic", match: ["vic zona esportiva", "vic"], lat: 41.9304, lon: 2.2546 },
+      { comarca: "Pallars Jussà", capital: "Tremp", match: ["tremp"], lat: 42.1667, lon: 0.8950 },
+      { comarca: "Pallars Sobirà", capital: "Sort", match: ["sort"], lat: 42.4106, lon: 1.1297 },
+      { comarca: "Pla d'Urgell", capital: "Mollerussa", match: ["mollerussa"], lat: 41.6317, lon: 0.8944 },
+      { comarca: "Pla de l'Estany", capital: "Banyoles", match: ["banyoles"], lat: 42.1194, lon: 2.7661 },
+      { comarca: "Priorat", capital: "Falset", match: ["falset"], lat: 41.1461, lon: 0.8206 },
+      { comarca: "Ribera d'Ebre", capital: "Móra d'Ebre", match: ["móra d'ebre", "ascó", "rasquera"], lat: 41.0928, lon: 0.6414 },
+      { comarca: "Ripollès", capital: "Ripoll", match: ["ripoll", "sant pau de segúries"], lat: 42.2006, lon: 2.1903 },
+      { comarca: "Segarra", capital: "Cervera", match: ["cervera"], lat: 41.6708, lon: 1.2711 },
+      { comarca: "Segrià", capital: "Lleida", match: ["lleida"], lat: 41.6176, lon: 0.6200 },
+      { comarca: "Selva", capital: "Santa Coloma de Farners", match: ["santa coloma"], lat: 41.8622, lon: 2.6656 },
+      { comarca: "Solsonès", capital: "Solsona", match: ["solsona"], lat: 41.9942, lon: 1.5175 },
+      { comarca: "Tarragonès", capital: "Tarragona", match: ["tarragona"], lat: 41.1189, lon: 1.2445 },
+      { comarca: "Terra Alta", capital: "Gandesa", match: ["gandesa"], lat: 41.0533, lon: 0.4383 },
+      { comarca: "Urgell", capital: "Tàrrega", match: ["tàrrega", "castellsera"], lat: 41.6472, lon: 1.1394 },
+      { comarca: "Val d'Aran", capital: "Vielha", match: ["vielha"], lat: 42.7022, lon: 0.7950 },
+      { comarca: "Vallès Occidental", capital: "Sabadell", match: ["sabadell", "terrassa"], lat: 41.5433, lon: 2.1094 },
+      { comarca: "Vallès Oriental", capital: "Granollers", match: ["granollers"], lat: 41.6080, lon: 2.2875 }
+    ];
     let lastWeatherUpdate = 0;
     let isFetchingWeather = false;
+
+    async function loadWeatherFromOpenMeteo() {
+      const lats = COMARQUES_CONFIG.map(c => c.lat).join(',');
+      const lons = COMARQUES_CONFIG.map(c => c.lon).join(',');
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m&timezone=Europe%2FMadrid&_=${Date.now()}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const resp = await fetch(url, { cache: 'no-store', signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!resp.ok) throw new Error('Open-Meteo HTTP ' + resp.status);
+      const list = await resp.json();
+      if (!Array.isArray(list) || list.length !== COMARQUES_CONFIG.length) {
+        throw new Error('Open-Meteo resposta inesperada');
+      }
+      capitalsData = COMARQUES_CONFIG.map((cfg, idx) => {
+        const rawT = list[idx]?.current?.temperature_2m;
+        const tVal = (typeof rawT === 'number' && isFinite(rawT)) ? rawT : 14.0;
+        return {
+          capital: cfg.capital,
+          comarca: cfg.comarca,
+          temp: parseFloat(tVal.toFixed(1)),
+          temp_round: Math.round(tVal),
+          station: 'Open-Meteo'
+        };
+      });
+      capitalsData.sort((a, b) => cleanSortKey(a.capital).localeCompare(cleanSortKey(b.capital)));
+    }
 
     async function loadWeatherData() {
       if (isFetchingWeather) return;
       isFetchingWeather = true;
 
+      // 1. Prova ICGC / MeteoTV3 (només si té estacions reals!)
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         const liveUrl = `${API_GEOJSON_URL}?_=${Date.now()}`;
         const resp = await fetch(liveUrl, {
           cache: 'no-store',
@@ -4449,17 +4522,35 @@ let flankCubesParams = {
 
         if (resp.ok) {
           const geojson = await resp.json();
-          processLiveGeoJson(geojson);
-          lastWeatherUpdate = Date.now();
-          console.log(`[Meteo TV3] Dades a temps real sincronitzades (${capitalsData.length} capitals):`, new Date().toLocaleTimeString());
-          applyWeatherDataToAllViews();
-          isFetchingWeather = false;
-          return;
+          const feats = geojson && Array.isArray(geojson.features) ? geojson.features : [];
+          if (feats.length >= 10) {
+            processLiveGeoJson(geojson);
+            lastWeatherUpdate = Date.now();
+            console.log(`[Meteo TV3] Dades a temps real sincronitzades (${capitalsData.length} capitals):`, new Date().toLocaleTimeString());
+            applyWeatherDataToAllViews();
+            isFetchingWeather = false;
+            return;
+          } else {
+            console.warn(`[Meteo TV3] GeoJSON buit (${feats.length} estacions), canviant a Open-Meteo...`);
+          }
         }
       } catch (err) {
-        console.warn("[Meteo TV3] Connexió directa en temps real no disponible, provant font local de reserva:", err);
+        console.warn("[Meteo TV3] Connexió directa no disponible, provant Open-Meteo:", err);
       }
 
+      // 2. Font fiable en temps real: Open-Meteo (43 capitals en 1 petició)
+      try {
+        await loadWeatherFromOpenMeteo();
+        lastWeatherUpdate = Date.now();
+        console.log(`[Open-Meteo] Temperatures a temps real sincronitzades (${capitalsData.length} capitals):`, new Date().toLocaleTimeString());
+        applyWeatherDataToAllViews();
+        isFetchingWeather = false;
+        return;
+      } catch (err) {
+        console.warn("[Open-Meteo] No disponible, provant font local de reserva:", err);
+      }
+
+      // 3. Fallback local data.json
       try {
         const respLocal = await fetch(`data.json?_=${Date.now()}`, { cache: 'no-store' });
         if (respLocal.ok) {
@@ -4518,53 +4609,7 @@ let flankCubesParams = {
 
     function processLiveGeoJson(geojson) {
       const features = geojson.features || [];
-      const comarquesConfig = [
-        { comarca: "Alt Camp", capital: "Valls", match: ["valls"] },
-        { comarca: "Alt Empordà", capital: "Figueres", match: ["figueres"] },
-        { comarca: "Alt Penedès", capital: "Vilafranca del Penedès", match: ["vilafranca"] },
-        { comarca: "Alt Urgell", capital: "La Seu d'Urgell", match: ["la seu d'urgell", "seu"] },
-        { comarca: "Alta Ribagorça", capital: "El Pont de Suert", match: ["pont de suert"] },
-        { comarca: "Anoia", capital: "Igualada", match: ["igualada", "òdena", "vallbona d'anoia"] },
-        { comarca: "Bages", capital: "Manresa", match: ["manresa"] },
-        { comarca: "Baix Camp", capital: "Reus", match: ["reus"] },
-        { comarca: "Baix Ebre", capital: "Tortosa", match: ["tortosa"] },
-        { comarca: "Baix Empordà", capital: "La Bisbal d'Empordà", match: ["bisbal"] },
-        { comarca: "Baix Llobregat", capital: "Sant Feliu de Llobregat", match: ["sant joan despí - tv3", "sant feliu"] },
-        { comarca: "Baix Penedès", capital: "El Vendrell", match: ["vendrell"] },
-        { comarca: "Barcelonès", capital: "Barcelona", match: ["barcelona - dexeus", "barcelona"] },
-        { comarca: "Berguedà", capital: "Berga", match: ["berga"] },
-        { comarca: "Cerdanya", capital: "Puigcerdà", match: ["puigcerdà", "la molina"] },
-        { comarca: "Conca de Barberà", capital: "Montblanc", match: ["montblanc"] },
-        { comarca: "Garraf", capital: "Vilanova i la Geltrú", match: ["sitges", "vilanova i la geltrú"] },
-        { comarca: "Garrigues", capital: "Les Borges Blanques", match: ["borges blanques"] },
-        { comarca: "Garrotxa", capital: "Olot", match: ["olot"] },
-        { comarca: "Gironès", capital: "Girona", match: ["girona 76m", "girona"] },
-        { comarca: "Lluçanès", capital: "Prats de Lluçanès", match: ["prats de lluçanès", "lluçanès", "vic"] },
-        { comarca: "Maresme", capital: "Mataró", match: ["mataró", "vilassar"] },
-        { comarca: "Moianès", capital: "Moià", match: ["moià"] },
-        { comarca: "Montsià", capital: "Amposta", match: ["amposta"] },
-        { comarca: "Noguera", capital: "Balaguer", match: ["balaguer"] },
-        { comarca: "Osona", capital: "Vic", match: ["vic zona esportiva", "vic"] },
-        { comarca: "Pallars Jussà", capital: "Tremp", match: ["tremp"] },
-        { comarca: "Pallars Sobirà", capital: "Sort", match: ["sort"] },
-        { comarca: "Pla d'Urgell", capital: "Mollerussa", match: ["mollerussa"] },
-        { comarca: "Pla de l'Estany", capital: "Banyoles", match: ["banyoles"] },
-        { comarca: "Priorat", capital: "Falset", match: ["falset"] },
-        { comarca: "Ribera d'Ebre", capital: "Móra d'Ebre", match: ["móra d'ebre", "ascó", "rasquera"] },
-        { comarca: "Ripollès", capital: "Ripoll", match: ["ripoll", "sant pau de segúries"] },
-        { comarca: "Segarra", capital: "Cervera", match: ["cervera"] },
-        { comarca: "Segrià", capital: "Lleida", match: ["lleida"] },
-        { comarca: "Selva", capital: "Santa Coloma de Farners", match: ["santa coloma"] },
-        { comarca: "Solsonès", capital: "Solsona", match: ["solsona"] },
-        { comarca: "Tarragonès", capital: "Tarragona", match: ["tarragona"] },
-        { comarca: "Terra Alta", capital: "Gandesa", match: ["gandesa"] },
-        { comarca: "Urgell", capital: "Tàrrega", match: ["tàrrega", "castellsera"] },
-        { comarca: "Val d'Aran", capital: "Vielha", match: ["vielha"] },
-        { comarca: "Vallès Occidental", capital: "Sabadell", match: ["sabadell", "terrassa"] },
-        { comarca: "Vallès Oriental", capital: "Granollers", match: ["granollers"] }
-      ];
-
-      capitalsData = comarquesConfig.map(cfg => {
+      capitalsData = COMARQUES_CONFIG.map(cfg => {
         let matched = null;
         const cfgComarca = cfg.comarca.toLowerCase();
 
