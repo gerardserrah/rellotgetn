@@ -6321,8 +6321,11 @@ rightMat = new THREE.MeshStandardMaterial({
     }
 
     // --- Animation Loop ---
+    let _cachedBtnResetView = null;
+    let _lastBtnResetVisible = null;
     function animate() {
       requestAnimationFrame(animate);
+      if (document.hidden) return;
 
       if (currentAppMode === '1996') {
         updateTN96Clock();
@@ -6427,13 +6430,17 @@ rightMat = new THREE.MeshStandardMaterial({
         }
       }
 
-      // Check if camera is away from default view, show reset icon only when not in initial position
+      // Check if camera is away from default view, show reset icon only when state changes (avoids per-frame DOM writes)
       if (camera && controls) {
         const distCam = camera.position.distanceTo(DEFAULT_CAMERA_POS);
         const distTarget = controls.target.distanceTo(DEFAULT_TARGET_POS);
-        const btnReset = document.getElementById('btn-reset-view');
-        if (btnReset) {
-          btnReset.style.display = (distCam > 0.08 || distTarget > 0.08) ? 'inline-flex' : 'none';
+        const shouldShow = (distCam > 0.08 || distTarget > 0.08);
+        if (shouldShow !== _lastBtnResetVisible) {
+          _lastBtnResetVisible = shouldShow;
+          if (!_cachedBtnResetView) _cachedBtnResetView = document.getElementById('btn-reset-view');
+          if (_cachedBtnResetView) {
+            _cachedBtnResetView.style.display = shouldShow ? 'inline-flex' : 'none';
+          }
         }
       }
 
@@ -7668,6 +7675,9 @@ function initTN25Ticker(forceRebuild = false) {
 
 let tn25TickerPos = 0;
 let cachedTickerSingleWidth = 0;
+let _cachedTN25TickerTrack = null;
+let _lastTN25Sec = -1;
+let _lastTN25DateKey = '';
 window.addEventListener('resize', () => { cachedTickerSingleWidth = 0; });
 let lastTN25TickerTime = performance.now();
 function updateTN25Ticker() {
@@ -7676,7 +7686,8 @@ function updateTN25Ticker() {
   lastTN25TickerTime = now;
   if (currentAppMode !== '2025') return;
 
-  const track = document.getElementById('tn25-ticker-track');
+  if (!_cachedTN25TickerTrack) _cachedTN25TickerTrack = document.getElementById('tn25-ticker-track');
+  const track = _cachedTN25TickerTrack;
   if (!track) return;
 
   const speed = tempParams.speed || 0.00012;
@@ -7692,15 +7703,19 @@ function updateTN25Ticker() {
   track.style.transform = `translate3d(${tn25TickerPos.toFixed(1)}px, 0, 0)`;
 }
 
-function updateTN25Clock() {
-  if (currentAppMode !== '2025') return;
+function updateTN25Clock(force) {
+  if (currentAppMode !== '2025' && !force) return;
 
   const now = new Date();
+  const secVal = now.getSeconds();
+  // Només actualitza el DOM i l'SVG 1 cop per segon (evita 60-120 mutacions DOM/segon!)
+  if (!force && secVal === _lastTN25Sec && tn25State.s2 !== null) return;
+  _lastTN25Sec = secVal;
+
   const hNum = now.getHours();
   const hStr = (hNum === 0) ? '00' : String(hNum);
   const mStr = String(now.getMinutes()).padStart(2, '0');
-  const sStr = String(now.getSeconds()).padStart(2, '0');
-  const secVal = now.getSeconds();
+  const sStr = String(secVal).padStart(2, '0');
 
   // Hours (no crop, with dot)
   const hoursEl = document.getElementById('tn25-hours-text');
@@ -7774,14 +7789,18 @@ function updateTN25Clock() {
     arcInd.style.strokeDashoffset = -sStart;
   }
 
-  // Date texts inside dome (hierarchy: dia setmana regular, dia mes black, any regular)
+  // Date texts inside dome (només s'actualitza quan canvia el dia)
   const d = getEffectiveDate();
-  const dnEl = document.getElementById('tn25-date-dayname');
-  const dmEl = document.getElementById('tn25-date-daymonth');
-  const yrEl = document.getElementById('tn25-date-year');
-  if (dnEl) dnEl.textContent = d.dayName.toUpperCase();
-  if (dmEl) dmEl.textContent = `${d.dayNum} ${d.monthName.toUpperCase()}`;
-  if (yrEl) yrEl.textContent = String(d.yearNum);
+  const dateKey = `${d.dayName}|${d.dayNum}|${d.monthName}|${d.yearNum}`;
+  if (dateKey !== _lastTN25DateKey) {
+    _lastTN25DateKey = dateKey;
+    const dnEl = document.getElementById('tn25-date-dayname');
+    const dmEl = document.getElementById('tn25-date-daymonth');
+    const yrEl = document.getElementById('tn25-date-year');
+    if (dnEl) dnEl.textContent = d.dayName.toUpperCase();
+    if (dmEl) dmEl.textContent = `${d.dayNum} ${d.monthName.toUpperCase()}`;
+    if (yrEl) yrEl.textContent = String(d.yearNum);
+  }
 }
 
 // ==========================================================================
@@ -9284,7 +9303,7 @@ function initTN05() {
 
 function resizeTN05Canvas() {
   if (!tn05Canvas) return;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   const { w, h } = getFullViewportDims();
   tn05Canvas.width = Math.round(w * dpr);
   tn05Canvas.height = Math.round(h * dpr);
@@ -9569,11 +9588,15 @@ function drawAllTN05Gears(ctx, cx, packY, h, globalScale, isMirror, aspectScale 
   });
 }
 
+let _lastTN05RenderMs = 0;
 function updateTN05Animation() {
   if (currentAppMode !== '2005' || !tn05Ctx || !tn05Canvas) return;
 
   const now = performance.now();
-  const dt = (now - lastTN05AnimTime) * 0.001;
+  // Limita el redibuix dels engranatges a 60 fps (estalvia el 50% en pantalles ProMotion 120Hz)
+  if ((now - _lastTN05RenderMs) < 15.5) return;
+  _lastTN05RenderMs = now;
+  const dt = Math.min(0.1, (now - lastTN05AnimTime) * 0.001);
   lastTN05AnimTime = now;
 
   // Rotació suau i contínua dels engranatges
