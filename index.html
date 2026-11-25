@@ -2509,48 +2509,22 @@ html.hide-config #master-editor-panel {
 <div id="view-tn-1996" style="display: none;">
   <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
     <defs>
-      <filter id="tn96-pal-filter" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
-        <!-- 1. Anisotropic PAL horizontal bandwidth softness (H ~ 3x V) -->
-        <feGaussianBlur id="tn96-pal-blur" in="SourceGraphic" stdDeviation="1.15 0.38" result="palSoft"/>
-        <!-- 2. Subtle analog PAL chroma bleed / CRT convergence shift (R right, B left) -->
-        <feColorMatrix in="palSoft" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palR"/>
-        <feOffset id="tn96-pal-r-off" in="palR" dx="0.8" dy="0" result="palRShift"/>
-        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palG"/>
-        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="palB"/>
-        <feOffset id="tn96-pal-b-off" in="palB" dx="-0.7" dy="0" result="palBShift"/>
-        <feComposite in="palRShift" in2="palG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRG"/>
-        <feComposite in="palRG" in2="palBShift" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRGB"/>
-        <!-- 3. Soft CRT phosphor halation bloom -->
-        <feGaussianBlur id="tn96-pal-bloom" in="palRGB" stdDeviation="3.2 1.6" result="palGlow"/>
-        <feComponentTransfer in="palGlow" result="palGlowDim">
-          <feFuncA id="tn96-pal-bloom-a" type="linear" slope="0.16"/>
-        </feComponentTransfer>
-        <feBlend in="palRGB" in2="palGlowDim" mode="screen"/>
+      <filter id="tn96-pal-filter" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+        <!-- Anisotropic PAL horizontal bandwidth softness (H ~ 3x V, ultra-fast single pass) -->
+        <feGaussianBlur id="tn96-pal-blur" in="SourceGraphic" stdDeviation="1.33 0.41"/>
       </filter>
     </defs>
   </svg>
   <canvas id="tn96-canvas"></canvas>
-  <div id="tn96-pal-scanlines" style="position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0.06;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.42) 3px, rgba(0,0,0,0) 4px);"></div>
+  <div id="tn96-pal-scanlines" style="position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0.055;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.42) 3px, rgba(0,0,0,0) 4px);"></div>
 </div>
 
 <!-- TN 1999 BROADCAST VIEW (Rellotge de Broques, Bola 3D, Triangle TV3 i Mapamundi) -->
 <div id="view-tn-1999" style="display: none;">
   <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
     <defs>
-      <filter id="tn99-pal-filter" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
-        <feGaussianBlur id="tn99-pal-blur" in="SourceGraphic" stdDeviation="1.33 0.41" result="palSoft"/>
-        <feColorMatrix in="palSoft" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palR"/>
-        <feOffset id="tn99-pal-r-off" in="palR" dx="0.82" dy="0" result="palRShift"/>
-        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="palG"/>
-        <feColorMatrix in="palSoft" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="palB"/>
-        <feOffset id="tn99-pal-b-off" in="palB" dx="-0.70" dy="0" result="palBShift"/>
-        <feComposite in="palRShift" in2="palG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRG"/>
-        <feComposite in="palRG" in2="palBShift" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="palRGB"/>
-        <feGaussianBlur id="tn99-pal-bloom" in="palRGB" stdDeviation="2.54 1.17" result="palGlow"/>
-        <feComponentTransfer in="palGlow" result="palGlowDim">
-          <feFuncA id="tn99-pal-bloom-a" type="linear" slope="0.109"/>
-        </feComponentTransfer>
-        <feBlend in="palRGB" in2="palGlowDim" mode="screen"/>
+      <filter id="tn99-pal-filter" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+        <feGaussianBlur id="tn99-pal-blur" in="SourceGraphic" stdDeviation="1.33 0.41"/>
       </filter>
     </defs>
   </svg>
@@ -8412,6 +8386,10 @@ function drawTV3Triangle(ctx, cx, cy, size, color) {
   ctx.restore();
 }
 
+let lastTN99Sec = -1;
+let lastTN99DimsKey = '';
+let lastTN99BlurStr = '';
+
 function updateTN99Clock(force) {
   if (currentAppMode !== '1999' && currentAppMode !== '2001' && !force) return;
   if (!tn99ClockCanvas) initTN99();
@@ -8419,9 +8397,24 @@ function updateTN99Clock(force) {
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const { w, h } = getTN99StageDims();
-  if (tn99ClockCanvas.width !== Math.max(1, Math.round(w * dpr)) || tn99ClockCanvas.height !== Math.max(1, Math.round(h * dpr))) {
+  const targetW = Math.max(1, Math.round(w * dpr));
+  const targetH = Math.max(1, Math.round(h * dpr));
+  const dimsKey = `${targetW}x${targetH}`;
+  let resized = false;
+  if (tn99ClockCanvas.width !== targetW || tn99ClockCanvas.height !== targetH) {
     resizeTN99Canvases();
+    resized = true;
   }
+
+  const now = new Date();
+  const curSec = now.getSeconds();
+  // En mode 'step' (per defecte), només redibuixem 1 cop per segon (estalvia >98% de CPU/GPU!)
+  if (!force && !resized && tn99Params.ballMotion !== 'smooth' && curSec === lastTN99Sec && dimsKey === lastTN99DimsKey) {
+    return;
+  }
+  lastTN99Sec = curSec;
+  lastTN99DimsKey = dimsKey;
+
   const cw = tn99ClockCanvas.width;
   const ch = tn99ClockCanvas.height;
 
@@ -8432,10 +8425,10 @@ function updateTN99Clock(force) {
   let stageX = 0;
   let stageY = 0;
   if (tn99Params.aspectRatio === '4:3') {
-    const targetW = h * (4 / 3);
-    if (targetW < w) {
-      stageW = targetW;
-      stageX = (w - targetW) / 2;
+    const targetW43 = h * (4 / 3);
+    if (targetW43 < w) {
+      stageW = targetW43;
+      stageX = (w - targetW43) / 2;
     }
   }
 
@@ -8443,17 +8436,18 @@ function updateTN99Clock(force) {
   const cy = Math.round((stageY + stageH / 2 + tn99Params.posY) * dpr);
   const baseR = (Math.min(stageW, stageH) / 2) * (tn99Params.size / 100) * dpr;
 
-  const now = new Date();
   const ms = now.getMilliseconds();
-  const s = now.getSeconds() + (tn99Params.ballMotion === 'smooth' ? ms / 1000 : 0);
-  const m = now.getMinutes() + now.getSeconds() / 60 + ms / 60000;
+  const s = curSec + (tn99Params.ballMotion === 'smooth' ? ms / 1000 : 0);
+  const m = now.getMinutes() + curSec / 60 + ms / 60000;
   const hr = (now.getHours() % 12) + m / 60;
 
   const ctx = tn99ClockCtx;
 
-  // Aplica desenfocament analògic PAL suau als elements si està activat
-  if (tn99ClockCanvas) {
-    tn99ClockCanvas.style.filter = (tn99Params.blur && tn99Params.blur > 0) ? `blur(${tn99Params.blur}px)` : 'none';
+  // Aplica desenfocament analògic PAL suau només quan canvia el valor
+  const nextBlurStr = (tn99Params.blur && tn99Params.blur > 0) ? `blur(${tn99Params.blur}px)` : 'none';
+  if (tn99ClockCanvas && nextBlurStr !== lastTN99BlurStr) {
+    tn99ClockCanvas.style.filter = nextBlurStr;
+    lastTN99BlurStr = nextBlurStr;
   }
 
   // 1. LES 12 RATLLETES D'HORES (Sense ombres al rellotge, net com a l'emissió original!)
@@ -13770,6 +13764,9 @@ function tn96ShadeHex(hex, factor) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+let lastTN96Sec = -1;
+let tn96Dirty = true;
+
 function resizeTN96Canvas() {
   if (!tn96Canvas) return;
   const { w, h } = getFullViewportDims();
@@ -13778,6 +13775,7 @@ function resizeTN96Canvas() {
   tn96Canvas.height = Math.max(1, Math.round(h * dpr));
   tn96Canvas.style.width = w + 'px';
   tn96Canvas.style.height = h + 'px';
+  tn96Dirty = true;
 }
 
 function initTN96() {
@@ -13788,10 +13786,19 @@ function initTN96() {
   resizeTN96Canvas();
 }
 
-function updateTN96Clock() {
-  if (currentAppMode !== '1996') return;
+function updateTN96Clock(force) {
+  if (currentAppMode !== '1996' && !force) return;
   if (!tn96Canvas || !tn96Ctx) initTN96();
   if (!tn96Canvas || !tn96Ctx) return;
+
+  const now = new Date();
+  const curSec = now.getSeconds();
+  // En mode 'step' i sense animació de llums (per defecte), només redibuixem 1 cop per segon!
+  if (!force && !tn96Dirty && tn96Params.secMode !== 'smooth' && !(tn96Params.animSpeed > 0) && curSec === lastTN96Sec) {
+    return;
+  }
+  lastTN96Sec = curSec;
+  tn96Dirty = false;
 
   const ctx = tn96Ctx;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -13806,7 +13813,6 @@ function updateTN96Clock() {
   const R_outer = minDim * (tn96Params.scale / 100);
   const R_inner = R_outer * (tn96Params.innerRatio / 100);
 
-  const now = new Date();
   const tSec = performance.now() * 0.001 * (tn96Params.animSpeed / 100);
 
   ctx.save();
@@ -13904,7 +13910,7 @@ function updateTN96Clock() {
     : `${Math.round(w)}x${Math.round(h)}_${tn96Params.scale}_${tn96Params.prismIntensity}_${tn96Params.prismBlur}`;
 
   if (!tn96PrismCache || tn96PrismCacheKey !== cacheKey || !cacheKey) {
-    const scaleDown = pBlur > 0.5 ? 0.5 : 1.0;
+    const scaleDown = pBlur > 0.5 ? 0.35 : 1.0;
     const pw = Math.max(2, Math.round(w * scaleDown));
     const ph = Math.max(2, Math.round(h * scaleDown));
     if (!tn96PrismCache) tn96PrismCache = document.createElement('canvas');
@@ -14240,11 +14246,11 @@ function updateTN96Clock() {
     if (!num || !rng) return;
     num.addEventListener('input', () => {
       const v = parseFloat(num.value);
-      if (!isNaN(v)) { rng.value = v; tn96Params[key] = v; }
+      if (!isNaN(v)) { rng.value = v; tn96Params[key] = v; tn96Dirty = true; }
     });
     rng.addEventListener('input', () => {
       const v = parseFloat(rng.value);
-      if (!isNaN(v)) { num.value = v; tn96Params[key] = v; }
+      if (!isNaN(v)) { num.value = v; tn96Params[key] = v; tn96Dirty = true; }
     });
   }
   function bindColor(pickId, hexId, key) {
@@ -14254,11 +14260,13 @@ function updateTN96Clock() {
     p.addEventListener('input', () => {
       h.value = p.value.toUpperCase();
       tn96Params[key] = p.value;
+      tn96Dirty = true;
     });
     h.addEventListener('input', () => {
       if (/^#[0-9A-Fa-f]{6}$/.test(h.value)) {
         p.value = h.value;
         tn96Params[key] = h.value;
+        tn96Dirty = true;
       }
     });
   }
@@ -14335,6 +14343,7 @@ function updateTN96Clock() {
   if (secModeSel) {
     secModeSel.addEventListener('change', () => {
       tn96Params.secMode = secModeSel.value;
+      tn96Dirty = true;
     });
   }
 
@@ -14366,6 +14375,7 @@ window.getTN96ConfigText = function getTN96ConfigText() {
   if (btnReset96) {
     btnReset96.addEventListener('click', () => {
       tn96Params = { ...TN96_DEFAULTS };
+      tn96Dirty = true;
       const pairs = [
         ['num-tn96-scale', 'slider-tn96-scale', tn96Params.scale],
         ['num-tn96-inner', 'slider-tn96-inner', tn96Params.innerRatio],
