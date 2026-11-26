@@ -4868,7 +4868,7 @@ let flankCubesParams = {
       if (text || showCursor) {
         ctx.save();
         ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-        ctx.font = '700 86px "Akkurat Pro", "Montserrat", sans-serif';
+        ctx.font = '700 86px "Akkurat Pro", "Montserrat", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
@@ -13734,6 +13734,11 @@ function updatePatroAnimation(nowMs) {
     tetCurrentText = "";
     tetShowCursor = false;
     tetPhotoAlpha = 0;
+    if (centralCube) {
+      centralCube.position.y = 1.9;
+      centralCube.visible = true;
+      centralCube.castShadow = true;
+    }
     if (backCubeCtx && backCubeTexture) {
       drawBackCubeCanvas(backCubeCtx, "", false);
       backCubeTexture.needsUpdate = true;
@@ -13751,7 +13756,9 @@ function updatePatroAnimation(nowMs) {
     clearTetEasterEggVisuals();
 
     // 1. Òrbita suau en coordenades polars al voltant del cub central fins quedar just al darrere
-    const pivot = new THREE.Vector3(centralCube.position.x, 1.9, centralCube.position.z);
+    const origCubeY = 1.9;
+    const hiddenCubeY = -2.1;
+    const pivot = new THREE.Vector3(centralCube.position.x, origCubeY, centralCube.position.z);
     const startTarget = controls.target.clone();
     const dx0 = camera.position.x - pivot.x;
     const dz0 = camera.position.z - pivot.z;
@@ -13759,9 +13766,7 @@ function updatePatroAnimation(nowMs) {
     const startRadius = Math.hypot(dx0, dz0);
     const startY = camera.position.y;
 
-    // Angle destí = Math.PI (exactament al darrere del cub, mirant cap a +Z)
     let endAngle = Math.PI;
-    // Assegura el camí més natural (girant pel lateral dret)
     while (endAngle - startAngle > Math.PI) endAngle -= Math.PI * 2;
     while (endAngle - startAngle < -Math.PI) endAngle += Math.PI * 2;
     if (Math.abs(endAngle - startAngle) < 0.05) endAngle = startAngle;
@@ -13772,56 +13777,61 @@ function updatePatroAnimation(nowMs) {
     const orbitStart = performance.now();
     isCameraAnimating = true;
 
-    function startRevealBehindCube() {
-      // A) Efecte màquina d'escriure "hola tet" a la cara esquerra (Material [0])
-      const fullText = "hola tet";
-      tetCurrentText = "";
-      tetShowCursor = true;
-      if (backCubeCtx && backCubeTexture) {
-        drawBackCubeCanvas(backCubeCtx, tetCurrentText, true);
-        backCubeTexture.needsUpdate = true;
-      }
+    // 2. Un cop la càmera ha girat: el cub baixa sota terra, posa "hola tet ❤️" + la foto, i torna a pujar!
+    function startCubeSinkAndRise() {
+      const sinkStart = performance.now();
+      const sinkDur = 700;
 
-      for (let i = 1; i <= fullText.length; i++) {
-        const tId = setTimeout(() => {
-          tetCurrentText = fullText.slice(0, i);
-          tetShowCursor = true;
+      function stepSink(now) {
+        const t = Math.min(1, (now - sinkStart) / sinkDur);
+        const e = patroEaseInOutCubic(t);
+        centralCube.position.y = THREE.MathUtils.lerp(origCubeY, hiddenCubeY, e);
+        if (t < 1) {
+          tetAnimRaf = requestAnimationFrame(stepSink);
+        } else {
+          centralCube.visible = false;
+          centralCube.castShadow = false;
+          tetAnimRaf = null;
+
+          // Aplica ja el text complet i la foto mentre el cub està amagat sota el terra
+          tetCurrentText = "hola tet ❤️";
+          tetShowCursor = false;
+          tetPhotoAlpha = 1;
           if (backCubeCtx && backCubeTexture) {
-            drawBackCubeCanvas(backCubeCtx, tetCurrentText, true);
+            drawBackCubeCanvas(backCubeCtx, tetCurrentText, false);
             backCubeTexture.needsUpdate = true;
           }
-        }, 120 * i);
-        tetAnimTimers.push(tId);
+          if (backRightCubeCtx && backRightCubeTexture) {
+            drawBackRightCubeCanvas(backRightCubeCtx, 1);
+            backRightCubeTexture.needsUpdate = true;
+          }
+
+          // Pausa breu sota terra i puja suaument com a 'patro'
+          const pauseId = setTimeout(() => {
+            centralCube.position.y = hiddenCubeY;
+            centralCube.visible = true;
+            centralCube.castShadow = true;
+            const riseStart = performance.now();
+            const riseDur = 800;
+
+            function stepRise(nowR) {
+              const tr = Math.min(1, (nowR - riseStart) / riseDur);
+              const er = patroEaseOutCubic(tr);
+              centralCube.position.y = THREE.MathUtils.lerp(hiddenCubeY, origCubeY, er);
+              if (tr < 1) {
+                tetAnimRaf = requestAnimationFrame(stepRise);
+              } else {
+                centralCube.position.y = origCubeY;
+                tetAnimRaf = null;
+              }
+            }
+            tetAnimRaf = requestAnimationFrame(stepRise);
+          }, 180);
+          tetAnimTimers.push(pauseId);
+        }
       }
 
-      // Treu el cursor poc després d'acabar d'escriure
-      const doneCursorId = setTimeout(() => {
-        tetShowCursor = false;
-        if (backCubeCtx && backCubeTexture) {
-          drawBackCubeCanvas(backCubeCtx, tetCurrentText, false);
-          backCubeTexture.needsUpdate = true;
-        }
-      }, 120 * fullText.length + 550);
-      tetAnimTimers.push(doneCursorId);
-
-      // B) Aparició suau de la foto dels cadells a la cara dreta (Material [5])
-      const fadeStart = performance.now();
-      const fadeDur = 900;
-      function fadePhoto(now) {
-        const p = Math.min(1, (now - fadeStart) / fadeDur);
-        const ease = 1 - Math.pow(1 - p, 3);
-        tetPhotoAlpha = ease;
-        if (backRightCubeCtx && backRightCubeTexture) {
-          drawBackRightCubeCanvas(backRightCubeCtx, tetPhotoAlpha);
-          backRightCubeTexture.needsUpdate = true;
-        }
-        if (p < 1) {
-          tetAnimRaf = requestAnimationFrame(fadePhoto);
-        } else {
-          tetAnimRaf = null;
-        }
-      }
-      tetAnimRaf = requestAnimationFrame(fadePhoto);
+      tetAnimRaf = requestAnimationFrame(stepSink);
     }
 
     function stepOrbit(now) {
@@ -13844,7 +13854,7 @@ function updatePatroAnimation(nowMs) {
       } else {
         isCameraAnimating = false;
         tetAnimRaf = null;
-        startRevealBehindCube();
+        startCubeSinkAndRise();
       }
     }
 
