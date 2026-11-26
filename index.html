@@ -394,6 +394,8 @@
 
     /* Modo Salvapantalles per Mac (sense UI, sense cursor, 100% net) */
     html.screensaver-mode .minimal-controls,
+    html.screensaver-mode .tn-timeline-bar,
+    html.screensaver-mode .tn-timeline-scrim,
     html.screensaver-mode .editor-panel,
     html.screensaver-mode #editor-panel,
     html.screensaver-mode #btn-open-editor,
@@ -5253,15 +5255,19 @@ let flankCubesParams = {
       const itemWidths = items.map(text => Math.ceil(testCtx.measureText(text).width * scaleX));
       const totalTextWidth = itemWidths.reduce((a, b) => a + b, 0);
 
-      // Exact canvas width: all text widths PLUS exactly N gaps (including gap between last and first item)
-      const canvasW = Math.round(totalTextWidth + items.length * gap);
-      const canvasH = 160;
+      // Exact logical width: all text widths PLUS exactly N gaps
+      const logicalW = Math.round(totalTextWidth + items.length * gap);
+      const maxTexW = window.__SCREENSAVER_MODE__ ? 4096 : 12288;
+      const texScale = logicalW > maxTexW ? (maxTexW / logicalW) : 1.0;
+      const canvasW = Math.max(64, Math.round(logicalW * texScale));
+      const canvasH = Math.max(48, Math.round(160 * texScale));
 
       const canvas = document.createElement('canvas');
       canvas.width = canvasW;
       canvas.height = canvasH;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvasW, canvasH);
+      ctx.scale(texScale, texScale);
 
       ctx.font = `700 ${fontSize}px "Akkurat Pro", "Montserrat", sans-serif`;
       ctx.fillStyle = '#b3b5ae';
@@ -5270,7 +5276,7 @@ let flankCubesParams = {
       ctx.shadowBlur = 0;
       ctx.shadowColor = 'transparent';
 
-      const textY = Math.floor(canvasH * 0.50);
+      const textY = 80;
       let currentX = 0;
       items.forEach((text, i) => {
         ctx.save();
@@ -5285,10 +5291,10 @@ let flankCubesParams = {
       tex.flipY = false;
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.ClampToEdgeWrapping;
-      tex.anisotropy = renderer ? renderer.capabilities.getMaxAnisotropy() : 8;
+      tex.anisotropy = window.__SCREENSAVER_MODE__ ? 2 : (renderer ? renderer.capabilities.getMaxAnisotropy() : 8);
+      tex.userData = { canvasW: logicalW };
       tex.minFilter = THREE.LinearMipmapLinearFilter;
       tex.magFilter = THREE.LinearFilter;
-      tex.userData = { canvasW: canvasW };
       return tex;
     }
 
@@ -5414,13 +5420,21 @@ let flankCubesParams = {
       camera.updateProjectionMatrix();
 
       // 3. Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({
+        antialias: !window.__SCREENSAVER_MODE__,
+        alpha: false,
+        preserveDrawingBuffer: !!window.__SCREENSAVER_MODE__,
+        powerPreference: window.__SCREENSAVER_MODE__ ? 'default' : 'high-performance'
+      });
       if (renderer) renderer.setSize(initW, initH);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
+      renderer.setPixelRatio(window.__SCREENSAVER_MODE__ ? 1 : Math.min(window.devicePixelRatio || 1, 1.25));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.14;
+      renderer.domElement.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+      }, false);
       container.appendChild(renderer.domElement);
 
       // 4. OrbitControls
@@ -6323,9 +6337,30 @@ rightMat = new THREE.MeshStandardMaterial({
     // --- Animation Loop ---
     let _cachedBtnResetView = null;
     let _lastBtnResetVisible = null;
+    let _lastAnimateTime = 0;
+    let _saverDriverInstalled = false;
+    window.__tnSaverPing = function() {
+      if (!_saverDriverInstalled && window.__SCREENSAVER_MODE__) {
+        _saverDriverInstalled = true;
+        // Motor estable a 30 fps quan macOS legacyScreenSaver frena requestAnimationFrame
+        setInterval(() => {
+          if (performance.now() - _lastAnimateTime >= 28) {
+            animateStep();
+          }
+        }, 33);
+      }
+      if (performance.now() - _lastAnimateTime >= 30) {
+        animateStep();
+      }
+      return 1;
+    };
     function animate() {
       requestAnimationFrame(animate);
-      if (document.hidden) return;
+      animateStep();
+    }
+    function animateStep() {
+      _lastAnimateTime = performance.now();
+      if (document.hidden && !window.__SCREENSAVER_MODE__) return;
 
       if (currentAppMode === '1996') {
         updateTN96Clock();
@@ -10178,6 +10213,34 @@ function updateDynamicFavicon(mode) {
   });
 }
 
+let _tvNoiseFrames = null;
+function getTVNoiseFrames() {
+  if (_tvNoiseFrames) return _tvNoiseFrames;
+  _tvNoiseFrames = [];
+  const nw = 240, nh = 135;
+  // Pre-generem 6 fotogrames de neu TV un sol cop (estalvia 57.600 Math.random() per fotograma!)
+  let seed = 0x12345678;
+  for (let f = 0; f < 6; f++) {
+    const c = document.createElement('canvas');
+    c.width = nw;
+    c.height = nh;
+    const cx = c.getContext('2d');
+    const img = cx.createImageData(nw, nh);
+    const buf = new Uint32Array(img.data.buffer);
+    for (let i = 0; i < buf.length; i++) {
+      // Xorshift32 ultra-ràpid
+      seed ^= seed << 13;
+      seed ^= seed >>> 17;
+      seed ^= seed << 5;
+      const v = seed & 0xFF;
+      buf[i] = 0xFF000000 | (v << 16) | (v << 8) | v;
+    }
+    cx.putImageData(img, 0, 0);
+    _tvNoiseFrames.push(c);
+  }
+  return _tvNoiseFrames;
+}
+
 function triggerYearTransition(targetMode, onMidpoint) {
   const overlay = document.getElementById('tv-transition-overlay');
   const canvas = document.getElementById('tv-static-canvas');
@@ -10193,34 +10256,44 @@ function triggerYearTransition(targetMode, onMidpoint) {
     tvNoiseRaf = null;
   }
 
-  if (canvas.width !== 320) canvas.width = 320;
-  if (canvas.height !== 180) canvas.height = 180;
+  const nw = 240, nh = 135;
+  if (canvas.width !== nw) canvas.width = nw;
+  if (canvas.height !== nh) canvas.height = nh;
   const ctx = canvas.getContext('2d');
-  const imgData = ctx.createImageData(320, 180);
-  const buf = new Uint32Array(imgData.data.buffer);
-  const bufLen = buf.length;
+  const frames = getTVNoiseFrames();
+  let frameIdx = 0;
+  let lastNoiseMs = 0;
 
-  function renderStaticNoise() {
-    for (let i = 0; i < bufLen; i++) {
-      const v = (Math.random() * 255) | 0;
-      buf[i] = 0xFF000000 | (v << 16) | (v << 8) | v;
-    }
-    ctx.putImageData(imgData, 0, 0);
+  function renderStaticNoise(now) {
+    // 30 fps de neu (autèntic i 0% càrrega de CPU)
+    if (now - lastNoiseMs < 30) return;
+    lastNoiseMs = now;
+    const src = frames[frameIdx % frames.length];
+    const flipX = (frameIdx & 1) ? -1 : 1;
+    const flipY = (frameIdx & 2) ? -1 : 1;
+    frameIdx++;
+    ctx.save();
+    ctx.setTransform(flipX, 0, 0, flipY, flipX < 0 ? nw : 0, flipY < 0 ? nh : 0);
+    ctx.drawImage(src, 0, 0);
+    ctx.restore();
   }
 
   logoCont.innerHTML = TV_YEAR_LOGOS[targetMode] || '';
+  overlay.style.willChange = 'opacity';
   overlay.style.display = 'block';
   overlay.style.opacity = '1';
 
   const startTime = performance.now();
-  const DURATION_MS = 720; // Menys d'un segon (~720ms total)
-  const MIDPOINT_MS = 280; // Pic de neu i canvi de mode a sota
-  const FADEOUT_START_MS = 450; // Inici de dissolució
+  const DURATION_MS = 440;     // Zàping TV àgil (~0.44s total)
+  const MIDPOINT_MS = 140;     // Canvi de mode immediat sota la neu opaca
+  const FADEOUT_START_MS = 260; // Dissolució ràpida i neta
   let midpointExecuted = false;
+
+  renderStaticNoise(startTime);
 
   function loop(now) {
     const elapsed = now - startTime;
-    renderStaticNoise();
+    renderStaticNoise(now);
 
     if (!midpointExecuted && elapsed >= MIDPOINT_MS) {
       midpointExecuted = true;
@@ -10241,6 +10314,7 @@ function triggerYearTransition(targetMode, onMidpoint) {
       }
       overlay.style.display = 'none';
       overlay.style.opacity = '1';
+      overlay.style.willChange = 'auto';
       logoCont.innerHTML = '';
       tvNoiseRaf = null;
       isYearTransitioning = false;
@@ -10254,13 +10328,6 @@ function switchMode(mode) {
   if (mode === currentAppMode || isYearTransitioning) {
     const sel = document.getElementById('select-tn-version');
     if (sel) sel.value = currentAppMode;
-    return;
-  }
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if (isMobile) {
-    triggerYearTransition(mode, () => {
-      window.location.href = `/?any=${mode}`;
-    });
     return;
   }
   triggerYearTransition(mode, () => {
