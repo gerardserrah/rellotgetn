@@ -4807,21 +4807,55 @@ let flankCubesParams = {
       drawSubtleInnerShadow(ctx, 512, 512);
     }
 
-    // --- Back Face Texture for Central Cube: "hola alecs" with Inner Shadow ---
+    // --- Back Face Textures for Central Cube (Left = typewriter "hola alecs", Right = "tet" photo) ---
     let backCubeCanvas = null, backCubeCtx = null, backCubeTexture = null;
-    function initBackCubeTexture(text = "hola alecs") {
+    let backRightCubeCanvas = null, backRightCubeCtx = null, backRightCubeTexture = null;
+    let tetCurrentText = "";
+    let tetShowCursor = false;
+    let tetPhotoAlpha = 0;
+    let tetPhotoImg = null;
+    let tetPhotoLoaded = false;
+
+    function preloadTetPhoto() {
+      if (tetPhotoImg) return;
+      tetPhotoImg = new Image();
+      tetPhotoImg.crossOrigin = 'anonymous';
+      tetPhotoImg.onload = () => {
+        tetPhotoLoaded = true;
+        if (tetPhotoAlpha > 0 && backRightCubeCtx && backRightCubeTexture) {
+          drawBackRightCubeCanvas(backRightCubeCtx, tetPhotoAlpha);
+          backRightCubeTexture.needsUpdate = true;
+        }
+      };
+      tetPhotoImg.src = 'libs/tet.jpg';
+    }
+
+    function initBackCubeTexture(text = "") {
       backCubeCanvas = document.createElement('canvas');
       backCubeCanvas.width = 1024;
       backCubeCanvas.height = 1024;
       backCubeCtx = backCubeCanvas.getContext('2d');
-      drawBackCubeCanvas(backCubeCtx, text);
+      tetCurrentText = text;
+      drawBackCubeCanvas(backCubeCtx, text, false);
       backCubeTexture = new THREE.CanvasTexture(backCubeCanvas);
       backCubeTexture.minFilter = THREE.LinearFilter;
       backCubeTexture.magFilter = THREE.LinearFilter;
       return backCubeTexture;
     }
 
-    function drawBackCubeCanvas(ctx, text = "hola alecs") {
+    function initBackRightCubeTexture() {
+      backRightCubeCanvas = document.createElement('canvas');
+      backRightCubeCanvas.width = 1024;
+      backRightCubeCanvas.height = 1024;
+      backRightCubeCtx = backRightCubeCanvas.getContext('2d');
+      drawBackRightCubeCanvas(backRightCubeCtx, 0);
+      backRightCubeTexture = new THREE.CanvasTexture(backRightCubeCanvas);
+      backRightCubeTexture.minFilter = THREE.LinearFilter;
+      backRightCubeTexture.magFilter = THREE.LinearFilter;
+      return backRightCubeTexture;
+    }
+
+    function drawBackCubeCanvas(ctx, text = "", showCursor = false) {
       ctx.clearRect(0, 0, 1024, 1024);
       const bgGrad = ctx.createLinearGradient(0, 0, 0, 1024);
       bgGrad.addColorStop(0, '#585c64');
@@ -4831,14 +4865,40 @@ let flankCubesParams = {
 
       drawSubtleInnerShadow(ctx, 1024, 1024);
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.90)';
-      ctx.font = '700 86px "Akkurat Pro", "Montserrat", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
-      ctx.shadowBlur = 8;
-      ctx.fillText(text, 512, 512);
-      ctx.shadowBlur = 0;
+      if (text || showCursor) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.font = '700 86px "Akkurat Pro", "Montserrat", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+        ctx.shadowBlur = 8;
+        ctx.fillText(showCursor ? (text + '|') : text, 512, 512);
+        ctx.restore();
+      }
+    }
+
+    function drawBackRightCubeCanvas(ctx, photoAlpha = 0) {
+      ctx.clearRect(0, 0, 1024, 1024);
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, 1024);
+      bgGrad.addColorStop(0, '#585c64');
+      bgGrad.addColorStop(1, '#444850');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      if (photoAlpha > 0.005 && tetPhotoImg && tetPhotoLoaded) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, photoAlpha));
+        const iw = tetPhotoImg.naturalWidth || 1024;
+        const ih = tetPhotoImg.naturalHeight || 1024;
+        const scale = Math.max(1024 / iw, 1024 / ih);
+        const dw = iw * scale;
+        const dh = ih * scale;
+        ctx.drawImage(tetPhotoImg, (1024 - dw) / 2, (1024 - dh) / 2, dw, dh);
+        ctx.restore();
+      }
+
+      drawSubtleInnerShadow(ctx, 1024, 1024);
     }
 
     function refreshAllCubeInnerShadows() {
@@ -4863,10 +4923,14 @@ let flankCubesParams = {
         centralTopTexture.needsUpdate = true;
       }
 
-      // 4. Central Cube Back faces ("hola alecs")
+      // 4. Central Cube Back faces (left = typewriter text, right = photo)
       if (backCubeCtx && backCubeTexture) {
-        drawBackCubeCanvas(backCubeCtx, "hola alecs");
+        drawBackCubeCanvas(backCubeCtx, tetCurrentText, tetShowCursor);
         backCubeTexture.needsUpdate = true;
+      }
+      if (backRightCubeCtx && backRightCubeTexture) {
+        drawBackRightCubeCanvas(backRightCubeCtx, tetPhotoAlpha);
+        backRightCubeTexture.needsUpdate = true;
       }
 
       // 5. Left Cube (World Map lateral faces)
@@ -5892,7 +5956,8 @@ let flankCubesParams = {
       textures.tv3Ring = initGreyTV3RingTexture();
       textures.worldMap = initWorldMapTexture();
       textures.catalunyaMap = initCatalunyaMapTexture();
-      textures.backCube = initBackCubeTexture("hola alecs");
+      textures.backCube = initBackCubeTexture("");
+      textures.backRightCube = initBackRightCubeTexture();
       textures.centralTop = initCentralTopTexture();
       textures.flankTop = initFlankTopTexture();
 
@@ -5909,12 +5974,12 @@ let flankCubesParams = {
       const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
       const centralMaterials = [
-        new THREE.MeshStandardMaterial({ map: textures.backCube, roughness: 0.46, metalness: 0.05 }),   // +X: Back-right ("hola alecs")
-        new THREE.MeshStandardMaterial({ map: textures.tv3Ring, roughness: 0.44, metalness: 0.06 }),   // -X: FRONT-LEFT (TV3 ring)
-        new THREE.MeshStandardMaterial({ map: textures.centralTop, roughness: 0.28, metalness: 0.08 }),// +Y: TOP (Inner Shadow)
-        new THREE.MeshStandardMaterial({ color: 0x33363b, roughness: 0.8 }),                           // -Y: Bottom
-        new THREE.MeshStandardMaterial({ map: textures.orangeDate, roughness: 0.35, metalness: 0.02 }),// +Z: FRONT-RIGHT (Orange Date)
-        new THREE.MeshStandardMaterial({ map: textures.backCube, roughness: 0.46, metalness: 0.05 })   // -Z: Back-left ("hola alecs")
+        new THREE.MeshStandardMaterial({ map: textures.backCube, roughness: 0.46, metalness: 0.05 }),      // +X: Back-left when viewed from behind ("hola alecs" on 'tet')
+        new THREE.MeshStandardMaterial({ map: textures.tv3Ring, roughness: 0.44, metalness: 0.06 }),       // -X: FRONT-LEFT (TV3 ring)
+        new THREE.MeshStandardMaterial({ map: textures.centralTop, roughness: 0.28, metalness: 0.08 }),    // +Y: TOP (Inner Shadow)
+        new THREE.MeshStandardMaterial({ color: 0x33363b, roughness: 0.8 }),                               // -Y: Bottom
+        new THREE.MeshStandardMaterial({ map: textures.orangeDate, roughness: 0.35, metalness: 0.02 }),    // +Z: FRONT-RIGHT (Orange Date)
+        new THREE.MeshStandardMaterial({ map: textures.backRightCube, roughness: 0.46, metalness: 0.05 })  // -Z: Back-right when viewed from behind (photo on 'tet')
       ];
 
       centralCube = new THREE.Mesh(cubeGeo, centralMaterials);
@@ -10786,6 +10851,9 @@ function applyModeSwitch(mode, skipUrlUpdate = false) {
       const btnResetView = document.getElementById('btn-reset-view');
       if (btnResetView) {
         btnResetView.addEventListener('click', () => {
+          if (typeof window.clearTetEasterEggVisuals === 'function') {
+            window.clearTetEasterEggVisuals();
+          }
           animateCameraTo(DEFAULT_CAMERA_POS, DEFAULT_TARGET_POS);
         });
       }
@@ -13652,6 +13720,137 @@ function updatePatroAnimation(nowMs) {
     });
   }
 
+  // Easter Egg "tet" (TN 2014): gira la càmera al darrere del cub central, escriu "hola alecs" a l'esquerra i mostra la foto a la dreta
+  let tetAnimTimers = [];
+  let tetAnimRaf = null;
+
+  function clearTetEasterEggVisuals() {
+    tetAnimTimers.forEach(id => clearTimeout(id));
+    tetAnimTimers = [];
+    if (tetAnimRaf) {
+      cancelAnimationFrame(tetAnimRaf);
+      tetAnimRaf = null;
+    }
+    tetCurrentText = "";
+    tetShowCursor = false;
+    tetPhotoAlpha = 0;
+    if (backCubeCtx && backCubeTexture) {
+      drawBackCubeCanvas(backCubeCtx, "", false);
+      backCubeTexture.needsUpdate = true;
+    }
+    if (backRightCubeCtx && backRightCubeTexture) {
+      drawBackRightCubeCanvas(backRightCubeCtx, 0);
+      backRightCubeTexture.needsUpdate = true;
+    }
+  }
+  window.clearTetEasterEggVisuals = clearTetEasterEggVisuals;
+
+  function triggerTetEasterEgg() {
+    if (currentAppMode !== '2014' || !camera || !controls || !centralCube) return;
+    preloadTetPhoto();
+    clearTetEasterEggVisuals();
+
+    // 1. Òrbita suau en coordenades polars al voltant del cub central fins quedar just al darrere
+    const pivot = new THREE.Vector3(centralCube.position.x, 1.9, centralCube.position.z);
+    const startTarget = controls.target.clone();
+    const dx0 = camera.position.x - pivot.x;
+    const dz0 = camera.position.z - pivot.z;
+    const startAngle = Math.atan2(dx0, dz0);
+    const startRadius = Math.hypot(dx0, dz0);
+    const startY = camera.position.y;
+
+    // Angle destí = Math.PI (exactament al darrere del cub, mirant cap a +Z)
+    let endAngle = Math.PI;
+    // Assegura el camí més natural (girant pel lateral dret)
+    while (endAngle - startAngle > Math.PI) endAngle -= Math.PI * 2;
+    while (endAngle - startAngle < -Math.PI) endAngle += Math.PI * 2;
+    if (Math.abs(endAngle - startAngle) < 0.05) endAngle = startAngle;
+
+    const endRadius = 11.2;
+    const endY = 3.1;
+    const orbitDuration = 1650;
+    const orbitStart = performance.now();
+    isCameraAnimating = true;
+
+    function startRevealBehindCube() {
+      // A) Efecte màquina d'escriure "hola alecs" a la cara esquerra (Material [0])
+      const fullText = "hola alecs";
+      tetCurrentText = "";
+      tetShowCursor = true;
+      if (backCubeCtx && backCubeTexture) {
+        drawBackCubeCanvas(backCubeCtx, tetCurrentText, true);
+        backCubeTexture.needsUpdate = true;
+      }
+
+      for (let i = 1; i <= fullText.length; i++) {
+        const tId = setTimeout(() => {
+          tetCurrentText = fullText.slice(0, i);
+          tetShowCursor = true;
+          if (backCubeCtx && backCubeTexture) {
+            drawBackCubeCanvas(backCubeCtx, tetCurrentText, true);
+            backCubeTexture.needsUpdate = true;
+          }
+        }, 120 * i);
+        tetAnimTimers.push(tId);
+      }
+
+      // Treu el cursor poc després d'acabar d'escriure
+      const doneCursorId = setTimeout(() => {
+        tetShowCursor = false;
+        if (backCubeCtx && backCubeTexture) {
+          drawBackCubeCanvas(backCubeCtx, tetCurrentText, false);
+          backCubeTexture.needsUpdate = true;
+        }
+      }, 120 * fullText.length + 550);
+      tetAnimTimers.push(doneCursorId);
+
+      // B) Aparició suau de la foto dels cadells a la cara dreta (Material [5])
+      const fadeStart = performance.now();
+      const fadeDur = 900;
+      function fadePhoto(now) {
+        const p = Math.min(1, (now - fadeStart) / fadeDur);
+        const ease = 1 - Math.pow(1 - p, 3);
+        tetPhotoAlpha = ease;
+        if (backRightCubeCtx && backRightCubeTexture) {
+          drawBackRightCubeCanvas(backRightCubeCtx, tetPhotoAlpha);
+          backRightCubeTexture.needsUpdate = true;
+        }
+        if (p < 1) {
+          tetAnimRaf = requestAnimationFrame(fadePhoto);
+        } else {
+          tetAnimRaf = null;
+        }
+      }
+      tetAnimRaf = requestAnimationFrame(fadePhoto);
+    }
+
+    function stepOrbit(now) {
+      const p = Math.min(1, (now - orbitStart) / orbitDuration);
+      const ease = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      const curAngle = startAngle + (endAngle - startAngle) * ease;
+      const curRadius = startRadius + (endRadius - startRadius) * ease;
+      const curY = startY + (endY - startY) * ease;
+
+      camera.position.set(
+        pivot.x + Math.sin(curAngle) * curRadius,
+        curY,
+        pivot.z + Math.cos(curAngle) * curRadius
+      );
+      controls.target.lerpVectors(startTarget, pivot, ease);
+      controls.update();
+
+      if (p < 1) {
+        tetAnimRaf = requestAnimationFrame(stepOrbit);
+      } else {
+        isCameraAnimating = false;
+        tetAnimRaf = null;
+        startRevealBehindCube();
+      }
+    }
+
+    tetAnimRaf = requestAnimationFrame(stepOrbit);
+  }
+
   window.addEventListener('keydown', (e) => {
     if ((currentAppMode !== '2014' && currentAppMode !== '2025') || patroState.phase !== 'idle') return;
     const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
@@ -13662,6 +13861,9 @@ function updatePatroAnimation(nowMs) {
       if (patroState.keyBuffer.endsWith('patro')) {
         patroState.keyBuffer = '';
         triggerPatroEasterEgg();
+      } else if (currentAppMode === '2014' && patroState.keyBuffer.endsWith('tet')) {
+        patroState.keyBuffer = '';
+        triggerTetEasterEgg();
       }
     }
   });
